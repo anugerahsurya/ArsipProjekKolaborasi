@@ -529,6 +529,66 @@ textarea {
   }
 }
 
+/* ---------- template ---------- */
+
+.tpl-note {
+  margin: 14px 0 6px;
+}
+
+.tpl-list {
+  display: grid;
+}
+
+.tpl {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.tpl > svg {
+  color: var(--contour);
+  align-self: start;
+  margin-top: 2px;
+}
+
+.tpl-text {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.tpl-text h3 {
+  font-size: 18px;
+}
+
+.tpl-text p {
+  color: var(--ink-2);
+  font-size: 14px;
+}
+
+.tpl-text code {
+  justify-self: start;
+  white-space: normal;
+  word-break: break-all;
+}
+
+.tpl-actions {
+  display: flex;
+  gap: 8px;
+}
+
+@media (max-width: 640px) {
+  .tpl {
+    grid-template-columns: 22px minmax(0, 1fr);
+  }
+  .tpl-actions {
+    grid-column: 2;
+  }
+}
+
 /* ---------- sheet (neatline) ---------- */
 
 .sheet {

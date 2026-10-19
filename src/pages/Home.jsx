@@ -5,6 +5,7 @@ import TopBar from '../components/TopBar.jsx'
 import Contours from '../components/Contours.jsx'
 import ScaleBar from '../components/ScaleBar.jsx'
 import StatusBadge from '../components/StatusBadge.jsx'
+import Templates from '../components/Templates.jsx'
 import { projects, deadlineOf } from '../projects/index.js'
 import { progressOf, useProjectState } from '../lib/useProjectState.js'
 import { formatTanggal, labelSisa } from '../lib/format.js'
@@ -97,6 +98,8 @@ export default function Home() {
             )}
           </div>
         </section>
+
+        <Templates />
       </main>
     </>
   )
