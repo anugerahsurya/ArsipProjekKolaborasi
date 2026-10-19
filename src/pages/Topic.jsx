@@ -11,6 +11,7 @@ import FlowDiagram from '../components/FlowDiagram.jsx'
 import LiteratureTable from '../components/LiteratureTable.jsx'
 import Checkpoints from '../components/Checkpoints.jsx'
 import Berkas from '../components/Berkas.jsx'
+import Kolaborator from '../components/Kolaborator.jsx'
 import NotFound from './NotFound.jsx'
 import { deadlineOf, getProject } from '../projects/index.js'
 import { progressOf, stateKey, useProjectState } from '../lib/useProjectState.js'
@@ -96,6 +97,8 @@ function TopicView({ project, topic }) {
               </div>
             )}
           </header>
+
+          <Kolaborator list={st.kolaborator} onAdd={st.addKolaborator} onRemove={st.removeKolaborator} loading={st.loading} />
 
           <div className="sheet-body">
             <Legend items={legend} />
@@ -244,7 +247,7 @@ function TopicView({ project, topic }) {
               <section id="checkpoint" className="block">
                 <h2>Checkpoint pengerjaan</h2>
                 {st.error && <p className="error">Data checkpoint gagal dimuat: {st.error}</p>}
-                <Checkpoints topic={topic} checkpoints={st.checkpoints} onSave={st.saveCheckpoint} loading={st.loading} />
+                <Checkpoints topic={topic} checkpoints={st.checkpoints} onSave={st.saveCheckpoint} loading={st.loading} tim={st.kolaborator} />
               </section>
 
               <section id="berkas" className="block">

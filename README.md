@@ -16,8 +16,12 @@ Salin `.env.example` menjadi `.env`, lalu isi `VITE_APPSCRIPT_URL`. Tanpa variab
 ## Apps Script
 
 1. Buka script.google.com, buat project baru, tempel isi `appscript/Code.gs`.
-2. Deploy > New deployment > Web app. Execute as: Me. Who has access: Anyone.
-3. Salin URL `/exec` ke `VITE_APPSCRIPT_URL` (di `.env` lokal dan di pengaturan Environment Variables Vercel/Netlify).
+2. Pilih fungsi `setup` di toolbar, klik Run, lalu izinkan akses Drive dan Sheets. Langkah ini wajib. Tanpa otorisasi, web menampilkan "Apps Script tidak bisa dihubungi" (sebelumnya "Failed to fetch").
+3. Deploy > New deployment > Web app. Execute as: Me. Who has access: Anyone.
+4. Salin URL yang berakhiran `/exec` (bukan `/dev`) ke `VITE_APPSCRIPT_URL` di `.env` lokal dan di Environment Variables Vercel/Netlify, lalu redeploy web. Vite membaca env saat build, jadi env yang ditambah setelah build belum terpakai.
+5. Cek dengan membuka URL `/exec` di browser. Jika muncul `{"ok":true,...}`, backend siap.
+
+Setiap kali `Code.gs` diubah, buat versi baru: Deploy > Manage deployments > Edit > Version: New version. URL tetap sama.
 
 Saat pertama dipakai, script membuat folder "Artikel Ilmiah Surya" di Drive pemilik beserta spreadsheet databasenya. Berkas PDF dibagikan dengan akses Pengomentar untuk siapa saja yang memiliki link. Siapa pun yang tahu URL web app bisa menulis data, jadi URL-nya jangan disebar di luar tim.
 

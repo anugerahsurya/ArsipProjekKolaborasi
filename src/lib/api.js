@@ -7,10 +7,16 @@ const LOCAL_KEY = 'pai-db'
 
 function localDb() {
   try {
-    return JSON.parse(localStorage.getItem(LOCAL_KEY)) || { checkpoint: [], projek: [], berkas: [] }
+    return { checkpoint: [], projek: [], berkas: [], kolaborator: [], ...JSON.parse(localStorage.getItem(LOCAL_KEY)) }
   } catch {
-    return { checkpoint: [], projek: [], berkas: [] }
+    return { checkpoint: [], projek: [], berkas: [], kolaborator: [] }
   }
+}
+
+function localSave(db) {
+  try {
+    localStorage.setItem(LOCAL_KEY, JSON.stringify(db))
+  } catch {}
 }
 
 function localUpsert(sheet, keys, obj) {
@@ -18,27 +24,39 @@ function localUpsert(sheet, keys, obj) {
   const i = db[sheet].findIndex((r) => keys.every((k) => r[k] === obj[k]))
   if (i >= 0) db[sheet][i] = obj
   else db[sheet].push(obj)
-  try {
-    localStorage.setItem(LOCAL_KEY, JSON.stringify(db))
-  } catch {}
+  localSave(db)
   return obj
 }
 
+// fetch gagal total (TypeError) hampir selalu berarti Apps Script membalas halaman login:
+// belum diotorisasi, akses bukan "Anyone", atau URL bukan /exec.
+async function call(input, init) {
+  let res
+  try {
+    res = await fetch(input, init)
+  } catch {
+    throw new Error('Apps Script tidak bisa dihubungi. Jalankan setup() di editor Apps Script, pastikan akses web app "Anyone" dan URL berakhiran /exec.')
+  }
+  try {
+    return await res.json()
+  } catch {
+    throw new Error('Balasan Apps Script bukan JSON. Cek pengaturan deployment web app.')
+  }
+}
+
 async function get(params) {
-  const res = await fetch(`${URL}?${new URLSearchParams(params)}`)
-  const data = await res.json()
+  const data = await call(`${URL}?${new URLSearchParams(params)}`)
   if (!data.ok) throw new Error(data.error || 'Gagal memuat data')
   return data
 }
 
 async function post(body) {
   // text/plain supaya tidak memicu preflight CORS di Apps Script
-  const res = await fetch(URL, {
+  const data = await call(URL, {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     body: JSON.stringify(body),
   })
-  const data = await res.json()
   if (!data.ok) throw new Error(data.error || 'Gagal menyimpan')
   return data.row
 }
@@ -56,6 +74,7 @@ export async function fetchState(project) {
       projek: db.projek.find(own) || null,
       checkpoints: db.checkpoint.filter(own),
       berkas: db.berkas.filter(own),
+      kolaborator: db.kolaborator.filter(own).map((r) => r.nama),
     }
   }
   return get({ action: 'state', project })
@@ -85,4 +104,18 @@ export async function uploadPdf({ project, topic, jenis, file }) {
     reader.readAsDataURL(file)
   })
   return post({ action: 'upload', project, topic, jenis, nama: file.name, data })
+}
+
+export async function addKolaborator(project, nama) {
+  if (!URL) return localUpsert('kolaborator', ['project', 'nama'], { project, nama, updatedAt: new Date().toISOString() })
+  return post({ action: 'kolaborator', project, nama })
+}
+
+export async function removeKolaborator(project, nama) {
+  if (!URL) {
+    const db = localDb()
+    db.kolaborator = db.kolaborator.filter((r) => !(r.project === project && r.nama === nama))
+    return localSave(db)
+  }
+  return post({ action: 'hapusKolaborator', project, nama })
 }

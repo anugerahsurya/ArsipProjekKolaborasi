@@ -6,8 +6,12 @@
  *   Who has access  : Anyone
  * Salin URL /exec ke VITE_APPSCRIPT_URL di file .env (lokal) atau env Vercel/Netlify.
  *
- * Saat pertama dipanggil, script membuat folder "Artikel Ilmiah Surya" di Drive
- * pemilik script beserta spreadsheet database di dalamnya.
+ * Sebelum deploy, jalankan fungsi setup() sekali dari editor (Run) dan izinkan akses
+ * Drive/Sheets. Fungsi ini membuat folder "Artikel Ilmiah Surya" beserta spreadsheet
+ * database. Tanpa otorisasi ini web app membalas halaman login dan browser menampilkan
+ * "Failed to fetch".
+ *
+ * Setiap kali kode ini diubah: Deploy > Manage deployments > Edit > Version: New version.
  */
 
 const ROOT_FOLDER = 'Artikel Ilmiah Surya';
@@ -17,7 +21,14 @@ const SHEETS = {
   checkpoint: ['project', 'topic', 'stepId', 'status', 'pic', 'catatan', 'updatedAt'],
   projek: ['project', 'status', 'updatedAt'],
   berkas: ['project', 'topic', 'jenis', 'nama', 'url', 'updatedAt'],
+  kolaborator: ['project', 'nama', 'updatedAt'],
 };
+
+function setup() {
+  root_();
+  Object.keys(SHEETS).forEach(sheet_);
+  Logger.log('Siap. Database: ' + db_().getUrl());
+}
 
 function doGet(e) {
   const p = e.parameter || {};
@@ -29,9 +40,10 @@ function doGet(e) {
       projek: rows_('projek').find(byProject) || null,
       checkpoints: rows_('checkpoint').filter(byProject),
       berkas: rows_('berkas').filter(byProject),
+      kolaborator: rows_('kolaborator').filter(byProject).map((r) => r.nama),
     });
   }
-  return json_({ ok: false, error: 'action tidak dikenal' });
+  return json_({ ok: true, pesan: 'Backend Projek Artikel Ilmiah aktif' });
 }
 
 function doPost(e) {
@@ -57,6 +69,15 @@ function doPost(e) {
           project: body.project, topic: body.topic, jenis: body.jenis,
           nama: body.nama || body.url, url: body.url, updatedAt: now,
         }) });
+
+      case 'kolaborator':
+        return json_({ ok: true, row: upsert_('kolaborator', ['project', 'nama'], {
+          project: body.project, nama: String(body.nama).trim(), updatedAt: now,
+        }) });
+
+      case 'hapusKolaborator':
+        remove_('kolaborator', { project: body.project, nama: body.nama });
+        return json_({ ok: true });
 
       case 'upload': {
         const folder = subfolder_(subfolder_(root_(), body.project), body.topic);
@@ -126,6 +147,15 @@ function upsert_(name, keys, obj) {
   if (idx > 0) sh.getRange(idx + 1, 1, 1, row.length).setValues([row]);
   else sh.appendRow(row);
   return obj;
+}
+
+function remove_(name, match) {
+  const sh = sheet_(name);
+  const head = SHEETS[name];
+  const values = sh.getDataRange().getValues();
+  for (let i = values.length - 1; i > 0; i--) {
+    if (Object.keys(match).every((k) => String(values[i][head.indexOf(k)]) === String(match[k]))) sh.deleteRow(i + 1);
+  }
 }
 
 function json_(obj) {

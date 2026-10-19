@@ -6,6 +6,7 @@ import Contours from '../components/Contours.jsx'
 import ScaleBar from '../components/ScaleBar.jsx'
 import StatusBadge from '../components/StatusBadge.jsx'
 import ProjectStatus from '../components/ProjectStatus.jsx'
+import Kolaborator from '../components/Kolaborator.jsx'
 import NotFound from './NotFound.jsx'
 import { getProject } from '../projects/index.js'
 import { progressOf, useProjectState } from '../lib/useProjectState.js'
@@ -73,6 +74,8 @@ function ProjectView({ project }) {
               <Contours seed={31} hills={2} levels={7} />
             </div>
           </header>
+
+          <Kolaborator list={st.kolaborator} onAdd={st.addKolaborator} onRemove={st.removeKolaborator} loading={st.loading} />
 
           <section className="block" aria-labelledby="h-jadwal">
             <h2 id="h-jadwal">Jadwal</h2>

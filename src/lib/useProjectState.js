@@ -4,7 +4,7 @@ import * as api from './api.js'
 const key = (...p) => p.join('|')
 
 export function useProjectState(project) {
-  const [state, setState] = useState({ loading: true, error: null, projek: null, checkpoints: {}, berkas: {} })
+  const [state, setState] = useState({ loading: true, error: null, projek: null, checkpoints: {}, berkas: {}, kolaborator: [] })
   const ref = useRef(state)
   ref.current = state
 
@@ -17,6 +17,7 @@ export function useProjectState(project) {
         projek: data.projek,
         checkpoints: Object.fromEntries(data.checkpoints.map((r) => [key(r.topic, r.stepId), r])),
         berkas: Object.fromEntries(data.berkas.map((r) => [key(r.topic, r.jenis), r])),
+        kolaborator: data.kolaborator || [],
       })
     } catch (err) {
       setState((s) => ({ ...s, loading: false, error: err.message }))
@@ -64,9 +65,25 @@ export function useProjectState(project) {
     [project.id],
   )
 
+  const addKolaborator = useCallback(
+    async (nama) => {
+      await api.addKolaborator(project.id, nama)
+      setState((s) => ({ ...s, kolaborator: [...new Set([...s.kolaborator, nama])] }))
+    },
+    [project.id],
+  )
+
+  const removeKolaborator = useCallback(
+    async (nama) => {
+      await api.removeKolaborator(project.id, nama)
+      setState((s) => ({ ...s, kolaborator: s.kolaborator.filter((n) => n !== nama) }))
+    },
+    [project.id],
+  )
+
   const statusProjek = state.projek?.status || project.status
 
-  return { ...state, statusProjek, saveCheckpoint, setProjectStatus, saveBerkas, reload: load }
+  return { ...state, statusProjek, saveCheckpoint, setProjectStatus, saveBerkas, addKolaborator, removeKolaborator, reload: load }
 }
 
 export function progressOf(topic, checkpoints) {

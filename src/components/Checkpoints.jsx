@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { CalendarDays, MessageSquareText, UserRound } from 'lucide-react'
+import { CalendarDays, ChevronDown, MessageSquareText, UserRound } from 'lucide-react'
 import StatusSymbol, { STATUS } from './StatusSymbol.jsx'
 import ScaleBar from './ScaleBar.jsx'
 import { stateKey } from '../lib/useProjectState.js'
 import { formatTanggalPendek, sisaHari, waktuRelatif } from '../lib/format.js'
 
-function Step({ step, row, onSave }) {
+function Step({ step, row, onSave, tim }) {
   const status = row?.status || 'belum'
   const [pic, setPic] = useState(row?.pic || '')
   const [catatan, setCatatan] = useState(row?.catatan || '')
@@ -54,14 +54,23 @@ function Step({ step, row, onSave }) {
 
         <label className="field field-pic">
           <UserRound size={15} aria-hidden="true" />
-          <input
-            list="pic-list"
-            placeholder="PIC"
+          <select
             value={pic}
-            onChange={(e) => setPic(e.target.value)}
-            onBlur={() => pic !== (row?.pic || '') && simpan({ pic, catatan })}
+            disabled={tim.length === 0 && !pic}
+            onChange={(e) => {
+              setPic(e.target.value)
+              simpan({ pic: e.target.value, catatan }, e.target.value ? `PIC: ${e.target.value}` : 'PIC dikosongkan')
+            }}
             aria-label={`PIC ${step.judul}`}
-          />
+          >
+            <option value="">{tim.length ? 'Pilih PIC' : 'Tambah kolaborator dulu'}</option>
+            {[...new Set([...tim, pic].filter(Boolean))].map((n) => (
+              <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
+          </select>
+          <ChevronDown size={15} aria-hidden="true" />
         </label>
 
         <button type="button" className={`btn-ghost ${open ? 'is-on' : ''}`} onClick={() => setOpen((o) => !o)} aria-expanded={open}>
@@ -88,8 +97,7 @@ function Step({ step, row, onSave }) {
   )
 }
 
-export default function Checkpoints({ topic, checkpoints, onSave, loading }) {
-  const picList = [...new Set(Object.values(checkpoints).map((r) => r.pic).filter(Boolean))]
+export default function Checkpoints({ topic, checkpoints, onSave, loading, tim = [] }) {
 
   if (loading) {
     return (
@@ -103,11 +111,6 @@ export default function Checkpoints({ topic, checkpoints, onSave, loading }) {
 
   return (
     <div className="phases">
-      <datalist id="pic-list">
-        {picList.map((p) => (
-          <option key={p} value={p} />
-        ))}
-      </datalist>
       {topic.checkpoint.map((f, fi) => {
         const statuses = f.langkah.map((s) => checkpoints[stateKey(topic.id, s.id)]?.status || 'belum')
         return (
@@ -125,6 +128,7 @@ export default function Checkpoints({ topic, checkpoints, onSave, loading }) {
                   key={s.id}
                   step={s}
                   row={checkpoints[stateKey(topic.id, s.id)]}
+                  tim={tim}
                   onSave={(patch) => onSave(topic.id, s.id, patch)}
                 />
               ))}

@@ -7,8 +7,8 @@ import { waktuRelatif } from '../lib/format.js'
 const MAKS_MB = 20
 
 const SLOT = [
-  { jenis: 'bahan_tayang', label: 'Bahan Tayang', ket: 'PDF slide presentasi', icon: Presentation },
-  { jenis: 'artikel_final', label: 'File Artikel Final', ket: 'PDF artikel sesuai template', icon: FileText },
+  { jenis: 'bahan_tayang', label: 'Bahan Tayang', ket: 'Slide presentasi', icon: Presentation },
+  { jenis: 'artikel_final', label: 'File Artikel Final', ket: 'Artikel sesuai template', icon: FileText },
 ]
 
 function SlotPdf({ slot, row, onUpload }) {
@@ -51,25 +51,29 @@ function SlotPdf({ slot, row, onUpload }) {
         <Icon size={20} aria-hidden="true" />
         <div>
           <h4>{slot.label}</h4>
-          <p>{slot.ket}, maks {MAKS_MB} MB</p>
+          <p>{slot.ket}</p>
         </div>
       </div>
 
-      {row ? (
-        <a className="slot-file" href={row.url} target="_blank" rel="noreferrer">
-          <span className="slot-name">{row.nama}</span>
-          <span className="slot-meta">Diunggah {waktuRelatif(row.updatedAt)}</span>
-          <ExternalLink size={15} aria-hidden="true" />
-        </a>
-      ) : (
-        <p className="slot-empty">Belum ada berkas. Tarik PDF ke sini atau pilih berkas.</p>
-      )}
+      <div className="slot-body">
+        {row ? (
+          <a className="slot-file" href={row.url} target="_blank" rel="noreferrer">
+            <span className="slot-name">{row.nama}</span>
+            <span className="slot-meta">Diunggah {waktuRelatif(row.updatedAt)}</span>
+            <ExternalLink size={15} aria-hidden="true" />
+          </a>
+        ) : (
+          <p className="slot-empty">Belum ada berkas. Tarik PDF ke sini, maksimal {MAKS_MB} MB.</p>
+        )}
+      </div>
 
-      <input ref={input} type="file" accept="application/pdf" hidden onChange={(e) => kirim(e.target.files[0])} />
-      <button type="button" className="btn" onClick={() => input.current?.click()} disabled={busy}>
-        {busy ? <LoaderCircle size={16} className="spin" aria-hidden="true" /> : <Upload size={16} aria-hidden="true" />}
-        {busy ? 'Mengunggah' : row ? 'Ganti berkas' : 'Pilih PDF'}
-      </button>
+      <div className="slot-foot">
+        <input ref={input} type="file" accept="application/pdf" hidden onChange={(e) => kirim(e.target.files[0])} />
+        <button type="button" className="btn" onClick={() => input.current?.click()} disabled={busy}>
+          {busy ? <LoaderCircle size={16} className="spin" aria-hidden="true" /> : <Upload size={16} aria-hidden="true" />}
+          {busy ? 'Mengunggah' : row ? 'Ganti berkas' : 'Pilih PDF'}
+        </button>
+      </div>
     </div>
   )
 }
@@ -99,17 +103,21 @@ function SlotLink({ row, onSave }) {
         <Link2 size={20} aria-hidden="true" />
         <div>
           <h4>Link Pengerjaan Artikel</h4>
-          <p>Dokumen kolaborasi (Google Docs, Overleaf, dan sejenisnya)</p>
+          <p>Google Docs, Overleaf, atau sejenisnya</p>
         </div>
       </div>
-      {row && (
-        <a className="slot-file" href={row.url} target="_blank" rel="noreferrer">
-          <span className="slot-name">{row.url}</span>
-          <span className="slot-meta">Diperbarui {waktuRelatif(row.updatedAt)}</span>
-          <ExternalLink size={15} aria-hidden="true" />
-        </a>
-      )}
-      <div className="slot-row">
+      <div className="slot-body">
+        {row ? (
+          <a className="slot-file" href={row.url} target="_blank" rel="noreferrer">
+            <span className="slot-name">{row.url}</span>
+            <span className="slot-meta">Diperbarui {waktuRelatif(row.updatedAt)}</span>
+            <ExternalLink size={15} aria-hidden="true" />
+          </a>
+        ) : (
+          <p className="slot-empty">Belum ada link. Tempel tautan dokumen yang dikerjakan bersama.</p>
+        )}
+      </div>
+      <div className="slot-foot">
         <input
           type="url"
           inputMode="url"
