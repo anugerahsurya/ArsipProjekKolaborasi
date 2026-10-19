@@ -23,7 +23,14 @@ Saat pertama dipakai, script membuat folder "Artikel Ilmiah Surya" di Drive pemi
 
 ## Menambah projek atau topik
 
-Buat folder baru di `src/projects/<id-projek>/` berisi `project.js`, lalu satu subfolder per topik (`<id-topik>/index.js`, `literatur.js`, `checkpoint.js`). Contohnya ada di `src/projects/iflp-icdsos-2026/`. Projek yang sudah selesai ditandai dari halaman projek dan otomatis pindah ke bagian Arsip di beranda.
+Template ada di folder `templates/`. Setiap template punya kunci `_prompt` berisi instruksi siap pakai.
+
+1. Buka `templates/project.template.json` (untuk projek baru) atau `templates/topik.template.json` (untuk topik baru).
+2. Isi bagian `<<...>>` di `_prompt` dengan informasi call for paper, ide topik, dan metadata data. Lalu tempel seluruh isi file ke Claude atau AI lain.
+3. Simpan jawabannya sebagai `src/projects/<id-projek>/project.json` atau `src/projects/<id-projek>/<id-topik>/topik.json`. Nama folder harus sama dengan `id` di dalam JSON.
+4. Cek literatur yang dihasilkan, karena tautan tetap perlu diverifikasi. Setelah itu jalankan `npm run dev` atau push, dan topik langsung muncul di web.
+
+Contoh yang sudah terisi ada di `src/projects/iflp-icdsos-2026/`. Id langkah checkpoint jangan diganti setelah dipakai, karena statusnya tersimpan di Sheet dengan id itu. Projek yang sudah selesai ditandai dari halaman projek dan otomatis pindah ke bagian Arsip di beranda.
 
 ## Deploy
 

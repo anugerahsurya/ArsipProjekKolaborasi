@@ -1,0 +1,36 @@
+{
+  "_prompt": [
+    "Kamu membantu mengisi file project.json untuk web Projek Artikel Ilmiah (arsip artikel ilmiah tim IPDS BPS Provinsi Sumatera Barat).",
+    "Satu projek = satu konferensi, call for paper, atau jurnal tujuan. Isi dari informasi call for paper yang saya lampirkan di bawah.",
+    "",
+    "Aturan:",
+    "1. Kembalikan JSON valid saja, struktur dan nama kunci persis seperti template ini. Hapus kunci _prompt dari hasil.",
+    "2. id: huruf kecil, angka, dan tanda hubung, tanpa spasi (contoh: icdsos-2027, jurnal-jaskss-2027). Nama folder projek harus sama dengan id ini.",
+    "3. status: selalu \"aktif\" untuk projek baru. Penandaan selesai dilakukan dari web.",
+    "4. jadwal: tanggal format YYYY-MM-DD. Tandai tepat satu entri dengan \"utama\": true, yaitu batas submit paper.",
+    "5. tautan: hanya URL yang ada di informasi call for paper. Jangan mengarang URL.",
+    "6. catatan: satu sampai tiga kalimat tentang publikasi, indeksasi, atau biaya. Kosongkan string jika tidak ada informasi.",
+    "7. Bahasa Indonesia yang lugas, tanpa emoji dan tanpa kata promosi.",
+    "",
+    "Informasi call for paper:",
+    "<<TEMPEL TEKS POSTER, CAPTION, ATAU HALAMAN WEB CALL FOR PAPER DI SINI>>"
+  ],
+  "id": "nama-projek-tahun",
+  "nama": "Nama singkat konferensi atau jurnal",
+  "namaPanjang": "Nama lengkap konferensi atau jurnal",
+  "tema": "Tema besar call for paper",
+  "penyelenggara": "Instansi penyelenggara, dipisah koma",
+  "wilayah": "Sumatera Barat",
+  "status": "aktif",
+  "tautan": [
+    { "label": "Situs konferensi", "url": "https://..." },
+    { "label": "Submit paper", "url": "https://..." }
+  ],
+  "jadwal": [
+    { "tanggal": "2027-01-01", "label": "Submission dibuka" },
+    { "tanggal": "2027-02-01", "label": "Batas submit paper", "utama": true },
+    { "tanggal": "2027-03-01", "label": "Pengumuman penerimaan" },
+    { "tanggal": "2027-04-01", "label": "Hari konferensi" }
+  ],
+  "catatan": "Informasi publikasi, indeksasi, atau biaya."
+}

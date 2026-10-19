@@ -1,7 +1,7 @@
-// Tiap folder di src/projects/<projek>/ berisi project.js dan subfolder <topik>/index.js.
-// Menambah projek atau topik cukup dengan menambah folder baru.
-const projectFiles = import.meta.glob('./*/project.js', { eager: true, import: 'default' })
-const topicFiles = import.meta.glob('./*/*/index.js', { eager: true, import: 'default' })
+// Tiap folder di src/projects/<projek>/ berisi project.json dan subfolder <topik>/topik.json.
+// Menambah projek atau topik cukup dengan menambah folder baru (template di folder templates/).
+const projectFiles = import.meta.glob('./*/project.json', { eager: true, import: 'default' })
+const topicFiles = import.meta.glob('./*/*/topik.json', { eager: true, import: 'default' })
 
 export const projects = Object.entries(projectFiles)
   .map(([path, p]) => {

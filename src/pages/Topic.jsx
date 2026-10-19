@@ -4,6 +4,7 @@ import TopBar from '../components/TopBar.jsx'
 import Sheet from '../components/Sheet.jsx'
 import Legend from '../components/Legend.jsx'
 import Illustration from '../components/Illustration.jsx'
+import Contours from '../components/Contours.jsx'
 import ScaleBar from '../components/ScaleBar.jsx'
 import StatusBadge from '../components/StatusBadge.jsx'
 import FlowDiagram from '../components/FlowDiagram.jsx'
@@ -85,9 +86,15 @@ function TopicView({ project, topic }) {
                 )}
               </div>
             </div>
-            <figure className="title-illus">
-              <Illustration jenis={topic.ilustrasi} />
-            </figure>
+            {topic.ilustrasi ? (
+              <figure className="title-illus">
+                <Illustration jenis={topic.ilustrasi} />
+              </figure>
+            ) : (
+              <div className="title-map">
+                <Contours seed={topic.nomor * 17} hills={2} levels={7} />
+              </div>
+            )}
           </header>
 
           <div className="sheet-body">

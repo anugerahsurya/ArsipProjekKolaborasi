@@ -1,0 +1,124 @@
+{
+  "_prompt": [
+    "Kamu membantu mengisi file topik.json untuk web Projek Artikel Ilmiah (arsip artikel ilmiah tim IPDS BPS Provinsi Sumatera Barat).",
+    "Satu topik = satu rancangan artikel. Isi seluruh kunci template ini berdasarkan topik, data, dan informasi projek yang saya berikan di bawah.",
+    "",
+    "Aturan isi:",
+    "1. Kembalikan JSON valid saja, struktur dan nama kunci persis seperti template ini. Hapus kunci _prompt dari hasil.",
+    "2. id: \"topik-<nomor>\", sama dengan nama folder topik. nomor: angka urut topik di projek ini.",
+    "3. judul: judul artikel dalam bahasa sesuai ketentuan konferensi (biasanya Inggris). judulSingkat: ringkasan judul dalam bahasa Indonesia, maksimal 10 kata.",
+    "4. subtema dan prosiding: ambil persis dari daftar subtema call for paper.",
+    "5. ilustrasi: pilih \"citra-ke-kelas\" (alur citra satelit ke klasifikasi wilayah), \"lapisan-indeks\" (tumpukan lapisan data menjadi indeks), atau null jika tidak cocok. Jika null, web menampilkan peta kontur.",
+    "6. ringkasan: dua paragraf. pertanyaan: tiga sampai empat pertanyaan penelitian.",
+    "7. gap: tiga sampai lima research gap. Setiap gap punya rujukan berupa daftar id yang ADA di bagian literatur.",
+    "8. kerangka.alur: empat sampai lima tahap (misalnya Data, Fitur/Indikator, Model/Analisis, Keluaran, Kebijakan), tiap tahap dua sampai empat item singkat.",
+    "9. kerangka.data: sumber data yang benar-benar dipakai dan cara aksesnya. kerangka.variabel: kode variabel asli dari metadata/layout data (contoh PODES: r906a, r905dk2), jangan mengarang kode.",
+    "10. kerangka.metode: lima sampai tujuh langkah metode, masing-masing dengan alasan singkat. kerangka.outline: struktur bab sesuai template paper konferensi.",
+    "11. Jangan menulis angka hasil, akurasi, atau temuan seolah sudah diolah. Hipotesis ditulis sebagai dugaan.",
+    "",
+    "Aturan literatur (paling penting):",
+    "12. Hanya literatur yang benar-benar ada. Setiap url harus DOI (https://doi.org/...) atau halaman resmi penerbit/arXiv/ILO/World Bank. Jika tidak yakin sebuah rujukan ada, jangan dimasukkan.",
+    "13. id literatur: nama belakang penulis pertama + tahun, huruf kecil (contoh: jean2016). penulis: \"Nama dkk.\" bila lebih dari dua penulis.",
+    "14. jenis: Jurnal, Prosiding, Buku, Laporan, Preprint, atau Working paper. kelompok: tiga sampai lima kelompok tema untuk filter tabel.",
+    "15. Target 15 sampai 25 literatur, utamakan terbitan 10 tahun terakhir dan studi Indonesia bila ada.",
+    "",
+    "Aturan checkpoint:",
+    "16. Tiga sampai lima fase (contoh: Persiapan data, Pengolahan, Analisis, Penulisan dan submit), total 12 sampai 18 langkah.",
+    "17. id langkah: \"t<nomor topik>-<dua digit>\" dan unik (contoh: t4-01). Setelah dipakai di web, id jangan diganti karena status checkpoint tersimpan dengan id ini.",
+    "18. target: tanggal YYYY-MM-DD, dibagi rata dari hari ini sampai batas submit, langkah terakhir adalah submit.",
+    "",
+    "Bahasa Indonesia yang lugas, tanpa emoji, tanpa kata seperti komprehensif, robust, seamless, leverage.",
+    "",
+    "Informasi projek (isi project.json atau ringkasan call for paper):",
+    "<<TEMPEL DI SINI>>",
+    "",
+    "Topik yang dipilih dan idenya:",
+    "<<TULIS JUDUL/IDE TOPIK DI SINI>>",
+    "",
+    "Data yang tersedia (nama dataset, metadata/layout variabel, tabel publikasi):",
+    "<<TEMPEL DI SINI>>",
+    "",
+    "Hari ini dan batas submit:",
+    "<<YYYY-MM-DD sampai YYYY-MM-DD>>"
+  ],
+  "id": "topik-1",
+  "nomor": 1,
+  "ilustrasi": null,
+  "judul": "Judul artikel lengkap",
+  "judulSingkat": "Ringkasan judul dalam bahasa Indonesia",
+  "subtema": "Nomor dan nama subtema",
+  "prosiding": "Nama prosiding atau jurnal",
+  "ringkasan": [
+    "Paragraf pertama: apa yang diteliti, data, dan pendekatan.",
+    "Paragraf kedua: kaitan dengan tema konferensi dan kegunaan hasil."
+  ],
+  "pertanyaan": [
+    "Pertanyaan penelitian 1",
+    "Pertanyaan penelitian 2",
+    "Pertanyaan penelitian 3"
+  ],
+  "gap": [
+    {
+      "judul": "Judul singkat research gap",
+      "isi": "Penjelasan gap dan bagaimana penelitian ini mengisinya.",
+      "rujukan": ["penulis2020"]
+    }
+  ],
+  "kerangka": {
+    "latar": [
+      "Paragraf latar belakang 1",
+      "Paragraf latar belakang 2"
+    ],
+    "rumusan": ["Rumusan masalah 1"],
+    "tujuan": ["Tujuan 1"],
+    "manfaat": ["Manfaat 1"],
+    "hipotesis": ["H1: ..."],
+    "alur": [
+      { "tahap": "Data", "item": ["Sumber data 1", "Sumber data 2"] },
+      { "tahap": "Analisis", "item": ["Metode 1"] },
+      { "tahap": "Keluaran", "item": ["Hasil yang diharapkan"] },
+      { "tahap": "Kebijakan", "item": ["Pemanfaatan hasil"] }
+    ],
+    "data": [
+      { "sumber": "Nama dataset", "isi": "Yang diambil dari dataset", "akses": "Asal atau cara akses" }
+    ],
+    "variabel": [
+      { "kode": "r000", "nama": "Nama variabel", "peran": "Label (Y) / Prediktor / Kontrol", "olah": "Cara pengolahan" }
+    ],
+    "metode": [
+      { "judul": "Nama langkah metode", "isi": "Penjelasan dan alasan" }
+    ],
+    "outline": [
+      { "bab": "Abstract", "isi": "Isi singkat bab" },
+      { "bab": "1. Introduction", "isi": "Isi singkat bab" },
+      { "bab": "2. Literature Review", "isi": "Isi singkat bab" },
+      { "bab": "3. Data and Methods", "isi": "Isi singkat bab" },
+      { "bab": "4. Results", "isi": "Isi singkat bab" },
+      { "bab": "5. Discussion", "isi": "Isi singkat bab" },
+      { "bab": "6. Conclusion", "isi": "Isi singkat bab" }
+    ],
+    "keterbatasan": ["Keterbatasan 1"]
+  },
+  "literatur": [
+    {
+      "id": "penulis2020",
+      "kelompok": "Nama kelompok tema",
+      "penulis": "Nama dkk.",
+      "tahun": 2020,
+      "judul": "Judul artikel",
+      "sumber": "Nama jurnal atau penerbit",
+      "jenis": "Jurnal",
+      "url": "https://doi.org/...",
+      "metode": "Metode atau data yang dipakai",
+      "relevansi": "Kegunaannya untuk penelitian ini"
+    }
+  ],
+  "checkpoint": [
+    {
+      "fase": "Persiapan data",
+      "langkah": [
+        { "id": "t1-01", "judul": "Nama langkah", "isi": "Rincian pekerjaan", "target": "2027-01-10" }
+      ]
+    }
+  ]
+}
