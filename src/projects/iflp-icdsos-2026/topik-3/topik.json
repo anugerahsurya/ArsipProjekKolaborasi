@@ -7,7 +7,7 @@
   "subtema": "07 Big Data, Alternative Data, and Data Integration for Official Statistics",
   "prosiding": "Prosiding ICDSOS",
   "ringkasan": [
-    "Penelitian ini membangun indeks ekonomi informal untuk setiap desa, nagari, dan kelurahan di Sumatera Barat. Ini indeks, bukan model prediksi: di tingkat desa tidak ada ukuran langsung ekonomi informal, dan Sakernas hanya representatif sampai kab/kota. Bobot indikator karena itu ditentukan dari struktur data, sedangkan angka resmi kab/kota hanya dipakai untuk validasi dan kalibrasi agregat.",
+    "Penelitian ini membangun indeks ekonomi informal untuk setiap desa, nagari, dan kelurahan di Sumatera Barat. Ini indeks, bukan model prediksi: di tingkat desa tidak ada ukuran langsung ekonomi informal. Statistik resmi yang tersedia hanya persentase pekerja informal per kab/kota dari publikasi BPS. Bobot indikator karena itu ditentukan dari struktur data, sedangkan persentase kab/kota hanya dipakai untuk validasi dan kalibrasi agregat.",
     "Indikator berasal dari tiga kelompok sumber. Google Earth Engine menyediakan cahaya malam VIIRS, luas terbangun GHSL, jejak Open Buildings, indeks spektral dan tekstur Sentinel-2, tutupan lahan Dynamic World dan WorldCover, penduduk WorldPop, waktu tempuh, dan lereng. Platform lain menyediakan POI OpenStreetMap dan Overture, jaringan jalan, Relative Wealth Index, dan kecepatan internet Ookla. Dari PODES 2025 hanya diambil jumlah fasilitas perdagangan, keuangan, dan pendidikan.",
     "Indeks utama disusun dengan PCA berjenjang per dimensi, diuji dengan GW-PCA dan bobot entropi, lalu dikalibrasi ke persentase pekerja informal kab/kota. Keluarannya berupa peta indeks 0 sampai 100 dengan selang ketidakpastian, peta hotspot, tipologi, dan daftar nagari prioritas yang dikaitkan dengan RPJMN 2025–2029 dan SDG 8.3."
   ],
@@ -719,7 +719,7 @@
       "jenis": "Jurnal",
       "url": "https://doi.org/10.1073/pnas.2113658119",
       "metode": "Relative Wealth Index dari citra dan konektivitas, label survei DHS",
-      "relevansi": "Sumber variabel RWI dan contoh model berlabel survei."
+      "relevansi": "Sumber variabel Relative Wealth Index."
     },
     {
       "id": "jean2016",
@@ -731,7 +731,7 @@
       "jenis": "Jurnal",
       "url": "https://doi.org/10.1126/science.aaf7894",
       "metode": "Transfer learning citra dengan label survei rumah tangga",
-      "relevansi": "Kerangka model berlabel survei (opsi D)."
+      "relevansi": "Bukti citra satelit menangkap variasi kesejahteraan antar wilayah kecil."
     },
     {
       "id": "engstrom2022",
@@ -1136,10 +1136,10 @@
     "penegasan": {
       "judul": "Yang dibangun adalah indeks, bukan model prediksi",
       "isi": [
-        "Di tingkat desa tidak ada label ekonomi informal. Sakernas hanya representatif sampai kab/kota, dan data mikronya tidak dipakai dalam penelitian ini.",
-        "Karena itu bobot indikator ditentukan dari struktur data (PCA berjenjang), bukan dilatih dari label.",
-        "Angka resmi kab/kota (n = 19) hanya dipakai untuk dua hal: validasi eksternal setelah indeks jadi, dan kalibrasi agar estimasi proporsi desa konsisten dengan angka BPS.",
-        "Akurasi dibuktikan lewat validitas eksternal, validitas konvergen antar sumber, dan ketahanan terhadap pilihan metode, bukan lewat R² prediksi desa."
+        "Di tingkat desa tidak ada ukuran langsung ekonomi informal. Statistik resmi yang tersedia hanya persentase pekerja informal per kab/kota dari publikasi BPS.",
+        "Karena itu bobot indikator ditentukan dari struktur data (PCA berjenjang), bukan dilatih dari data pekerja.",
+        "Persentase pekerja informal kab/kota (n = 19) hanya dipakai untuk dua hal: validasi eksternal setelah indeks jadi, dan kalibrasi agar estimasi proporsi desa konsisten dengan angka BPS.",
+        "Akurasi dibuktikan lewat validitas eksternal, validitas konvergen antar sumber, dan ketahanan terhadap pilihan metode."
       ]
     }
   },
