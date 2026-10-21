@@ -38,6 +38,19 @@ function List({ items, ordered }) {
   )
 }
 
+function Refs({ ids, litById }) {
+  if (!ids?.length) return null
+  return (
+    <div className="refs">
+      {ids.map((r) => (
+        <button key={r} type="button" className="ref" onClick={() => sorotLiteratur(r)}>
+          {litById[r] ? `${litById[r].penulis} (${litById[r].tahun})` : r}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 export default function Topic() {
   const { projectId, topicId } = useParams()
   const project = getProject(projectId)
@@ -54,14 +67,20 @@ function TopicView({ project, topic }) {
   const litById = Object.fromEntries(topic.literatur.map((l) => [l.id, l]))
   const nBerkas = ['bahan_tayang', 'artikel_final', 'link'].filter((j) => st.berkas[stateKey(topic.id, j)]).length
 
+  const so = topic.sorotan
+  const iv = topic.intervensi
+  const ds = topic.desain
+
   const legend = [
     { id: 'ringkasan', label: 'Ringkasan', swatch: 'line' },
+    so && { id: 'sorotan', label: 'Sorotan dan kebijakan', swatch: 'road' },
     { id: 'gap', label: 'Research gap', swatch: 'contour', meta: topic.gap.length },
     { id: 'kerangka', label: 'Kerangka penelitian', swatch: 'water' },
+    ds && { id: 'desain', label: 'Desain indeks', swatch: 'veg', meta: ds.variabel?.length },
     { id: 'literatur', label: 'Tabel literatur', swatch: 'dots', meta: topic.literatur.length },
     { id: 'checkpoint', label: 'Checkpoint', swatch: 'veg', meta: `${pr.selesai}/${pr.total}` },
     { id: 'berkas', label: 'Berkas', swatch: 'road', meta: `${nBerkas}/3` },
-  ]
+  ].filter(Boolean)
 
   return (
     <>
@@ -113,6 +132,89 @@ function TopicView({ project, topic }) {
                 <List items={topic.pertanyaan} ordered />
               </section>
 
+              {so && (
+                <section id="sorotan" className="block">
+                  <h2>Sorotan dan arah kebijakan</h2>
+                  <div className="highlight-grid">
+                    {[
+                      ['Fenomena', so.fenomena],
+                      ['Masalah', so.masalah],
+                      ['Target', so.target],
+                      ['Hasil yang dijanjikan', so.hasil],
+                    ].map(([label, items]) => (
+                      <div key={label} className="highlight">
+                        <h3>{label}</h3>
+                        <List items={items} />
+                      </div>
+                    ))}
+                  </div>
+                  {so.catatanHasil && <p className="note">{so.catatanHasil}</p>}
+
+                  {so.agenda && (
+                    <>
+                      <h3>Kaitan dengan RPJMN dan SDGs</h3>
+                      <div className="table-wrap">
+                        <table className="data-table">
+                          <thead>
+                            <tr>
+                              <th scope="col">Agenda</th>
+                              <th scope="col">Butir</th>
+                              <th scope="col">Kaitan dengan indeks</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {so.agenda.map((a) => (
+                              <tr key={a.agenda}>
+                                <td data-label="Agenda"><strong>{a.agenda}</strong></td>
+                                <td data-label="Butir">{a.butir}</td>
+                                <td data-label="Kaitan">{a.kaitan}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </>
+                  )}
+
+                  {iv && (
+                    <>
+                      <h3>Arah intervensi per tipologi</h3>
+                      {iv.pengantar && <p className="prose">{iv.pengantar}</p>}
+                      <div className="table-wrap">
+                        <table className="data-table">
+                          <thead>
+                            <tr>
+                              <th scope="col">Tipologi</th>
+                              <th scope="col">Ciri</th>
+                              <th scope="col">Arah</th>
+                              <th scope="col">Program</th>
+                              <th scope="col">Pelaksana</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {iv.tipologi.map((r) => (
+                              <tr key={r.nama}>
+                                <td data-label="Tipologi"><strong>{r.nama}</strong></td>
+                                <td data-label="Ciri">{r.ciri}</td>
+                                <td data-label="Arah">{r.arah}</td>
+                                <td data-label="Program">{r.program}</td>
+                                <td data-label="Pelaksana">{r.pelaksana}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                      {iv.tuas && (
+                        <>
+                          <h3>Sub-indeks sebagai tuas kebijakan</h3>
+                          <List items={iv.tuas} />
+                        </>
+                      )}
+                    </>
+                  )}
+                </section>
+              )}
+
               <section id="gap" className="block">
                 <h2>Research gap</h2>
                 <ol className="gaps">
@@ -122,13 +224,7 @@ function TopicView({ project, topic }) {
                       <div>
                         <h3>{g.judul}</h3>
                         <p className="prose">{g.isi}</p>
-                        <div className="refs">
-                          {g.rujukan.map((r) => (
-                            <button key={r} type="button" className="ref" onClick={() => sorotLiteratur(r)}>
-                              {litById[r] ? `${litById[r].penulis} (${litById[r].tahun})` : r}
-                            </button>
-                          ))}
-                        </div>
+                        <Refs ids={g.rujukan} litById={litById} />
                       </div>
                     </li>
                   ))}
@@ -190,7 +286,7 @@ function TopicView({ project, topic }) {
                   </table>
                 </div>
 
-                <h3>Variabel PODES 2025</h3>
+                <h3>{k.variabelJudul || 'Variabel PODES 2025'}</h3>
                 <div className="table-wrap">
                   <table className="data-table">
                     <thead>
@@ -203,7 +299,7 @@ function TopicView({ project, topic }) {
                     </thead>
                     <tbody>
                       {k.variabel.map((v) => (
-                        <tr key={v.kode}>
+                        <tr key={`${v.kode}-${v.nama}`}>
                           <td data-label="Kode"><code>{v.kode}</code></td>
                           <td data-label="Variabel">{v.nama}</td>
                           <td data-label="Peran"><span className="role">{v.peran}</span></td>
@@ -237,6 +333,115 @@ function TopicView({ project, topic }) {
                   ))}
                 </dl>
               </section>
+
+              {ds && (
+                <section id="desain" className="block">
+                  <h2>Desain indeks</h2>
+                  {ds.pengantar && <p className="prose">{ds.pengantar}</p>}
+
+                  <h3>Variabel geospasial per dimensi</h3>
+                  <div className="table-wrap">
+                    <table className="data-table">
+                      <thead>
+                        <tr>
+                          <th scope="col">Dimensi</th>
+                          <th scope="col">Variabel dan sumber</th>
+                          <th scope="col">Pengolahan ke desa</th>
+                          <th scope="col">Arah</th>
+                          <th scope="col">Dasar literatur</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {ds.variabel.map((v, i) => (
+                          <tr key={v.nama}>
+                            <td data-label="Dimensi">{ds.variabel[i - 1]?.dimensi !== v.dimensi && <strong>{v.dimensi}</strong>}</td>
+                            <td data-label="Variabel">
+                              <strong>{v.nama}</strong>
+                              <span className="lit-source">{v.sumber}</span>
+                            </td>
+                            <td data-label="Pengolahan">{v.olah}</td>
+                            <td data-label="Arah"><span className="role">{v.arah}</span></td>
+                            <td data-label="Dasar">
+                              {v.dasar}
+                              <Refs ids={v.rujukan} litById={litById} />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {ds.opsiMetode && (
+                    <>
+                      <h3>Opsi metode pembangunan indeks</h3>
+                      <ol className="options">
+                        {ds.opsiMetode.map((o) => (
+                          <li key={o.kode} className={o.rekomendasi ? 'option is-rec' : 'option'}>
+                            <div className="option-head">
+                              <span className="gap-no num" aria-hidden="true">{o.kode}</span>
+                              <h4>{o.nama}</h4>
+                              {o.rekomendasi && <span className="option-badge">Direkomendasikan</span>}
+                            </div>
+                            <p className="prose">{o.cara}</p>
+                            <dl className="option-facts">
+                              <div><dt>Kelebihan</dt><dd>{o.kelebihan}</dd></div>
+                              <div><dt>Kekurangan</dt><dd>{o.kekurangan}</dd></div>
+                              <div><dt>Ukuran akurasi</dt><dd>{o.akurasi}</dd></div>
+                            </dl>
+                            <Refs ids={o.rujukan} litById={litById} />
+                          </li>
+                        ))}
+                      </ol>
+                      {ds.rekomendasi && <p className="prose callout">{ds.rekomendasi}</p>}
+                    </>
+                  )}
+
+                  {ds.akurasi && (
+                    <>
+                      <h3>Protokol uji akurasi</h3>
+                      <List items={ds.akurasi} />
+                    </>
+                  )}
+
+                  {ds.skala && (
+                    <>
+                      <h3>Mekanisme penurunan ke tingkat desa</h3>
+                      <div className="table-wrap">
+                        <table className="data-table">
+                          <thead>
+                            <tr>
+                              <th scope="col">Data asal</th>
+                              <th scope="col">Mekanisme</th>
+                              <th scope="col">Rumus</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {ds.skala.map((r) => (
+                              <tr key={r.asal}>
+                                <td data-label="Data asal">
+                                  <strong>{r.asal}</strong>
+                                  <span className="lit-source">{r.contoh}</span>
+                                </td>
+                                <td data-label="Mekanisme">
+                                  {r.mekanisme}
+                                  <Refs ids={r.rujukan} litById={litById} />
+                                </td>
+                                <td data-label="Rumus"><code className="formula">{r.rumus}</code></td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                      {ds.catatanSkala && (
+                        <>
+                          <h3>Catatan penyelarasan</h3>
+                          <List items={ds.catatanSkala} />
+                        </>
+                      )}
+                    </>
+                  )}
+                </section>
+              )}
 
               <section id="literatur" className="block">
                 <h2>Tabel literatur</h2>

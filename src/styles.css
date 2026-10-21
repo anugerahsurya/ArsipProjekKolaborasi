@@ -1638,6 +1638,118 @@ tr.is-flash td {
   font-size: 14px;
 }
 
+/* ---------- sorotan & desain indeks ---------- */
+
+.highlight-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.highlight {
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--road);
+  border-radius: var(--radius);
+  padding: 16px 18px 18px;
+}
+
+.highlight h3 {
+  margin: 0 0 10px;
+}
+
+@media (max-width: 760px) {
+  .highlight-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.options {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.option {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+}
+
+.option.is-rec {
+  border-color: var(--veg);
+  background: var(--veg-soft);
+}
+
+.option-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.option-head h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.option-badge {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--veg);
+  padding: 2px 10px;
+  border-radius: 999px;
+}
+
+.option-facts {
+  margin: 10px 0 0;
+  display: grid;
+  gap: 6px;
+  max-width: 900px;
+}
+
+.option-facts div {
+  display: grid;
+  grid-template-columns: 130px minmax(0, 1fr);
+  gap: 12px;
+  font-size: 14.5px;
+}
+
+.option-facts dt {
+  font-weight: 700;
+}
+
+.option-facts dd {
+  margin: 0;
+  color: var(--ink-2);
+}
+
+@media (max-width: 640px) {
+  .option-facts div {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+}
+
+.callout {
+  margin-top: 14px;
+  padding: 12px 16px;
+  border-left: 3px solid var(--veg);
+  background: var(--paper-2);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+code.formula {
+  white-space: normal;
+  display: inline-block;
+  line-height: 1.5;
+}
+
 /* ---------- methods & outline ---------- */
 
 .methods,
