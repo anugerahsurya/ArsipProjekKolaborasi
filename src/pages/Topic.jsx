@@ -11,6 +11,8 @@ import FlowDiagram from '../components/FlowDiagram.jsx'
 import LiteratureTable from '../components/LiteratureTable.jsx'
 import Checkpoints from '../components/Checkpoints.jsx'
 import Berkas from '../components/Berkas.jsx'
+import Tex from '../components/Tex.jsx'
+import KodeSumber from '../components/KodeSumber.jsx'
 import Kolaborator from '../components/Kolaborator.jsx'
 import NotFound from './NotFound.jsx'
 import { deadlineOf, getProject } from '../projects/index.js'
@@ -77,6 +79,7 @@ function TopicView({ project, topic }) {
     { id: 'gap', label: 'Research gap', swatch: 'contour', meta: topic.gap.length },
     { id: 'kerangka', label: 'Kerangka penelitian', swatch: 'water' },
     ds && { id: 'desain', label: 'Metode dan skala desa', swatch: 'veg', meta: ds.opsiMetode?.length },
+    topic.kode && { id: 'kode', label: 'Kode ekstraksi', swatch: 'dots', meta: topic.kode.berkas?.length },
     { id: 'literatur', label: 'Tabel literatur', swatch: 'dots', meta: topic.literatur.length },
     { id: 'checkpoint', label: 'Checkpoint', swatch: 'veg', meta: `${pr.selesai}/${pr.total}` },
     { id: 'berkas', label: 'Berkas', swatch: 'road', meta: `${nBerkas}/3` },
@@ -135,6 +138,12 @@ function TopicView({ project, topic }) {
               {so && (
                 <section id="sorotan" className="block">
                   <h2>Sorotan dan arah kebijakan</h2>
+                  {so.penegasan && (
+                    <div className="stance">
+                      <h3>{so.penegasan.judul}</h3>
+                      <List items={so.penegasan.isi} />
+                    </div>
+                  )}
                   <div className="highlight-grid">
                     {[
                       ['Fenomena', so.fenomena],
@@ -288,38 +297,56 @@ function TopicView({ project, topic }) {
 
                 {ds?.variabel && (
                   <>
-                    <h3>Variabel geospasial per dimensi</h3>
+                    <h3>Variabel indeks per platform</h3>
                     {ds.pengantar && <p className="prose">{ds.pengantar}</p>}
-                    <div className="table-wrap">
-                      <table className="data-table">
-                        <thead>
-                          <tr>
-                            <th scope="col">Dimensi</th>
-                            <th scope="col">Variabel dan sumber</th>
-                            <th scope="col">Pengolahan ke desa</th>
-                            <th scope="col">Arah</th>
-                            <th scope="col">Dasar literatur</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {ds.variabel.map((v, i) => (
-                            <tr key={v.nama}>
-                              <td data-label="Dimensi">{ds.variabel[i - 1]?.dimensi !== v.dimensi && <strong>{v.dimensi}</strong>}</td>
-                              <td data-label="Variabel">
-                                <strong>{v.nama}</strong>
-                                <span className="lit-source">{v.sumber}</span>
-                              </td>
-                              <td data-label="Pengolahan">{v.olah}</td>
-                              <td data-label="Arah"><span className="role">{v.arah}</span></td>
-                              <td data-label="Dasar">
-                                {v.dasar}
-                                <Refs ids={v.rujukan} litById={litById} />
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
+                    {[...new Set(ds.variabel.map((v) => v.platform))].map((pf) => {
+                      const rows = ds.variabel.filter((v) => v.platform === pf)
+                      return (
+                        <div key={pf} className="platform">
+                          <h4 className="platform-title">
+                            {pf} <span className="num">{rows.length} variabel</span>
+                          </h4>
+                          <div className="table-wrap">
+                            <table className="data-table var-table">
+                              <thead>
+                                <tr>
+                                  <th scope="col">Variabel dan sumber</th>
+                                  <th scope="col">Pengolahan dan rumus</th>
+                                  <th scope="col">Dasar literatur</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {rows.flatMap((v, i) => [
+                                  rows[i - 1]?.dimensi !== v.dimensi && (
+                                    <tr key={`dim-${v.dimensi}`} className="dim-row">
+                                      <th scope="colgroup" colSpan={3}>{v.dimensi}</th>
+                                    </tr>
+                                  ),
+                                  <tr key={v.nama}>
+                                    <td data-label="Variabel">
+                                      <strong>{v.nama}</strong>
+                                      <span className="lit-source">{v.sumber}</span>
+                                      <span className="var-tags">
+                                        <span className="role">{v.arah}</span>
+                                        {v.skrip && <span className="skrip">skrip: {v.skrip}</span>}
+                                      </span>
+                                    </td>
+                                    <td data-label="Pengolahan">
+                                      {v.olah}
+                                      {v.rumus && <Tex tex={v.rumus} block />}
+                                    </td>
+                                    <td data-label="Dasar">
+                                      {v.dasar}
+                                      <Refs ids={v.rujukan} litById={litById} />
+                                    </td>
+                                  </tr>,
+                                ])}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      )
+                    })}
                   </>
                 )}
 
@@ -378,30 +405,55 @@ function TopicView({ project, topic }) {
                     <>
                       <h3>Opsi metode pembangunan indeks</h3>
                       <ol className="options">
-                        {ds.opsiMetode.map((o) => (
-                          <li key={o.kode} className={o.rekomendasi ? 'option is-rec' : 'option'}>
-                            <div className="option-head">
-                              <span className="gap-no num" aria-hidden="true">{o.kode}</span>
-                              <h4>{o.nama}</h4>
-                              {o.rekomendasi && <span className="option-badge">Direkomendasikan</span>}
-                            </div>
-                            <p className="prose">{o.cara}</p>
-                            <dl className="option-facts">
-                              <div><dt>Kelebihan</dt><dd>{o.kelebihan}</dd></div>
-                              <div><dt>Kekurangan</dt><dd>{o.kekurangan}</dd></div>
-                              <div><dt>Ukuran akurasi</dt><dd>{o.akurasi}</dd></div>
-                            </dl>
-                            <Refs ids={o.rujukan} litById={litById} />
-                          </li>
-                        ))}
+                        {ds.opsiMetode.map((o) => {
+                          const utama = o.rekomendasi === 'Utama' || o.rekomendasi === true
+                          return (
+                            <li key={o.kode} className={utama ? 'option is-rec' : 'option'}>
+                              <div className="option-head">
+                                <span className="gap-no num" aria-hidden="true">{o.kode}</span>
+                                <h4>{o.nama}</h4>
+                                {o.rekomendasi && (
+                                  <span className={utama ? 'option-badge' : 'option-badge is-soft'}>
+                                    {typeof o.rekomendasi === 'string' ? o.rekomendasi : 'Direkomendasikan'}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="prose">{o.cara}</p>
+                              <dl className="option-facts">
+                                <div><dt>Kelebihan</dt><dd>{o.kelebihan}</dd></div>
+                                <div><dt>Kekurangan</dt><dd>{o.kekurangan}</dd></div>
+                                <div><dt>Ukuran akurasi</dt><dd>{o.akurasi}</dd></div>
+                              </dl>
+                              <Refs ids={o.rujukan} litById={litById} />
+                            </li>
+                          )
+                        })}
                       </ol>
                       {ds.rekomendasi && <p className="prose callout">{ds.rekomendasi}</p>}
                     </>
                   )}
 
+                  {ds.rumus && (
+                    <>
+                      <h3>Rumus inti</h3>
+                      <ol className="formulas">
+                        {ds.rumus.map((r, i) => (
+                          <li key={r.judul} className="formula-item">
+                            <div className="formula-head">
+                              <span className="formula-no num">({i + 1})</span>
+                              <span className="formula-title">{r.judul}</span>
+                            </div>
+                            <Tex tex={r.tex} block />
+                            {r.ket && <p className="note">{r.ket}</p>}
+                          </li>
+                        ))}
+                      </ol>
+                    </>
+                  )}
+
                   {ds.akurasi && (
                     <>
-                      <h3>Protokol uji akurasi</h3>
+                      <h3>Protokol uji akurasi tanpa label desa</h3>
                       <List items={ds.akurasi} />
                     </>
                   )}
@@ -429,7 +481,7 @@ function TopicView({ project, topic }) {
                                   {r.mekanisme}
                                   <Refs ids={r.rujukan} litById={litById} />
                                 </td>
-                                <td data-label="Rumus"><code className="formula">{r.rumus}</code></td>
+                                <td data-label="Rumus" className="cell-tex">{r.tex && <Tex tex={r.tex} block />}</td>
                               </tr>
                             ))}
                           </tbody>
@@ -443,6 +495,14 @@ function TopicView({ project, topic }) {
                       )}
                     </>
                   )}
+                </section>
+              )}
+
+              {topic.kode && (
+                <section id="kode" className="block">
+                  <h2>Kode ekstraksi dan pengolahan</h2>
+                  {topic.kode.pengantar && <p className="prose">{topic.kode.pengantar}</p>}
+                  <KodeSumber kode={topic.kode} sumber={topic.kodeSumber || {}} />
                 </section>
               )}
 

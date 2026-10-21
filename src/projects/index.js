@@ -2,13 +2,24 @@
 // Menambah projek atau topik cukup dengan menambah folder baru (template di folder templates/).
 const projectFiles = import.meta.glob('./*/project.json', { eager: true, import: 'default' })
 const topicFiles = import.meta.glob('./*/*/topik.json', { eager: true, import: 'default' })
+// Kode ekstraksi opsional per topik: src/projects/<projek>/<topik>/kode/*
+const codeFiles = import.meta.glob('./*/*/kode/*.{js,py,R}', { eager: true, query: '?raw', import: 'default' })
+
+function kodeOf(topicPath) {
+  const base = topicPath.replace('topik.json', 'kode/')
+  return Object.fromEntries(
+    Object.entries(codeFiles)
+      .filter(([p]) => p.startsWith(base))
+      .map(([p, isi]) => [p.slice(base.length), isi]),
+  )
+}
 
 export const projects = Object.entries(projectFiles)
   .map(([path, p]) => {
     const dir = path.split('/')[1]
     const topics = Object.entries(topicFiles)
       .filter(([tp]) => tp.split('/')[1] === dir)
-      .map(([, t]) => t)
+      .map(([tp, t]) => ({ ...t, kodeSumber: kodeOf(tp) }))
       .sort((a, b) => a.nomor - b.nomor)
     return { ...p, topics }
   })

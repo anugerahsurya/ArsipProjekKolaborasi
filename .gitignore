@@ -4,3 +4,4 @@ dist
 .env.local
 .impeccable/review
 .claude
+__pycache__

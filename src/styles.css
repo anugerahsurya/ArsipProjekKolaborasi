@@ -1744,10 +1744,260 @@ tr.is-flash td {
   border-radius: 0 var(--radius) var(--radius) 0;
 }
 
-code.formula {
-  white-space: normal;
+.stance {
+  border: 1.5px solid var(--road);
+  background: var(--road-soft);
+  border-radius: var(--radius);
+  padding: 16px 20px 18px;
+  margin-bottom: 18px;
+}
+
+.stance h3 {
+  margin: 0 0 8px;
+  color: var(--road);
+}
+
+.stance .prose-list {
+  color: var(--ink);
+}
+
+.option-badge.is-soft {
+  background: transparent;
+  color: var(--veg);
+  border: 1px solid var(--veg);
+}
+
+/* ---------- rumus (KaTeX) ---------- */
+
+.tex-block {
+  margin: 8px 0 2px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+}
+
+.tex-block .katex-display {
+  margin: 0;
+  text-align: left;
+}
+
+.tex-block .katex-display > .katex {
+  text-align: left;
+  font-size: 1.02em;
+}
+
+@media (min-width: 721px) {
+  .var-table {
+    table-layout: fixed;
+  }
+  .var-table thead th:nth-child(1) {
+    width: 28%;
+  }
+  .var-table thead th:nth-child(2) {
+    width: 34%;
+  }
+}
+
+.var-table .dim-row th {
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 13px;
+  letter-spacing: 0;
+  border-bottom: 1px solid var(--line);
+  padding-top: 14px;
+}
+
+.var-table td {
+  overflow-wrap: anywhere;
+}
+
+.var-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin-top: 6px;
+}
+
+.var-tags .skrip {
+  margin-top: 0;
+}
+
+.cell-tex {
+  min-width: 240px;
+}
+
+.formulas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+  max-width: 900px;
+}
+
+.formula-item {
+  padding: 14px 0;
+  border-top: 1px solid var(--line-2);
+}
+
+.formula-item:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.formula-head {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+}
+
+.formula-no {
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+.formula-title {
+  font-weight: 700;
+}
+
+.formula-item .note {
+  margin: 6px 0 0;
+}
+
+/* ---------- variabel per platform ---------- */
+
+.platform + .platform {
+  margin-top: 22px;
+}
+
+.platform-title {
+  margin: 18px 0 8px;
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+}
+
+.platform-title .num {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-3);
+}
+
+.skrip {
   display: inline-block;
-  line-height: 1.5;
+  margin-top: 6px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--water);
+  background: var(--water-soft);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+/* ---------- kode sumber ---------- */
+
+.kode-list {
+  display: grid;
+  gap: 10px;
+}
+
+.kode {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.kode summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 12px;
+  padding: 12px 16px;
+}
+
+.kode summary::-webkit-details-marker {
+  display: none;
+}
+
+.kode summary::before {
+  content: '▸';
+  color: var(--ink-3);
+  transition: transform 160ms var(--ease-out);
+}
+
+.kode[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.kode summary:hover {
+  background: var(--paper-2);
+}
+
+.kode-lang {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--water);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.kode-title {
+  font-weight: 600;
+  flex: 1 1 260px;
+}
+
+.kode-meta {
+  font-size: 12.5px;
+  color: var(--ink-3);
+}
+
+.kode-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  padding: 10px 16px;
+  border-top: 1px solid var(--line);
+  background: var(--paper-2);
+}
+
+.kode-out {
+  font-size: 12.5px;
+  color: var(--ink-3);
+  flex: 1 1 240px;
+}
+
+.kode-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.kode-pre {
+  margin: 0;
+  max-height: 560px;
+  overflow: auto;
+  padding: 14px 16px;
+  background: #1b2422;
+  color: #e6ece9;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.55;
+  tab-size: 2;
+}
+
+.kode-pre code {
+  background: none;
+  border: 0;
+  padding: 0;
+  white-space: pre;
+  word-break: normal;
+  color: inherit;
+  font-size: inherit;
 }
 
 /* ---------- methods & outline ---------- */

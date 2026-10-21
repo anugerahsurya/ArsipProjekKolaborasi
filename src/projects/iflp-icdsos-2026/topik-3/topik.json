@@ -3,17 +3,17 @@
   "nomor": 3,
   "ilustrasi": "lapisan-indeks",
   "judul": "A Village-Level Informal Economy Index for West Sumatra: Integrating Geospatial Big Data, Village Potential Statistics, and Official Labour Statistics",
-  "judulSingkat": "Indeks ekonomi informal tingkat nagari dari data geospasial, PODES, dan Sakernas",
+  "judulSingkat": "Indeks ekonomi informal tingkat nagari dari data geospasial, PODES, dan statistik resmi",
   "subtema": "07 Big Data, Alternative Data, and Data Integration for Official Statistics",
   "prosiding": "Prosiding ICDSOS",
   "ringkasan": [
-    "Penelitian ini menyusun indeks ekonomi informal untuk setiap desa, nagari, dan kelurahan di Sumatera Barat. Indeks dibangun dari tujuh dimensi geospasial: intensitas cahaya malam per luas terbangun, morfologi bangunan, kepadatan dan jenis titik usaha (POI), aksesibilitas, penduduk dan SDM, struktur tutupan lahan, serta kesejahteraan dan konektivitas digital. PODES 2025 tetap dipakai, tetapi terbatas pada jumlah fasilitas perdagangan, keuangan, pendidikan, dan industri mikro kecil.",
-    "Dua jalur metode disandingkan. Jalur pertama adalah indeks komposit berjenjang (PCA dan GW-PCA) yang mudah dibaca dan bisa dipecah menjadi sub-indeks. Jalur kedua adalah model berbasis label Sakernas tingkat desa sampel (gradient boosting dengan validasi silang spasial) yang hasilnya dikalibrasi ke angka resmi kab/kota. Variabel yang hanya tersedia di grid kasar atau di tingkat kab/kota diturunkan ke desa lewat statistik zonal berbobot penduduk, interpolasi dasimetrik, dan benchmarking.",
-    "Keluarannya berupa peta indeks 0 sampai 100 dengan selang ketidakpastian, peta hotspot, tipologi empat kuadran, dan daftar nagari prioritas. Hasil ini dikaitkan dengan sasaran RPJMN 2025–2029 dan SDG 8.3, 8.10, 9.3, dan 1.3, sehingga tiap tipologi punya arah intervensi yang berbeda."
+    "Penelitian ini membangun indeks ekonomi informal untuk setiap desa, nagari, dan kelurahan di Sumatera Barat. Ini indeks, bukan model prediksi: di tingkat desa tidak ada ukuran langsung ekonomi informal, dan Sakernas hanya representatif sampai kab/kota. Bobot indikator karena itu ditentukan dari struktur data, sedangkan angka resmi kab/kota hanya dipakai untuk validasi dan kalibrasi agregat.",
+    "Indikator berasal dari tiga kelompok sumber. Google Earth Engine menyediakan cahaya malam VIIRS, luas terbangun GHSL, jejak Open Buildings, indeks spektral dan tekstur Sentinel-2, tutupan lahan Dynamic World dan WorldCover, penduduk WorldPop, waktu tempuh, dan lereng. Platform lain menyediakan POI OpenStreetMap dan Overture, jaringan jalan, Relative Wealth Index, dan kecepatan internet Ookla. Dari PODES 2025 hanya diambil jumlah fasilitas perdagangan, keuangan, dan pendidikan.",
+    "Indeks utama disusun dengan PCA berjenjang per dimensi, diuji dengan GW-PCA dan bobot entropi, lalu dikalibrasi ke persentase pekerja informal kab/kota. Keluarannya berupa peta indeks 0 sampai 100 dengan selang ketidakpastian, peta hotspot, tipologi, dan daftar nagari prioritas yang dikaitkan dengan RPJMN 2025–2029 dan SDG 8.3."
   ],
   "pertanyaan": [
-    "Variabel geospasial apa saja yang dapat menangkap jejak ekonomi informal tingkat desa, dan bagaimana menggabungkannya dengan fasilitas PODES?",
-    "Metode mana yang memberi akurasi tertinggi terhadap statistik informalitas resmi: indeks komposit (PCA, GW-PCA) atau model berbasis label Sakernas?",
+    "Variabel geospasial apa yang dapat menangkap jejak ekonomi informal di tingkat desa, dan bagaimana menggabungkannya dengan fasilitas PODES?",
+    "Bagaimana menyusun indeks tanpa label tingkat desa yang tetap sahih terhadap statistik informalitas resmi kab/kota?",
     "Bagaimana variabel yang tersedia di grid kasar atau di tingkat kab/kota diturunkan ke tingkat desa tanpa menimbulkan bias?",
     "Di mana kantong ekonomi informal di Sumatera Barat, dan intervensi apa yang cocok untuk tiap tipologi wilayah?"
   ],
@@ -40,8 +40,10 @@
     },
     {
       "judul": "Data geospasial terbuka belum dipakai untuk informalitas",
-      "isi": "Jejak bangunan, POI, aksesibilitas, dan indeks kekayaan relatif sudah terbukti memprediksi kemiskinan dan PDB wilayah, tetapi belum dipakai untuk ekonomi informal. Indeks wilayah di Indonesia juga masih bertumpu pada PODES saja.",
+      "isi": "Jejak bangunan, tekstur citra Sentinel-2, POI, aksesibilitas, dan indeks kekayaan relatif sudah terbukti memetakan permukiman informal, kemiskinan, dan PDB wilayah, tetapi belum dipakai untuk ekonomi informal. Indeks wilayah di Indonesia juga masih bertumpu pada PODES saja.",
       "rujukan": [
+        "kuffer2016glcm",
+        "matarira2022",
         "chi2022",
         "engstrom2022",
         "bettencourt2025",
@@ -51,11 +53,11 @@
     },
     {
       "judul": "Indeks komposit jarang divalidasi ke luar",
-      "isi": "Indeks wilayah di Indonesia biasanya berhenti di pembobotan PCA. Uji akurasi terhadap statistik resmi dengan validasi silang spasial jarang dilakukan, padahal itu yang membuat indeks bisa dipercaya.",
+      "isi": "Indeks wilayah di Indonesia biasanya berhenti di pembobotan PCA. Pengujian terhadap statistik resmi, antar sumber data yang independen, dan terhadap pilihan bobot jarang dilakukan, padahal itu yang membuat indeks tanpa label bisa dipercaya.",
       "rujukan": [
         "oecd2008",
         "greco2019",
-        "roberts2017",
+        "saisana2005",
         "putri2022"
       ]
     },
@@ -71,19 +73,19 @@
   "kerangka": {
     "latar": [
       "Formalisasi tenaga kerja adalah sasaran RPJMN 2025–2029 dan SDG 8.3, tetapi lebih dari separuh pekerja Indonesia masih informal. Statistik resmi informalitas hanya tersedia sampai kab/kota, padahal program seperti Dana Desa, BUMNag, Kopdes Merah Putih, dan perluasan jaminan sosial bekerja di tingkat desa/nagari.",
-      "Ekonomi informal meninggalkan jejak fisik yang terekam data geospasial terbuka: bangunan kecil yang rapat (Open Buildings), titik dagang (OpenStreetMap, Overture), cahaya malam yang redup dibanding luas permukiman (VIIRS), jarak ke kota dan bank, serta tutupan lahan pertanian. PODES melengkapi dengan jumlah fasilitas perdagangan, keuangan, dan pendidikan. Gabungan keduanya bisa disusun menjadi indeks, lalu diuji dengan Sakernas dan statistik resmi."
+      "Ekonomi informal meninggalkan jejak fisik yang terekam data geospasial terbuka: bangunan kecil yang rapat (Open Buildings), tekstur permukiman yang tidak beraturan (Sentinel-2), titik dagang (OpenStreetMap, Overture), cahaya malam yang redup dibanding luas permukiman (VIIRS), jarak ke kota dan bank, serta tutupan lahan pertanian. PODES melengkapi dengan jumlah fasilitas perdagangan, keuangan, dan pendidikan. Karena tidak ada label di tingkat desa, gabungan ini disusun menjadi indeks komposit, lalu diuji dengan statistik resmi kab/kota."
     ],
     "rumusan": [
       "Belum ada ukuran ekonomi informal tingkat desa/nagari di Sumatera Barat.",
       "Data geospasial terbuka belum dimanfaatkan secara sistematis sebagai proksi informalitas, dan indeks wilayah masih bergantung pada PODES.",
-      "Belum diketahui metode mana yang paling akurat dan bagaimana menurunkan variabel berskala kasar ke desa.",
+      "Belum ada cara menyusun dan menguji indeks informalitas tingkat desa tanpa label, termasuk menurunkan variabel berskala kasar ke desa.",
       "Belum ada pemetaan kantong informal yang terhubung dengan arah intervensi kebijakan."
     ],
     "tujuan": [
-      "Menyusun indikator geospasial dan PODES untuk tujuh dimensi ekonomi informal tingkat desa.",
-      "Membandingkan indeks komposit (PCA, GW-PCA) dan model berbasis label Sakernas, lalu memilih yang paling akurat.",
-      "Menurunkan variabel grid kasar dan kab/kota ke desa dengan statistik zonal, interpolasi dasimetrik, dan benchmarking.",
-      "Memvalidasi indeks terhadap tabel BPS kab/kota, label Sakernas, dan listing Sensus Ekonomi.",
+      "Menyusun indikator geospasial (GEE dan platform lain) dan PODES untuk tujuh dimensi ekonomi informal tingkat desa.",
+      "Membangun indeks dengan PCA berjenjang, lalu membandingkannya dengan GW-PCA, bobot entropi, dan agregasi geometrik.",
+      "Menurunkan variabel grid kasar ke desa dengan statistik zonal, interpolasi dasimetrik, dan imputasi tetangga.",
+      "Memvalidasi indeks terhadap tabel BPS kab/kota dan antar sumber, lalu mengkalibrasinya menjadi estimasi proporsi pekerja informal desa.",
       "Memetakan hotspot dan tipologi, lalu merumuskan arah intervensi per tipologi."
     ],
     "manfaat": [
@@ -93,9 +95,9 @@
       "Bagi akademik: kerangka integrasi data geospasial dan statistik resmi dengan uji akurasi dan mekanisme downscaling yang eksplisit."
     ],
     "hipotesis": [
-      "H1: Indikator informal (bangunan kecil rapat, warung, pasar tanpa bangunan, cahaya per luas terbangun rendah) dan indikator formal (bank, minimarket, POI bermerek) membentuk dimensi yang berbeda pada analisis faktor.",
+      "H1: Indikator informal (bangunan kecil rapat, tekstur tinggi, warung, pasar tanpa bangunan, cahaya per luas terbangun rendah) dan indikator formal (bank, minimarket, POI bermerek) membentuk dimensi yang berbeda pada analisis faktor.",
       "H2: Rata-rata indeks per kab/kota berkorelasi positif dengan persentase pekerja informal dan negatif dengan pendapatan pekerja informal.",
-      "H3: Model berbasis label Sakernas dengan fitur geospasial memberi akurasi validasi silang spasial lebih tinggi daripada indeks komposit.",
+      "H3: Indeks yang disusun hanya dari sumber geospasial berkorelasi positif dengan indeks yang disusun hanya dari PODES (validitas konvergen).",
       "H4: Bobot indikator berbeda antar wilayah (GW-PCA), terutama antara pesisir, dataran tinggi, dan Kepulauan Mentawai.",
       "H5: Nilai indeks membentuk klaster spasial yang signifikan (Moran's I positif)."
     ],
@@ -103,9 +105,9 @@
       {
         "tahap": "Data",
         "item": [
-          "Geospasial: VIIRS, GHSL, Open Buildings, OSM/Overture POI, waktu tempuh, WorldPop, WorldCover, RWI, Ookla",
-          "PODES 2025: fasilitas perdagangan, keuangan, pendidikan, IMK",
-          "Sakernas mikro dan tabel BPS kab/kota"
+          "GEE: VIIRS, GHSL, Open Buildings, Sentinel-2, Dynamic World, WorldPop, akses, SRTM",
+          "Platform lain: OSM, Overture, RWI (HDX), Ookla (AWS)",
+          "PODES 2025 dan tabel BPS kab/kota"
         ]
       },
       {
@@ -113,23 +115,23 @@
         "item": [
           "Statistik zonal berbobot penduduk",
           "Interpolasi dasimetrik grid kasar",
-          "Benchmarking ke angka kab/kota"
+          "Imputasi tetangga dan penanda"
         ]
       },
       {
         "tahap": "Indeks",
         "item": [
-          "Jalur A: PCA berjenjang dan GW-PCA",
-          "Jalur B: XGBoost dengan label Sakernas",
-          "Sensitivitas Monte Carlo"
+          "PCA berjenjang per dimensi",
+          "GW-PCA, entropi, geometrik",
+          "Monte Carlo 1.000 simulasi"
         ]
       },
       {
-        "tahap": "Akurasi",
+        "tahap": "Validasi",
         "item": [
-          "Validasi silang spasial",
-          "Korelasi dengan tabel BPS dan listing SE",
-          "Pilih atau gabungkan jalur"
+          "Spearman kab/kota (n = 19)",
+          "Konvergen geospasial vs PODES",
+          "Kalibrasi dan benchmarking"
         ]
       },
       {
@@ -147,33 +149,38 @@
         "akses": "Data milik BPS Sumbar"
       },
       {
-        "sumber": "Sakernas Agustus 2024 dan 2025 (data mikro)",
-        "isi": "Status pekerjaan utama per anggota rumah tangga, kode desa sampel, penimbang",
-        "akses": "BPS (akses internal)"
-      },
-      {
         "sumber": "Tabel BPS Sumbar: status pekerjaan dan pendapatan pekerja informal per kab/kota",
-        "isi": "Validasi dan benchmark kab/kota",
+        "isi": "Validasi eksternal dan kalibrasi agregat (bukan label desa)",
         "akses": "sumbar.bps.go.id"
       },
       {
-        "sumber": "Listing Sensus Ekonomi 2016 (SE2026 bila sudah rilis)",
-        "isi": "Proporsi usaha tanpa badan hukum per desa",
-        "akses": "BPS (akses internal)"
-      },
-      {
-        "sumber": "VIIRS VNL v2 tahunan dan Black Marble",
-        "isi": "Radiansi cahaya malam 2024–2025 (500 m)",
+        "sumber": "VIIRS DNB bulanan (VCMSLCFG)",
+        "isi": "Radiansi cahaya malam, median 2024 (sekitar 500 m)",
         "akses": "Google Earth Engine"
       },
       {
-        "sumber": "GHSL GHS-BUILT-S dan GHS-POP R2023A",
-        "isi": "Luas terbangun dan penduduk (100 m)",
-        "akses": "Google Earth Engine / JRC"
+        "sumber": "GHSL GHS-BUILT-S R2023A",
+        "isi": "Luas terbangun total dan non-hunian (100 m)",
+        "akses": "Google Earth Engine"
       },
       {
         "sumber": "Google Open Buildings v3",
         "isi": "Jejak bangunan: jumlah, luas tapak",
+        "akses": "Google Earth Engine"
+      },
+      {
+        "sumber": "Sentinel-2 SR Harmonized + Cloud Score+",
+        "isi": "NDVI, NDBI, MNDWI, BSI, tekstur GLCM (10 m), komposit 2024",
+        "akses": "Google Earth Engine"
+      },
+      {
+        "sumber": "Dynamic World V1 dan ESA WorldCover v200",
+        "isi": "Masker terbangun dan proporsi tutupan lahan (10 m)",
+        "akses": "Google Earth Engine"
+      },
+      {
+        "sumber": "SRTM 30 m",
+        "isi": "Lereng berbobot penduduk",
         "akses": "Google Earth Engine"
       },
       {
@@ -182,13 +189,13 @@
         "akses": "Geofabrik / Overture (terbuka)"
       },
       {
-        "sumber": "Waktu tempuh ke kota (Nelson dkk., 2019)",
-        "isi": "Menit ke kota menurut ukuran (1 km)",
-        "akses": "figshare"
+        "sumber": "Waktu tempuh ke kota (Weiss dkk., 2018)",
+        "isi": "Menit ke kota 50 ribu jiwa ke atas (1 km)",
+        "akses": "Google Earth Engine (Oxford/MAP)"
       },
       {
-        "sumber": "WorldPop 2020 dan ESA WorldCover / Dynamic World",
-        "isi": "Struktur umur penduduk, tutupan lahan (10–100 m)",
+        "sumber": "WorldPop 2020",
+        "isi": "Penduduk dan struktur umur (100 m)",
         "akses": "Google Earth Engine"
       },
       {
@@ -308,41 +315,41 @@
     "metode": [
       {
         "judul": "Ekstraksi ke desa",
-        "isi": "Raster diringkas per poligon desa dengan bobot fraksi piksel dan bobot penduduk. Grid kasar diturunkan dengan interpolasi dasimetrik. Angka kab/kota dikalibrasi lewat benchmarking. Rincian ada di bagian Desain indeks."
+        "isi": "Raster diringkas per poligon desa dengan bobot fraksi piksel dan bobot penduduk di GEE. Grid kasar diturunkan dengan interpolasi dasimetrik di Python. Rumus dan kodenya ada di bagian Metode indeks dan Kode ekstraksi."
       },
       {
         "judul": "Penyusunan indikator",
-        "isi": "Indikator jumlah dinormalisasi per penduduk atau keluarga, pencilan di-winsorize pada persentil 1 dan 99, distribusi miring ditransformasi log, dan arah indikator formal dibalik agar nilai tinggi berarti lebih informal."
+        "isi": "Indikator jumlah dinormalisasi per penduduk atau keluarga, pencilan di-winsorize pada persentil 1 dan 99, distribusi miring ditransformasi log, lalu diskalakan 0 sampai 1 dengan arah diseragamkan (nilai tinggi berarti lebih informal)."
       },
       {
-        "judul": "Jalur A: indeks komposit",
-        "isi": "PCA per dimensi menghasilkan sub-indeks, lalu sub-indeks diagregasi menjadi indeks. GW-PCA menguji apakah bobot berubah antar wilayah. Kelayakan diuji dengan KMO dan Bartlett, dan skor akhir diskalakan 0 sampai 100."
+        "judul": "Indeks utama",
+        "isi": "PCA per dimensi menghasilkan bobot indikator dan sub-indeks, lalu PCA atas sub-indeks menghasilkan bobot dimensi. Kelayakan diuji dengan KMO dan Bartlett. Skor akhir diskalakan 0 sampai 100."
       },
       {
-        "judul": "Jalur B: model berlabel",
-        "isi": "Label proporsi pekerja informal dihitung dari Sakernas per desa sampel dengan penimbang. XGBoost dilatih dengan fitur geospasial dan PODES, dievaluasi dengan validasi silang blok spasial, lalu diprediksi ke semua desa. Hasil dikalibrasi ke angka kab/kota."
+        "judul": "Uji ketahanan",
+        "isi": "GW-PCA untuk heterogenitas spasial bobot, bobot entropi dan bobot sama sebagai pembanding, agregasi geometrik, serta 1.000 simulasi Monte Carlo atas bobot, normalisasi, dan agregasi."
       },
       {
-        "judul": "Sensitivitas",
-        "isi": "Simulasi Monte Carlo atas bobot, normalisasi (min-max vs z-score), dan agregasi (aritmetik vs geometrik). Yang dilaporkan adalah median pergeseran peringkat desa dan indeks Sobol orde pertama."
+        "judul": "Validasi tanpa label desa",
+        "isi": "Rata-rata indeks berbobot penduduk per kab/kota dikorelasikan (Spearman, n = 19, selang bootstrap) dengan persentase dan pendapatan pekerja informal. Indeks geospasial-saja dibandingkan dengan indeks PODES-saja di tingkat desa."
       },
       {
-        "judul": "Validasi eksternal",
-        "isi": "Rata-rata indeks tertimbang penduduk per kab/kota dikorelasikan (Spearman, n = 19) dengan persentase dan pendapatan pekerja informal. Di tingkat desa, indeks dikorelasikan dengan label Sakernas yang tidak dipakai dalam pelatihan dan dengan proporsi usaha tanpa badan hukum dari listing SE."
+        "judul": "Kalibrasi",
+        "isi": "Regresi logit agregat kab/kota (dicek LOOCV) mengubah indeks menjadi estimasi proporsi, lalu benchmarking logit membuat rata-rata tertimbang desa sama dengan angka resmi."
       },
       {
         "judul": "Analisis spasial",
-        "isi": "Matriks bobot queen contiguity, dengan k-tetangga terdekat untuk pulau di Mentawai. Global Moran's I, LISA, dan Getis-Ord Gi* dengan koreksi FDR."
+        "isi": "Matriks bobot queen contiguity, dengan dua tetangga terdekat untuk desa pulau di Mentawai. Global Moran's I, LISA, dan Getis-Ord Gi* dengan koreksi FDR."
       },
       {
         "judul": "Tipologi dan kebijakan",
-        "isi": "Kuadran indeks informal vs intensitas aktivitas (cahaya malam total), dioverlay dengan hotspot. Sub-indeks dominan menentukan tuas intervensi."
+        "isi": "Kuadran indeks informal vs intensitas aktivitas (cahaya malam berbobot penduduk, tidak masuk indeks), dioverlay dengan hotspot. Sub-indeks tertinggi menentukan tuas intervensi."
       }
     ],
     "outline": [
       {
         "bab": "Abstract",
-        "isi": "Masalah skala, data geospasial dan PODES, dua jalur metode, akurasi, peta hotspot, arah kebijakan."
+        "isi": "Masalah skala, indeks tanpa label desa dari data geospasial dan PODES, validasi kab/kota, peta hotspot, arah kebijakan."
       },
       {
         "bab": "1. Introduction",
@@ -350,15 +357,15 @@
       },
       {
         "bab": "2. Literature Review",
-        "isi": "Pengukuran ekonomi informal, data geospasial untuk statistik ekonomi, indeks komposit, downscaling dan SAE."
+        "isi": "Pengukuran ekonomi informal, data geospasial untuk statistik ekonomi, indeks komposit tanpa label, downscaling dan benchmarking."
       },
       {
         "bab": "3. Data and Methods",
-        "isi": "Tujuh dimensi variabel, mekanisme ke tingkat desa, jalur A dan B, sensitivitas, validasi, analisis spasial."
+        "isi": "Tujuh dimensi variabel per platform, mekanisme ke tingkat desa, PCA berjenjang dan uji ketahanan, validasi tanpa label, kalibrasi, analisis spasial."
       },
       {
         "bab": "4. Results",
-        "isi": "Struktur faktor, perbandingan akurasi, peta indeks dan sub-indeks, LISA dan Gi*, tipologi."
+        "isi": "Struktur faktor, bobot, validitas eksternal dan konvergen, ketahanan, peta indeks dan sub-indeks, LISA dan Gi*, tipologi."
       },
       {
         "bab": "5. Discussion",
@@ -370,10 +377,10 @@
       }
     ],
     "keterbatasan": [
-      "Indeks mengukur jejak fisik dan sisi tempat usaha, bukan status pekerjaan individu. Label Sakernas per desa sampel berasal dari sedikit rumah tangga sehingga mengandung galat sampling.",
-      "Data geospasial global punya kelengkapan yang tidak merata. POI OSM di perdesaan dan tile Ookla di desa terpencil bisa kosong, sehingga perlu penanda data hilang.",
-      "Validasi kab/kota hanya 19 titik, dan listing SE2016 berjarak sembilan tahun dari PODES 2025.",
-      "Ada risiko ecological fallacy. Variabel hasil downscaling tidak boleh dipakai sekaligus sebagai input dan sebagai pembanding validasi."
+      "Tidak ada label informalitas di tingkat desa. Validitas indeks hanya bisa diuji di tingkat agregat (19 kab/kota) dan antar sumber, sehingga kesalahan di dalam kab/kota tidak bisa diukur langsung.",
+      "Indeks mengukur jejak fisik dan sisi tempat usaha, bukan status pekerjaan individu. Banyak literatur rujukan variabel citra mengukur permukiman informal atau kemiskinan, bukan ekonomi informal secara langsung.",
+      "Data geospasial global punya kelengkapan yang tidak merata. POI OSM di perdesaan dan tile Ookla di desa terpencil bisa kosong, sehingga perlu imputasi dan penanda data hilang.",
+      "Ada risiko ecological fallacy. Estimasi proporsi hasil kalibrasi adalah turunan indeks, bukan pengamatan, dan tidak boleh dipakai untuk menguji indeks itu sendiri."
     ],
     "variabelJudul": "Variabel PODES 2025 (pelengkap)"
   },
@@ -799,42 +806,6 @@
       "relevansi": "Metode opsi C."
     },
     {
-      "id": "chen2016",
-      "kelompok": "Downscaling dan SAE",
-      "penulis": "Chen, Guestrin",
-      "tahun": 2016,
-      "judul": "XGBoost: A Scalable Tree Boosting System",
-      "sumber": "Proceedings of KDD 2016",
-      "jenis": "Prosiding",
-      "url": "https://doi.org/10.1145/2939672.2939785",
-      "metode": "Gradient boosting pohon keputusan",
-      "relevansi": "Algoritma opsi D."
-    },
-    {
-      "id": "roberts2017",
-      "kelompok": "Downscaling dan SAE",
-      "penulis": "Roberts dkk.",
-      "tahun": 2017,
-      "judul": "Cross-validation strategies for data with temporal, spatial, hierarchical, or phylogenetic structure",
-      "sumber": "Ecography 40(8)",
-      "jenis": "Jurnal",
-      "url": "https://doi.org/10.1111/ecog.02881",
-      "metode": "Validasi silang blok",
-      "relevansi": "Dasar uji akurasi yang tidak bias akibat autokorelasi spasial."
-    },
-    {
-      "id": "fayherriot1979",
-      "kelompok": "Downscaling dan SAE",
-      "penulis": "Fay, Herriot",
-      "tahun": 1979,
-      "judul": "Estimates of Income for Small Places: An Application of James-Stein Procedures to Census Data",
-      "sumber": "Journal of the American Statistical Association 74",
-      "jenis": "Jurnal",
-      "url": "https://doi.org/10.1080/01621459.1979.10482505",
-      "metode": "Model SAE tingkat area",
-      "relevansi": "Metode opsi E."
-    },
-    {
       "id": "rao2015",
       "kelompok": "Downscaling dan SAE",
       "penulis": "Rao, Molina",
@@ -845,18 +816,6 @@
       "url": "https://doi.org/10.1002/9781118735855",
       "metode": "EBLUP, HB, benchmarking",
       "relevansi": "Rujukan benchmarking ke angka resmi."
-    },
-    {
-      "id": "riebler2016",
-      "kelompok": "Downscaling dan SAE",
-      "penulis": "Riebler dkk.",
-      "tahun": 2016,
-      "judul": "An intuitive Bayesian spatial model for disease mapping that accounts for scaling",
-      "sumber": "Statistical Methods in Medical Research 25(4)",
-      "jenis": "Jurnal",
-      "url": "https://doi.org/10.1177/0962280216660421",
-      "metode": "Model BYM2",
-      "relevansi": "Efek acak spasial pada opsi E."
     },
     {
       "id": "kyriakidis2004",
@@ -893,6 +852,102 @@
       "url": "https://doi.org/10.1111/0033-0124.10042",
       "metode": "Pemetaan dasimetrik",
       "relevansi": "Dasar interpolasi grid kasar ke desa."
+    },
+    {
+      "id": "kuffer2016glcm",
+      "kelompok": "Citra dan permukiman informal",
+      "penulis": "Kuffer, Pfeffer, Sliuzas, Baud",
+      "tahun": 2016,
+      "judul": "Extraction of Slum Areas From VHR Imagery Using GLCM Variance",
+      "sumber": "IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing 9(5)",
+      "jenis": "Jurnal",
+      "url": "https://doi.org/10.1109/JSTARS.2016.2538563",
+      "metode": "GLCM variance dan NDVI untuk memisahkan slum, akurasi 84–88 persen",
+      "relevansi": "Dasar indikator tekstur dan NDVI di kawasan terbangun."
+    },
+    {
+      "id": "kuffer2016",
+      "kelompok": "Citra dan permukiman informal",
+      "penulis": "Kuffer, Pfeffer, Sliuzas",
+      "tahun": 2016,
+      "judul": "Slums from Space: 15 Years of Slum Mapping Using Remote Sensing",
+      "sumber": "Remote Sensing 8(6)",
+      "jenis": "Jurnal",
+      "url": "https://doi.org/10.3390/rs8060455",
+      "metode": "Tinjauan fitur spektral, tekstur, dan morfologi untuk pemetaan slum",
+      "relevansi": "Rujukan umum fitur citra untuk informalitas fisik."
+    },
+    {
+      "id": "wurm2019",
+      "kelompok": "Citra dan permukiman informal",
+      "penulis": "Wurm dkk.",
+      "tahun": 2019,
+      "judul": "Semantic segmentation of slums in satellite images using transfer learning on fully convolutional neural networks",
+      "sumber": "ISPRS Journal of Photogrammetry and Remote Sensing 150",
+      "jenis": "Jurnal",
+      "url": "https://doi.org/10.1016/j.isprsjprs.2019.02.006",
+      "metode": "FCN dengan transfer learning dari QuickBird ke Sentinel-2",
+      "relevansi": "Bukti Sentinel-2 dapat menangkap pola permukiman informal."
+    },
+    {
+      "id": "matarira2022",
+      "kelompok": "Citra dan permukiman informal",
+      "penulis": "Matarira, Mutanga, Naidu",
+      "tahun": 2022,
+      "judul": "Google Earth Engine for Informal Settlement Mapping: A Random Forest Classification Using Spectral and Textural Information",
+      "sumber": "Remote Sensing 14(20)",
+      "jenis": "Jurnal",
+      "url": "https://doi.org/10.3390/rs14205130",
+      "metode": "Band, tekstur, dan indeks spektral Sentinel-2 di GEE; band dan tekstur terbaik (F-score 94 persen)",
+      "relevansi": "Dasar memakai tekstur Sentinel-2 di GEE dan alasan menguji indeks spektral."
+    },
+    {
+      "id": "zha2003",
+      "kelompok": "Citra dan permukiman informal",
+      "penulis": "Zha, Gao, Ni",
+      "tahun": 2003,
+      "judul": "Use of normalized difference built-up index in automatically mapping urban areas from TM imagery",
+      "sumber": "International Journal of Remote Sensing 24(3)",
+      "jenis": "Jurnal",
+      "url": "https://doi.org/10.1080/01431160304987",
+      "metode": "Definisi NDBI",
+      "relevansi": "Rujukan rumus NDBI."
+    },
+    {
+      "id": "yeh2020",
+      "kelompok": "Citra dan kesejahteraan",
+      "penulis": "Yeh dkk.",
+      "tahun": 2020,
+      "judul": "Using publicly available satellite imagery and deep learning to understand economic well-being in Africa",
+      "sumber": "Nature Communications 11",
+      "jenis": "Jurnal",
+      "url": "https://doi.org/10.1038/s41467-020-16185-w",
+      "metode": "Citra Landsat dan cahaya malam untuk indeks aset desa",
+      "relevansi": "Bukti citra terbuka menangkap variasi kesejahteraan antar desa."
+    },
+    {
+      "id": "saisana2005",
+      "kelompok": "Indeks komposit dan spasial",
+      "penulis": "Saisana, Saltelli, Tarantola",
+      "tahun": 2005,
+      "judul": "Uncertainty and sensitivity analysis techniques as tools for the quality assessment of composite indicators",
+      "sumber": "Journal of the Royal Statistical Society Series A 168(2)",
+      "jenis": "Jurnal",
+      "url": "https://doi.org/10.1111/j.1467-985X.2005.00350.x",
+      "metode": "Analisis ketidakpastian dan sensitivitas Monte Carlo indeks komposit",
+      "relevansi": "Dasar uji ketahanan peringkat desa."
+    },
+    {
+      "id": "zou2006",
+      "kelompok": "Indeks komposit dan spasial",
+      "penulis": "Zou, Yun, Sun",
+      "tahun": 2006,
+      "judul": "Entropy method for determination of weight of evaluating indicators in fuzzy synthetic evaluation for water quality assessment",
+      "sumber": "Journal of Environmental Sciences 18(5)",
+      "jenis": "Jurnal",
+      "url": "https://doi.org/10.1016/S1001-0742(06)60032-6",
+      "metode": "Metode bobot entropi",
+      "relevansi": "Rujukan bobot entropi sebagai pembanding."
     }
   ],
   "checkpoint": [
@@ -907,14 +962,14 @@
         },
         {
           "id": "t3-02",
-          "judul": "Tabel BPS dan Sakernas mikro",
-          "isi": "Tabel status dan pendapatan pekerja informal per kab/kota. Ajukan akses Sakernas Agustus 2024–2025 dengan kode desa.",
+          "judul": "Unduh tabel informalitas BPS",
+          "isi": "Status pekerjaan dan pendapatan pekerja informal per kab/kota, untuk validasi dan kalibrasi (bukan label desa).",
           "target": "2026-10-20"
         },
         {
           "id": "t3-03",
           "judul": "Ekstraksi fitur geospasial",
-          "isi": "Batas desa 2025; VIIRS, GHSL, Open Buildings, WorldPop, WorldCover di GEE; POI OSM/Overture; waktu tempuh; RWI; Ookla.",
+          "isi": "Unggah batas desa ke GEE sebagai DataWilayahDesa, jalankan gee_01 sampai gee_03; Python bagian A (a1, a2) untuk POI, jalan, RWI, Ookla.",
           "target": "2026-10-21"
         }
       ]
@@ -925,7 +980,7 @@
         {
           "id": "t3-04",
           "judul": "Bangun indikator",
-          "isi": "Statistik zonal berbobot penduduk, dasimetrik grid kasar, normalisasi, winsorizing, samakan arah.",
+          "isi": "Python b1: PODES, penggabungan, normalisasi, winsorizing, arah indikator.",
           "target": "2026-10-22"
         },
         {
@@ -936,20 +991,20 @@
         },
         {
           "id": "t3-06",
-          "judul": "Jalur A: PCA berjenjang dan GW-PCA",
-          "isi": "Sub-indeks per dimensi, indeks 0 sampai 100, peta bobot lokal.",
+          "judul": "PCA berjenjang dan GW-PCA",
+          "isi": "Python b2 untuk bobot dan sub-indeks, R untuk GW-PCA.",
           "target": "2026-10-23"
         },
         {
           "id": "t3-16",
-          "judul": "Jalur B: XGBoost berlabel Sakernas",
-          "isi": "Label per desa sampel, validasi silang blok spasial, prediksi semua desa, benchmarking ke kab/kota.",
+          "judul": "Bobot pembanding",
+          "isi": "Bobot entropi, bobot sama, agregasi geometrik; korelasi peringkat dengan indeks utama.",
           "target": "2026-10-24"
         },
         {
           "id": "t3-07",
           "judul": "Analisis sensitivitas",
-          "isi": "Monte Carlo bobot dan normalisasi, pergeseran peringkat.",
+          "isi": "1.000 simulasi Monte Carlo bobot, normalisasi, dan agregasi; median pergeseran peringkat.",
           "target": "2026-10-24"
         }
       ]
@@ -960,25 +1015,25 @@
         {
           "id": "t3-08",
           "judul": "Validasi kab/kota",
-          "isi": "Spearman indeks vs persentase dan pendapatan pekerja informal.",
+          "isi": "Python b3: Spearman indeks vs persentase dan pendapatan pekerja informal, selang bootstrap.",
           "target": "2026-10-25"
         },
         {
           "id": "t3-17",
-          "judul": "Bandingkan akurasi jalur A dan B",
-          "isi": "R², RMSE, Spearman, SHAP vs loading; tetapkan rekomendasi metode.",
+          "judul": "Validitas konvergen dan kalibrasi",
+          "isi": "Indeks geospasial vs indeks PODES; kalibrasi logit dan benchmarking ke angka kab/kota.",
           "target": "2026-10-25"
         },
         {
           "id": "t3-09",
-          "judul": "Validasi desa",
-          "isi": "Label Sakernas yang disisihkan dan proporsi usaha tanpa badan hukum dari listing SE, per strata r105.",
+          "judul": "Cek per strata",
+          "isi": "Distribusi indeks dan sub-indeks per strata r105 dan per kab/kota; pemeriksaan visual sampel desa.",
           "target": "2026-10-25"
         },
         {
           "id": "t3-10",
           "judul": "Moran's I, LISA, Gi*",
-          "isi": "Peta klaster dan hotspot, daftar nagari prioritas.",
+          "isi": "Python b4: peta klaster dan hotspot, daftar nagari prioritas.",
           "target": "2026-10-26"
         },
         {
@@ -1028,21 +1083,22 @@
     ],
     "masalah": [
       "Ketidaksesuaian skala. Statistik informalitas resmi hanya representatif sampai 19 kab/kota, padahal Dana Desa, BUMNag, Kopdes Merah Putih, dan perluasan jaminan sosial bekerja di tingkat nagari.",
-      "Heterogenitas dalam kab/kota. Rata-rata kab/kota menyamarkan perbedaan antara nagari pusat pasar dan nagari terpencil, sehingga program salah sasaran.",
+      "Tidak ada label di tingkat desa. Model prediksi biasa tidak bisa dilatih, sehingga yang dibutuhkan adalah indeks komposit yang bobotnya sahih dan hasilnya bisa diuji ke angka agregat.",
       "Ketergantungan pada satu sumber. Indeks wilayah yang ada umumnya hanya memakai PODES, yang merupakan laporan aparat desa, terbit tiga tahun sekali, dan kualitasnya berbeda antar desa.",
-      "Indeks jarang diuji akurasinya. Tanpa uji terhadap statistik resmi, pemda sulit memakai indeks sebagai dasar penetapan lokasi program."
+      "Heterogenitas dalam kab/kota. Rata-rata kab/kota menyamarkan perbedaan antara nagari pusat pasar dan nagari terpencil, sehingga program salah sasaran."
     ],
     "target": [
-      "Indeks ekonomi informal 0 sampai 100 untuk seluruh desa, nagari, dan kelurahan di Sumatera Barat, lengkap dengan selang ketidakpastian.",
-      "Validitas eksternal: korelasi Spearman antara rata-rata indeks kab/kota dan persentase pekerja informal minimal 0,6. Untuk jalur model, R² validasi silang spasial dilaporkan dan dibandingkan dengan indeks komposit.",
-      "Ketahanan: median pergeseran peringkat desa dalam simulasi Monte Carlo di bawah 10 persen dari jumlah desa.",
+      "Indeks ekonomi informal 0 sampai 100 untuk seluruh desa, nagari, dan kelurahan di Sumatera Barat, lengkap dengan selang ketidakpastian (persentil 5 sampai 95).",
+      "Validitas eksternal: korelasi Spearman rata-rata indeks kab/kota dengan persentase pekerja informal minimal 0,6, dan negatif dengan pendapatan pekerja informal.",
+      "Ketahanan: median pergeseran peringkat desa dalam 1.000 simulasi Monte Carlo di bawah 10 persen dari jumlah desa.",
+      "Estimasi proporsi pekerja informal desa hasil kalibrasi yang rata-rata tertimbangnya sama dengan angka resmi tiap kab/kota.",
       "Daftar nagari prioritas per tipologi, siap dipakai Disnaker, Dinas Koperasi UKM, dan Bappeda dalam perencanaan 2027."
     ],
     "hasil": [
-      "Peta indeks dan sub-indeks per dimensi untuk seluruh desa.",
-      "Tabel validasi: korelasi dengan tabel BPS kab/kota, akurasi model terhadap label Sakernas, dan perbandingan dengan proporsi usaha tanpa badan hukum dari listing Sensus Ekonomi.",
+      "Peta indeks dan tujuh sub-indeks per dimensi untuk seluruh desa.",
+      "Tabel validasi: Spearman dengan tabel BPS kab/kota (dengan selang bootstrap), RMSE LOOCV kalibrasi, dan korelasi indeks geospasial dengan indeks PODES.",
       "Peta klaster LISA dan hotspot Gi* yang menunjukkan kantong informal lintas nagari.",
-      "Tipologi empat kuadran (indeks informal vs intensitas aktivitas) dan daftar nagari prioritas per tipologi."
+      "Tipologi empat kuadran dan daftar nagari prioritas, masing-masing dengan sub-indeks dominan sebagai tuas kebijakan."
     ],
     "catatanHasil": "Angka hasil diisi setelah langkah t3-06 sampai t3-11 selesai. Poin di atas adalah bentuk keluaran yang dijanjikan di artikel.",
     "agenda": [
@@ -1076,7 +1132,16 @@
         "butir": "Perlindungan sosial bagi semua dan cakupan jaringan seluler.",
         "kaitan": "Tipologi informal perdesaan menjadi sasaran perluasan jaminan sosial pekerja rentan. Dimensi konektivitas digital membaca kesiapan formalisasi daring (OSS, QRIS)."
       }
-    ]
+    ],
+    "penegasan": {
+      "judul": "Yang dibangun adalah indeks, bukan model prediksi",
+      "isi": [
+        "Di tingkat desa tidak ada label ekonomi informal. Sakernas hanya representatif sampai kab/kota, dan data mikronya tidak dipakai dalam penelitian ini.",
+        "Karena itu bobot indikator ditentukan dari struktur data (PCA berjenjang), bukan dilatih dari label.",
+        "Angka resmi kab/kota (n = 19) hanya dipakai untuk dua hal: validasi eksternal setelah indeks jadi, dan kalibrasi agar estimasi proporsi desa konsisten dengan angka BPS.",
+        "Akurasi dibuktikan lewat validitas eksternal, validitas konvergen antar sumber, dan ketahanan terhadap pilihan metode, bukan lewat R² prediksi desa."
+      ]
+    }
   },
   "intervensi": {
     "pengantar": "Indeks dibaca bersama intensitas aktivitas ekonomi (cahaya malam total dan kepadatan terbangun) sehingga terbentuk empat tipologi. Hotspot Gi* yang signifikan menandai kawasan lintas nagari yang bisa ditangani sebagai satu klaster program.",
@@ -1118,181 +1183,331 @@
     ]
   },
   "desain": {
-    "pengantar": "Indeks bertumpu pada data geospasial terbuka yang tersedia untuk semua desa dan bisa diperbarui setiap tahun. PODES hanya dipakai untuk jumlah fasilitas yang tidak bisa diamati dari citra. Tiap variabel dikelompokkan ke satu dimensi agar sub-indeksnya bisa dibaca sebagai tuas kebijakan.",
+    "pengantar": "Variabel dikelompokkan menurut platform pengambilannya. Sebagian besar diambil dari Google Earth Engine sehingga bisa diperbarui setiap tahun. Variabel vektor dan grid khusus diambil dengan Python, sedangkan PODES hanya untuk fasilitas yang tidak terlihat dari citra. Tiap baris menyebut skrip yang mengambilnya; kodenya ada di bagian Kode ekstraksi.",
     "variabel": [
       {
+        "platform": "Google Earth Engine",
         "dimensi": "1. Intensitas aktivitas",
-        "nama": "Radiansi cahaya malam per hektare terbangun",
-        "sumber": "VIIRS VNL v2, 500 m",
-        "olah": "Jumlah radiansi dibagi luas terbangun GHSL, log",
-        "arah": "Informal (-)",
-        "dasar": "Usaha informal menghasilkan cahaya lebih sedikit per unit kegiatan, sehingga permukiman yang rapat tetapi redup cenderung informal.",
+        "nama": "Radiansi cahaya malam berbobot penduduk",
+        "sumber": "NOAA/VIIRS/DNB/MONTHLY_V1/VCMSLCFG, median 2024",
+        "skrip": "gee_01",
+        "olah": "Rata-rata berbobot penduduk; dipakai sebagai sumbu tipologi, tidak masuk indeks",
+        "rumus": "\\bar L_d=\\frac{\\sum_p f_{pd}\\,P_p\\,L_p}{\\sum_p f_{pd}\\,P_p}",
+        "arah": "Sumbu tipologi",
+        "dasar": "Cahaya malam adalah proksi aktivitas ekonomi yang paling banyak dipakai, termasuk untuk mengestimasi ekonomi informal sebagai selisih antara cahaya dan PDB resmi.",
         "rujukan": [
-          "tanaka2017",
-          "ghosh2009",
           "henderson2012",
-          "elvidge2017"
+          "ghosh2009",
+          "elvidge2017",
+          "bps2022"
         ]
       },
       {
+        "platform": "Google Earth Engine",
         "dimensi": "1. Intensitas aktivitas",
-        "nama": "Proporsi luas terbangun",
-        "sumber": "GHSL GHS-BUILT-S, 100 m",
-        "olah": "Statistik zonal, persen luas desa",
-        "arah": "Konteks",
-        "dasar": "Pembeda tingkat urbanisasi; dipakai juga sebagai sumbu tipologi.",
+        "nama": "Cahaya per hektare terbangun",
+        "sumber": "VIIRS + JRC/GHSL/P2023A/GHS_BUILT_S/2020",
+        "skrip": "gee_01",
+        "olah": "Jumlah radiansi dibagi luas terbangun, lalu log",
+        "rumus": "L^{B}_d=\\frac{\\sum_p f_{pd}\\,L_p}{B_d/10^4}",
+        "arah": "Informal (-)",
+        "dasar": "Usaha informal menghasilkan cahaya lebih sedikit per unit kegiatan. Tanaka dan Keola memisahkan elastisitas cahaya usaha formal dan informal; Medina dan Schneider memakai cahaya malam dalam MIMIC ekonomi bayangan.",
+        "rujukan": [
+          "tanaka2017",
+          "medina2018"
+        ]
+      },
+      {
+        "platform": "Google Earth Engine",
+        "dimensi": "1. Intensitas aktivitas",
+        "nama": "Proporsi terbangun non-hunian",
+        "sumber": "GHS_BUILT_S band built_surface_nres",
+        "skrip": "gee_01",
+        "olah": "Persen dari total luas terbangun",
+        "rumus": "N_d=100\\cdot\\frac{B^{\\mathrm{nres}}_d}{B_d}",
+        "arah": "Formal (-)",
+        "dasar": "Gedung non-hunian besar (kantor, pabrik, pusat belanja) mencirikan kawasan usaha formal. GHSL memisahkan kelas ini dengan akurasi yang terdokumentasi.",
         "rujukan": [
           "pesaresi2024"
         ]
       },
       {
+        "platform": "Google Earth Engine",
         "dimensi": "2. Morfologi bangunan",
         "nama": "Kepadatan bangunan dan median luas tapak",
-        "sumber": "Open Buildings v3",
-        "olah": "Jumlah per km² terbangun; median m²",
-        "arah": "Informal (+) untuk rapat dan kecil",
-        "dasar": "Tapak kecil yang rapat dan tanpa akses jalan berasosiasi dengan informalitas fisik dan deprivasi.",
+        "sumber": "GOOGLE/Research/open-buildings/v3/polygons, keyakinan ≥ 0,7",
+        "skrip": "gee_03",
+        "olah": "Jumlah per km²; median m², keduanya log",
+        "rumus": "\\rho_d=\\frac{N_d}{A_d},\\qquad \\tilde a_d=\\operatorname{median}\\{a_b: b\\in d\\}",
+        "arah": "Informal (+) rapat, (-) tapak",
+        "dasar": "Morfologi blok dari jejak bangunan (jumlah, ukuran, kepadatan) berasosiasi dengan informalitas fisik dan indikator deprivasi; jumlah bangunan dan jalan dari citra menjelaskan 37–62 persen variasi kemiskinan.",
         "rujukan": [
-          "sirko2021",
           "bettencourt2025",
-          "engstrom2022"
+          "engstrom2022",
+          "sirko2021"
         ]
       },
       {
+        "platform": "Google Earth Engine",
         "dimensi": "2. Morfologi bangunan",
         "nama": "Proporsi bangunan di bawah 50 m²",
         "sumber": "Open Buildings v3",
-        "olah": "Persen dari total bangunan, hanya keyakinan di atas 0,7",
+        "skrip": "gee_03",
+        "olah": "Persen dari jumlah bangunan",
+        "rumus": "K_d=100\\cdot\\frac{\\#\\{b\\in d: a_b<50\\}}{N_d}",
         "arah": "Informal (+)",
-        "dasar": "Proksi usaha rumahan dan lapak kecil.",
+        "dasar": "Proksi usaha rumahan dan lapak kecil; ukuran bangunan termasuk fitur utama pemisah permukiman informal.",
         "rujukan": [
           "bettencourt2025"
         ]
       },
       {
-        "dimensi": "3. Struktur usaha (POI)",
-        "nama": "Kepadatan POI dagang dan jasa kecil",
-        "sumber": "OSM, Overture Places",
-        "olah": "Kernel density 500 m, dirata-rata per desa",
+        "platform": "Google Earth Engine",
+        "dimensi": "2. Morfologi bangunan",
+        "nama": "Tekstur GLCM variance band NIR di piksel terbangun",
+        "sumber": "COPERNICUS/S2_SR_HARMONIZED B8, masker Cloud Score+, jendela 3×3",
+        "skrip": "gee_02",
+        "olah": "Rata-rata di piksel terbangun Dynamic World, log",
+        "rumus": "\\mathrm{VAR}=\\sum_{i,j}(i-\\mu)^2\\,P(i,j)",
         "arah": "Informal (+)",
-        "dasar": "POI terbukti memprediksi aktivitas ekonomi wilayah, terutama pada tingkat kabupaten ke bawah.",
+        "dasar": "Atap kecil yang rapat dan tidak beraturan memberi variasi tekstur tinggi. GLCM variance bersama NDVI memisahkan slum dari kawasan formal dengan akurasi 84–88 persen; di Sentinel-2, kombinasi band dan tekstur mencapai F-score 94 persen di GEE.",
         "rujukan": [
-          "wang2024",
-          "barrington2017"
+          "kuffer2016glcm",
+          "matarira2022",
+          "wurm2019"
         ]
       },
       {
-        "dimensi": "3. Struktur usaha (POI)",
-        "nama": "Proporsi POI bermerek atau berjejaring",
-        "sumber": "Overture Places (atribut brand)",
-        "olah": "Persen POI bermerek dari total POI",
-        "arah": "Formal (-)",
-        "dasar": "Gerai waralaba, bank, dan minimarket adalah usaha berbadan hukum.",
+        "platform": "Google Earth Engine",
+        "dimensi": "2. Morfologi bangunan",
+        "nama": "NDVI di piksel terbangun",
+        "sumber": "Sentinel-2 B8, B4",
+        "skrip": "gee_02",
+        "olah": "Rata-rata di piksel terbangun",
+        "rumus": "\\mathrm{NDVI}=\\frac{B_8-B_4}{B_8+B_4}",
+        "arah": "Informal (-)",
+        "dasar": "Permukiman informal yang padat cenderung minim vegetasi; NDVI dipakai bersama tekstur untuk memisahkan kawasan informal.",
         "rujukan": [
-          "rothenberg2016"
+          "kuffer2016glcm",
+          "kuffer2016"
         ]
       },
       {
-        "dimensi": "3. Struktur usaha (POI)",
-        "nama": "Fasilitas perdagangan PODES",
-        "sumber": "PODES 2025",
-        "olah": "Lihat tabel PODES",
-        "arah": "Campuran",
-        "dasar": "Melengkapi POI di desa yang POI-nya kosong.",
+        "platform": "Google Earth Engine",
+        "dimensi": "2. Morfologi bangunan",
+        "nama": "NDBI, MNDWI, dan BSI (diuji, tidak otomatis masuk)",
+        "sumber": "Sentinel-2 B2, B3, B4, B8, B11",
+        "skrip": "gee_02",
+        "olah": "Rata-rata di piksel terbangun; masuk indeks hanya bila lolos uji korelasi dan KMO",
+        "rumus": "\\begin{gathered}\\mathrm{NDBI}=\\frac{B_{11}-B_8}{B_{11}+B_8},\\qquad \\mathrm{MNDWI}=\\frac{B_3-B_{11}}{B_3+B_{11}}\\\\[1ex]\\mathrm{BSI}=\\frac{(B_{11}+B_4)-(B_8+B_2)}{(B_{11}+B_4)+(B_8+B_2)}\\end{gathered}",
+        "arah": "Diuji",
+        "dasar": "NDBI adalah indeks baku lahan terbangun, tetapi Matarira dkk. menemukan indeks spektral justru menurunkan akurasi pemetaan permukiman informal di Sentinel-2. Karena itu indeks ini diuji dulu.",
         "rujukan": [
-          "gibson2010"
+          "zha2003",
+          "matarira2022"
         ]
       },
       {
-        "dimensi": "4. Aksesibilitas",
-        "nama": "Waktu tempuh ke kota 50 ribu jiwa ke atas",
-        "sumber": "Nelson dkk. 2019, 1 km",
-        "olah": "Rata-rata berbobot penduduk",
-        "arah": "Informal (+)",
-        "dasar": "Jarak ke pasar kerja formal menentukan pilihan kerja informal.",
-        "rujukan": [
-          "nelson2019",
-          "weiss2018"
-        ]
-      },
-      {
-        "dimensi": "4. Aksesibilitas",
-        "nama": "Kerapatan jalan dan jarak jaringan ke bank atau pasar",
-        "sumber": "OSM",
-        "olah": "km/km²; jarak jaringan dari sentroid berbobot penduduk",
-        "arah": "Informal (+) untuk jarak",
-        "dasar": "Infrastruktur memengaruhi skala dan formalitas usaha non-pertanian desa.",
-        "rujukan": [
-          "gibson2010",
-          "barrington2017"
-        ]
-      },
-      {
-        "dimensi": "5. Penduduk dan SDM",
-        "nama": "Kepadatan penduduk dan rasio ketergantungan",
-        "sumber": "WorldPop / GHS-POP, 100 m",
-        "olah": "Statistik zonal; penyebut indikator per kapita",
-        "arah": "Konteks",
-        "dasar": "Penyebut yang konsisten untuk semua indikator.",
-        "rujukan": [
-          "stevens2015"
-        ]
-      },
-      {
-        "dimensi": "5. Penduduk dan SDM",
-        "nama": "Ketersediaan SMA/SMK",
-        "sumber": "PODES 2025",
-        "olah": "Per 1.000 penduduk usia 15–19",
-        "arah": "Formal (-)",
-        "dasar": "Modal manusia rendah adalah pendorong utama informalitas.",
-        "rujukan": [
-          "laporta2014"
-        ]
-      },
-      {
+        "platform": "Google Earth Engine",
         "dimensi": "6. Struktur lahan",
-        "nama": "Proporsi lahan pertanian dan kebun",
-        "sumber": "ESA WorldCover / Dynamic World, 10 m",
-        "olah": "Persen luas desa",
+        "nama": "Proporsi lahan pertanian",
+        "sumber": "GOOGLE/DYNAMICWORLD/V1 (2024) dan ESA/WorldCover/v200 (2021)",
+        "skrip": "gee_02",
+        "olah": "Rata-rata dua sumber, persen luas desa",
+        "rumus": "T_d=50\\cdot\\left(\\overline{\\mathbb 1[\\mathrm{DW}=\\text{crops}]}_d+\\overline{\\mathbb 1[\\mathrm{WC}=40]}_d\\right)",
         "arah": "Informal (+)",
-        "dasar": "Pertanian rakyat adalah sektor dengan informalitas tertinggi; cahaya malam saja kurang peka di wilayah pertanian.",
+        "dasar": "Pertanian rakyat adalah sektor dengan informalitas tertinggi; cahaya malam saja kurang peka di wilayah pertanian sehingga perlu fitur tutupan lahan.",
         "rujukan": [
           "keola2015",
           "brown2022"
         ]
       },
       {
-        "dimensi": "7. Kesejahteraan dan digital",
-        "nama": "Relative Wealth Index",
-        "sumber": "Meta, grid 2,4 km",
-        "olah": "Interpolasi dasimetrik berbobot penduduk",
+        "platform": "Google Earth Engine",
+        "dimensi": "6. Struktur lahan",
+        "nama": "Proporsi tutupan pohon di luar kawasan hutan",
+        "sumber": "ESA WorldCover kelas 10",
+        "skrip": "gee_02",
+        "olah": "Persen luas desa; kawasan hutan negara dikeluarkan bila poligonnya tersedia",
+        "rumus": "H_d=100\\cdot\\overline{\\mathbb 1[\\mathrm{WC}=10]}_d",
+        "arah": "Informal (+)",
+        "dasar": "Di luar kawasan hutan, tutupan pohon di Sumatera Barat sebagian besar adalah kebun rakyat (karet, kelapa sawit, gambir) yang dikelola secara informal.",
+        "rujukan": [
+          "keola2015"
+        ]
+      },
+      {
+        "platform": "Google Earth Engine",
+        "dimensi": "5. Penduduk dan SDM",
+        "nama": "Kepadatan penduduk dan rasio ketergantungan",
+        "sumber": "WorldPop/GP/100m/pop dan pop_age_sex (2020)",
+        "skrip": "gee_01",
+        "olah": "Penduduk menjadi penyebut indikator per kapita; rasio ketergantungan masuk dimensi SDM",
+        "rumus": "\\mathrm{RK}_d=100\\cdot\\frac{P^{0-14}_d+P^{65+}_d}{P^{15-64}_d}",
+        "arah": "Informal (+)",
+        "dasar": "Penyebut yang konsisten untuk semua desa; beban tanggungan tinggi mendorong pekerjaan informal.",
+        "rujukan": [
+          "stevens2015",
+          "laporta2014"
+        ]
+      },
+      {
+        "platform": "Google Earth Engine",
+        "dimensi": "4. Aksesibilitas",
+        "nama": "Waktu tempuh ke kota",
+        "sumber": "Oxford/MAP/accessibility_to_cities_2015_v1_0",
+        "skrip": "gee_01",
+        "olah": "Rata-rata berbobot penduduk, log",
+        "rumus": "\\bar T_d=\\frac{\\sum_p f_{pd}\\,P_p\\,T_p}{\\sum_p f_{pd}\\,P_p}",
+        "arah": "Informal (+)",
+        "dasar": "Jarak ke pasar kerja formal menentukan pilihan kerja informal; peta friksi global ini menjadi rujukan baku aksesibilitas.",
+        "rujukan": [
+          "weiss2018",
+          "nelson2019"
+        ]
+      },
+      {
+        "platform": "Google Earth Engine",
+        "dimensi": "4. Aksesibilitas",
+        "nama": "Lereng berbobot penduduk",
+        "sumber": "USGS/SRTMGL1_003",
+        "skrip": "gee_01",
+        "olah": "Derajat, rata-rata berbobot penduduk",
+        "rumus": "\\bar S_d=\\frac{\\sum_p f_{pd}\\,P_p\\,S_p}{\\sum_p f_{pd}\\,P_p}",
+        "arah": "Informal (+)",
+        "dasar": "Medan Bukit Barisan menaikkan biaya angkut ke pasar dan bank; lereng adalah komponen permukaan friksi waktu tempuh.",
+        "rujukan": [
+          "weiss2018",
+          "gibson2010"
+        ]
+      },
+      {
+        "platform": "Platform lain (Python)",
+        "dimensi": "3. Struktur usaha (POI)",
+        "nama": "POI usaha kecil per 1.000 penduduk dan kepadatan kernel",
+        "sumber": "Overture Maps Places (CLI overturemaps) dan OSM (osmnx)",
+        "skrip": "python a1",
+        "olah": "Hitungan per penduduk; kernel density 500 m",
+        "rumus": "\\begin{gathered}x_d=\\frac{1000\\,n^{\\mathrm{kecil}}_d}{P_d}\\\\[1ex]\\hat f(s)=\\frac{1}{2\\pi h^2}\\sum_i e^{-\\lVert s-s_i\\rVert^2/2h^2}\\end{gathered}",
+        "arah": "Informal (+)",
+        "dasar": "Data OSM terbukti menjelaskan aktivitas ekonomi wilayah dengan akurasi setara cahaya malam, terutama di tingkat kabupaten ke bawah.",
+        "rujukan": [
+          "wang2024",
+          "barrington2017"
+        ]
+      },
+      {
+        "platform": "Platform lain (Python)",
+        "dimensi": "3. Struktur usaha (POI)",
+        "nama": "Proporsi POI bermerek atau berjejaring",
+        "sumber": "Overture Places, atribut brand",
+        "skrip": "python a1",
+        "olah": "Persen dari total POI desa",
+        "rumus": "M_d=100\\cdot\\frac{n^{\\mathrm{merek}}_d}{n_d}",
         "arah": "Formal (-)",
-        "dasar": "Kekayaan relatif dari citra dan konektivitas dengan akurasi teruji di negara berkembang.",
+        "dasar": "Gerai waralaba, bank, dan minimarket adalah usaha berbadan hukum; proporsinya membedakan pusat dagang formal dan informal.",
+        "rujukan": [
+          "rothenberg2016"
+        ]
+      },
+      {
+        "platform": "Platform lain (Python)",
+        "dimensi": "4. Aksesibilitas",
+        "nama": "Kerapatan jalan",
+        "sumber": "OSM network_type drive (osmnx)",
+        "skrip": "python a1",
+        "olah": "Panjang ruas dalam poligon dibagi luas",
+        "rumus": "\\ell_d=\\frac{\\sum_{e\\in d}\\mathrm{len}(e)}{A_d}",
+        "arah": "Formal (-)",
+        "dasar": "Infrastruktur jalan memengaruhi skala dan formalitas usaha non-pertanian desa; kelengkapan jalan OSM sudah di atas 80 persen secara global.",
+        "rujukan": [
+          "gibson2010",
+          "barrington2017"
+        ]
+      },
+      {
+        "platform": "Platform lain (Python)",
+        "dimensi": "4. Aksesibilitas",
+        "nama": "Jarak jaringan ke pasar dan bank terdekat",
+        "sumber": "OSM + Dijkstra multi-sumber (networkx)",
+        "skrip": "python a1",
+        "olah": "Dari sentroid berbobot penduduk (keluaran GEE 01), km, log",
+        "rumus": "\\begin{gathered}d_d=\\min_{b\\in\\mathcal B}\\operatorname{dist}_G(c_d,b)\\\\[1ex]c_d=\\frac{\\sum_p P_p\\,s_p}{\\sum_p P_p}\\end{gathered}",
+        "arah": "Informal (+)",
+        "dasar": "Jarak ke lembaga keuangan formal memisahkan usaha mikro yang bisa mengakses kredit dari yang tidak.",
+        "rujukan": [
+          "gibson2010"
+        ]
+      },
+      {
+        "platform": "Platform lain (Python)",
+        "dimensi": "7. Keuangan dan digital",
+        "nama": "Relative Wealth Index",
+        "sumber": "Meta, grid 2,4 km (HDX)",
+        "skrip": "python a2",
+        "olah": "Interpolasi dasimetrik berbobot penduduk",
+        "rumus": "x_d=\\sum_c\\frac{P_{cd}}{\\sum_{c'}P_{c'd}}\\,x_c",
+        "arah": "Formal (-)",
+        "dasar": "Kekayaan relatif dari citra dan data konektivitas, divalidasi dengan survei rumah tangga di negara berkembang.",
         "rujukan": [
           "chi2022",
+          "yeh2020",
           "jean2016"
         ]
       },
       {
-        "dimensi": "7. Kesejahteraan dan digital",
-        "nama": "Kecepatan internet seluler",
-        "sumber": "Ookla Open Data, tile sekitar 610 m",
-        "olah": "Median berbobot jumlah tes; cadangan dari sinyal PODES",
+        "platform": "Platform lain (Python)",
+        "dimensi": "7. Keuangan dan digital",
+        "nama": "Kecepatan unduh internet seluler",
+        "sumber": "Ookla Open Data, parquet AWS, 4 kuartal 2024",
+        "skrip": "python a2",
+        "olah": "Dasimetrik berbobot penduduk × log jumlah tes; desa tanpa tile diimputasi 5 tetangga dan diberi penanda",
+        "rumus": "x_d=\\frac{\\sum_c P_{cd}\\ln(1+T_c)\\,x_c}{\\sum_c P_{cd}\\ln(1+T_c)}",
         "arah": "Formal (-)",
-        "dasar": "Syarat formalisasi daring (OSS, QRIS) dan inklusi keuangan digital.",
+        "dasar": "Syarat formalisasi daring (OSS, QRIS) dan inklusi keuangan digital; terkait SDG 9.c.",
+        "rujukan": []
+      },
+      {
+        "platform": "BPS (PODES 2025)",
+        "dimensi": "3. Struktur usaha (POI)",
+        "nama": "Pasar tanpa bangunan, warung, kelontong, IMK, minimarket",
+        "sumber": "PODES 2025 r905, r907a",
+        "skrip": "python b1",
+        "olah": "Per 1.000 keluarga, log",
+        "rumus": "x_{dj}=\\frac{1000\\,F_{dj}}{K_d}",
+        "arah": "Campuran",
+        "dasar": "Melengkapi POI di desa yang POI-nya kosong; karakter usaha informal Indonesia terlihat dari tempat dan skala usaha.",
         "rujukan": [
-          "chi2022"
+          "rothenberg2016",
+          "gibson2010"
         ]
       },
       {
-        "dimensi": "7. Kesejahteraan dan digital",
-        "nama": "Bank, ATM, koperasi, dan KUR",
-        "sumber": "PODES 2025 dan POI OSM",
-        "olah": "Per 10.000 penduduk dewasa (SDG 8.10.1)",
+        "platform": "BPS (PODES 2025)",
+        "dimensi": "7. Keuangan dan digital",
+        "nama": "Bank dan ATM per 10.000 penduduk dewasa, koperasi, jenis kredit",
+        "sumber": "PODES 2025 r902–r904 + POI bank OSM",
+        "skrip": "python b1",
+        "olah": "Sejalan dengan indikator SDG 8.10.1",
+        "rumus": "x_d=\\frac{10^4\\,(n^{\\mathrm{bank}}_d+n^{\\mathrm{ATM}}_d)}{P^{15+}_d}",
         "arah": "Formal (-)",
         "dasar": "Akses kredit formal memisahkan usaha mikro formal dan informal.",
         "rujukan": [
           "ohnsorge2022"
+        ]
+      },
+      {
+        "platform": "BPS (PODES 2025)",
+        "dimensi": "5. Penduduk dan SDM",
+        "nama": "SMA/MA dan SMK per 1.000 penduduk usia 15–19",
+        "sumber": "PODES 2025 (kode cek metadata) + WorldPop",
+        "skrip": "python b1",
+        "olah": "Penyebut dari WorldPop pop_age_sex",
+        "rumus": "x_d=\\frac{1000\\,n^{\\mathrm{SMA/SMK}}_d}{P^{15-19}_d}",
+        "arah": "Formal (-)",
+        "dasar": "Modal manusia rendah adalah pendorong utama informalitas.",
+        "rujukan": [
+          "laporta2014"
         ]
       }
     ],
@@ -1300,33 +1515,35 @@
       {
         "kode": "A",
         "nama": "PCA berjenjang (OECD/JRC)",
-        "cara": "PCA per dimensi menghasilkan sub-indeks, lalu sub-indeks diagregasi dengan bobot varians atau bobot sama.",
-        "kelebihan": "Transparan, mudah direplikasi BPS, dan sub-indeksnya bisa dibaca sebagai tuas kebijakan.",
-        "kekurangan": "Tanpa label. Bobot mengikuti varians data, bukan kekuatan hubungan dengan informalitas.",
-        "akurasi": "Hanya validitas eksternal (Spearman dengan tabel kab/kota).",
+        "cara": "PCA per dimensi menghasilkan bobot indikator dan sub-indeks; PCA atas sub-indeks menghasilkan bobot dimensi. Indeks diskalakan 0 sampai 100.",
+        "kelebihan": "Tidak butuh label. Transparan, mudah direplikasi BPS, dan sub-indeksnya bisa dibaca sebagai tuas kebijakan.",
+        "kekurangan": "Bobot mengikuti varians bersama indikator, bukan kekuatan hubungan dengan informalitas, sehingga wajib diuji ke luar.",
+        "akurasi": "Spearman kab/kota, validitas konvergen, ketahanan Monte Carlo.",
         "rujukan": [
           "oecd2008",
           "greco2019"
-        ]
+        ],
+        "rekomendasi": "Utama"
       },
       {
         "kode": "B",
         "nama": "GW-PCA",
-        "cara": "PCA lokal dengan kernel adaptif, sehingga bobot tiap indikator berbeda antar wilayah.",
-        "kelebihan": "Menangkap perbedaan struktur ekonomi pesisir, darek, dan Mentawai.",
+        "cara": "PCA lokal dengan kernel bisquare adaptif, sehingga bobot tiap indikator berbeda antar wilayah.",
+        "kelebihan": "Menangkap perbedaan struktur ekonomi pesisir, darek, dan Mentawai, dan peta indikator dominannya menjadi temuan tersendiri.",
         "kekurangan": "Skor antar wilayah lebih sulit dibandingkan, dan pemilihan bandwidth sensitif.",
-        "akurasi": "Validitas eksternal ditambah peta bobot lokal sebagai temuan.",
+        "akurasi": "Spearman kab/kota dan perbandingan peringkat dengan opsi A.",
         "rujukan": [
           "harris2011"
-        ]
+        ],
+        "rekomendasi": "Pelengkap"
       },
       {
         "kode": "C",
-        "nama": "Model laten MIMIC/SEM",
-        "cara": "Variabel geospasial sebagai sebab, ekonomi informal sebagai variabel laten, dan fasilitas informal PODES sebagai indikator.",
-        "kelebihan": "Sejalan dengan tradisi estimasi ekonomi bayangan dan memberi uji kecocokan model.",
+        "nama": "Analisis faktor konfirmatori / MIMIC",
+        "cara": "Ekonomi informal sebagai variabel laten dengan tujuh dimensi sebagai indikator; pada MIMIC, variabel struktural (akses, lahan) menjadi sebab.",
+        "kelebihan": "Memberi uji kecocokan struktur (CFI, RMSEA) dan sejalan dengan tradisi estimasi ekonomi bayangan.",
         "kekurangan": "Skala laten harus dijangkar ke angka eksternal, dan estimasi tidak stabil bila indikator lemah.",
-        "akurasi": "Indeks kecocokan (CFI, RMSEA) dan korelasi dengan tabel kab/kota.",
+        "akurasi": "Indeks kecocokan dan Spearman kab/kota.",
         "rujukan": [
           "joreskog1975",
           "schneider2010"
@@ -1334,56 +1551,53 @@
       },
       {
         "kode": "D",
-        "nama": "XGBoost dengan label Sakernas",
-        "cara": "Proporsi pekerja informal per desa sampel Sakernas (penimbang, digabung dua tahun) menjadi label. Model dilatih dengan semua fitur, diprediksi ke seluruh desa, lalu di-benchmark ke angka kab/kota.",
-        "kelebihan": "Akurasi tertinggi karena belajar langsung dari ukuran resmi. Pendekatan ini sudah dipakai BPS dan ADB untuk peta kemiskinan.",
-        "kekurangan": "Butuh akses data mikro. Label desa bising karena sampelnya kecil, sehingga perlu bobot jumlah sampel.",
-        "akurasi": "R² dan RMSE validasi silang blok spasial, Spearman per kab/kota, serta cakupan interval prediksi.",
+        "nama": "Bobot entropi dan bobot sama",
+        "cara": "Bobot dari sebaran informasi tiap indikator (entropi) atau bobot sama, dengan agregasi aritmetik atau geometrik.",
+        "kelebihan": "Sederhana dan objektif; berguna sebagai pembanding untuk menunjukkan peringkat tidak bergantung pada satu skema bobot.",
+        "kekurangan": "Entropi memberi bobot besar pada indikator yang jarang (banyak nol), belum tentu yang paling relevan.",
+        "akurasi": "Korelasi peringkat dengan opsi A dan Spearman kab/kota.",
         "rujukan": [
-          "chen2016",
-          "jean2016",
-          "chi2022",
-          "bps2022",
-          "adb2025",
-          "roberts2017"
+          "zou2006",
+          "saisana2005"
         ],
-        "rekomendasi": true
+        "rekomendasi": "Uji ketahanan"
       },
       {
         "kode": "E",
-        "nama": "SAE Fay–Herriot spasial / Bayesian BYM2",
-        "cara": "Estimasi langsung Sakernas per kecamatan diperhalus dengan kovariat geospasial dan efek acak spasial, lalu diturunkan ke desa secara dasimetrik.",
-        "kelebihan": "Kerangka resmi statistik wilayah kecil dengan MSE yang terukur.",
-        "kekurangan": "Hanya sampai kecamatan; ke desa masih perlu langkah tambahan.",
-        "akurasi": "MSE/CV per kecamatan, dibandingkan dengan estimasi langsung.",
+        "nama": "Kalibrasi top-down ke angka resmi",
+        "cara": "Regresi logit agregat kab/kota mengubah indeks menjadi estimasi proporsi pekerja informal desa, lalu benchmarking logit membuat rata-rata tertimbangnya sama dengan angka BPS.",
+        "kelebihan": "Menghasilkan angka dalam satuan yang dipahami pengambil kebijakan dan konsisten dengan statistik resmi.",
+        "kekurangan": "Hanya 19 titik untuk kalibrasi; ini turunan indeks, bukan estimasi independen.",
+        "akurasi": "RMSE LOOCV kab/kota; selisih benchmarking sama dengan nol.",
         "rujukan": [
-          "fayherriot1979",
           "rao2015",
-          "riebler2016"
-        ]
+          "kyriakidis2004"
+        ],
+        "rekomendasi": "Keluaran turunan"
       }
     ],
-    "rekomendasi": "Rekomendasinya adalah gabungan A dan D. Opsi D menjadi jangkar akurasi: hasilnya dipakai untuk memilih dan membobot ulang indikator, dan prediksinya menjadi estimasi utama proporsi informal per desa. Opsi A tetap dilaporkan sebagai indeks yang bisa dibaca per dimensi untuk arah intervensi. Bila akses Sakernas mikro tidak sempat diperoleh sebelum 31 Oktober, pakai A dan B dengan validasi kab/kota, lalu jadikan D sebagai pengembangan lanjutan.",
+    "rekomendasi": "Rekomendasinya adalah A sebagai indeks utama. B dan D dipakai untuk menunjukkan bahwa peringkat desa tidak bergantung pada satu skema bobot, dan C bila sempat menguji struktur dimensi. E dipakai di bagian akhir untuk menerjemahkan indeks menjadi estimasi proporsi pekerja informal desa yang konsisten dengan angka BPS. Semua opsi ini tidak membutuhkan label tingkat desa.",
     "akurasi": [
-      "Validasi silang blok spasial (blok per kecamatan) agar akurasi tidak terlalu optimis akibat autokorelasi.",
-      "Metrik: R², RMSE, Spearman, dan cakupan interval prediksi 90 persen.",
-      "Uji luar sampel: label Sakernas tahun lain dan proporsi usaha tanpa badan hukum dari listing SE.",
-      "Kepentingan fitur (SHAP) dibandingkan dengan loading PCA untuk memastikan arah indikator konsisten.",
-      "Moran's I pada residual model. Residual yang masih berklaster berarti perlu efek spasial."
+      "Kelayakan struktur: KMO di atas 0,6, uji Bartlett signifikan, dan varians yang dijelaskan per dimensi.",
+      "Validitas eksternal: Spearman rata-rata indeks kab/kota dengan persentase pekerja informal (target ≥ 0,6) dan pendapatan pekerja informal (negatif), dengan selang bootstrap 2.000 ulangan karena n = 19.",
+      "Validitas konvergen: indeks dari sumber geospasial saja dibandingkan dengan indeks dari PODES saja. Kedua sumber independen, sehingga korelasi positif menunjukkan keduanya menangkap fenomena yang sama.",
+      "Ketahanan: 1.000 simulasi Monte Carlo atas bobot (Dirichlet di sekitar bobot PCA), normalisasi, dan agregasi. Target median pergeseran peringkat di bawah 10 persen.",
+      "Kalibrasi: RMSE leave-one-out kab/kota untuk model logit agregat.",
+      "Validitas muka (bila sempat): pemeriksaan visual citra resolusi tinggi untuk sampel desa per tipologi."
     ],
     "skala": [
       {
         "asal": "Raster halus (10–100 m)",
-        "contoh": "GHSL, WorldPop, WorldCover, Open Buildings (raster turunan)",
-        "mekanisme": "Statistik zonal dengan bobot fraksi piksel yang masuk poligon (exactextract).",
-        "rumus": "x_d = Σ f_p x_p / Σ f_p; untuk jumlah: X_d = Σ f_p x_p",
+        "contoh": "GHSL, WorldPop, Sentinel-2, Dynamic World, WorldCover",
+        "mekanisme": "Statistik zonal di GEE (reduceRegions). Reducer mean dan sum otomatis memberi bobot fraksi piksel yang masuk poligon.",
+        "tex": "\\begin{gathered}\\bar x_d=\\frac{\\sum_p f_{pd}\\,x_p}{\\sum_p f_{pd}}\\\\[1ex]X_d=\\sum_p f_{pd}\\,x_p\\end{gathered}",
         "rujukan": []
       },
       {
         "asal": "Raster menengah (500 m–1 km)",
-        "contoh": "VIIRS, waktu tempuh",
-        "mekanisme": "Rata-rata berbobot penduduk agar piksel hutan kosong tidak menurunkan nilai. Desa yang lebih kecil dari satu piksel diberi fraksi piksel dan ditandai.",
-        "rumus": "x_d = Σ f_p pop_p x_p / Σ f_p pop_p",
+        "contoh": "VIIRS, waktu tempuh, SRTM",
+        "mekanisme": "Rata-rata berbobot penduduk 100 m, agar piksel hutan kosong tidak menurunkan nilai. Desa yang lebih kecil dari satu piksel tetap mendapat nilai dari fraksi piksel.",
+        "tex": "\\bar x_d=\\frac{\\sum_p f_{pd}\\,P_p\\,x_p}{\\sum_p f_{pd}\\,P_p}",
         "rujukan": [
           "stevens2015"
         ]
@@ -1391,8 +1605,8 @@
       {
         "asal": "Grid kasar (610 m–2,4 km)",
         "contoh": "Meta RWI, tile Ookla",
-        "mekanisme": "Interpolasi areal dasimetrik: nilai sel dibagi ke desa menurut penduduk di irisan sel dan desa, bukan menurut luas. Sel kosong diisi dengan kriging atau rata-rata k-tetangga, disertai penanda imputasi.",
-        "rumus": "x_d = Σ_c (pop_cd / pop_d) x_c",
+        "mekanisme": "Interpolasi areal dasimetrik: tiap sel dipotong dengan batas desa, lalu dibobot dengan penduduk di irisan (exactextract), bukan dengan luas.",
+        "tex": "x_d=\\sum_c\\frac{P_{cd}}{\\sum_{c'}P_{c'd}}\\,x_c",
         "rujukan": [
           "mennis2003",
           "chi2022"
@@ -1401,38 +1615,142 @@
       {
         "asal": "Titik dan garis vektor",
         "contoh": "POI, jalan, bank, pasar",
-        "mekanisme": "Hitungan atau panjang dalam poligon dibagi luas atau penduduk. Kernel density mengurangi efek batas. Jarak dihitung lewat jaringan jalan OSM dari sentroid berbobot penduduk, bukan sentroid geometris.",
-        "rumus": "KDE dengan bandwidth 500 m; jarak jaringan dengan OSRM atau pandana",
+        "mekanisme": "Hitungan atau panjang dalam poligon dibagi luas atau penduduk. Kernel density mengurangi efek batas. Jarak dihitung lewat jaringan jalan dari sentroid berbobot penduduk.",
+        "tex": "\\begin{gathered}\\ell_d=\\frac{L_d}{A_d},\\qquad d_d=\\min_{b}\\operatorname{dist}_G(c_d,b)\\\\[1ex]c_d=\\frac{\\sum_p P_p\\,s_p}{\\sum_p P_p}\\end{gathered}",
         "rujukan": [
           "barrington2017"
         ]
       },
       {
-        "asal": "Kab/kota (n = 19)",
-        "contoh": "Persentase dan pendapatan pekerja informal, PDRB sektoral",
-        "mekanisme": "Tidak dipakai langsung sebagai input desa. Ada tiga cara menurunkannya: (1) model berlabel Sakernas mikro (opsi D), (2) area-to-point kriging atau interpolasi piknofilaktik bila hanya ada tabel publikasi, (3) benchmarking agar rata-rata tertimbang desa sama dengan angka resmi.",
-        "rumus": "logit(p*_d) = logit(p̂_d) + δ_k, dengan δ_k dipilih agar Σ w_d p*_d / Σ w_d = P_k",
-        "rujukan": [
-          "kyriakidis2004",
-          "tobler1979",
-          "rao2015"
-        ]
+        "asal": "Data hilang",
+        "contoh": "Tile Ookla kosong, desa tanpa POI",
+        "mekanisme": "Imputasi rata-rata lima desa terdekat, disertai variabel penanda agar pengaruhnya bisa diuji dalam sensitivitas.",
+        "tex": "\\begin{gathered}\\hat x_d=\\frac{1}{5}\\sum_{d'\\in\\mathcal N_5(d)}x_{d'}\\\\[1ex]\\mathrm{flag}_d=1\\end{gathered}",
+        "rujukan": []
       },
       {
-        "asal": "Kecamatan (SAE)",
-        "contoh": "Estimasi Fay–Herriot proporsi informal",
-        "mekanisme": "Diturunkan ke desa dengan bobot prediksi model desa, lalu di-benchmark ke angka kecamatan.",
-        "rumus": "p*_d = p̂_d × (P_kec / p̄_kec)",
+        "asal": "Kab/kota (n = 19)",
+        "contoh": "Persentase dan pendapatan pekerja informal (tabel BPS)",
+        "mekanisme": "Tidak pernah dipakai sebagai input indeks. Dipakai untuk validasi setelah indeks jadi, lalu untuk kalibrasi top-down (opsi E). Alternatif tanpa indeks adalah area-to-point kriging atau interpolasi piknofilaktik yang menjaga total kab/kota.",
+        "tex": "\\begin{gathered}p^{*}_d=\\operatorname{logit}^{-1}\\!\\big(\\operatorname{logit}\\hat p_d+\\delta_k\\big)\\\\[1ex]\\frac{\\sum_{d\\in k}P_d\\,p^{*}_d}{\\sum_{d\\in k}P_d}=P^{\\mathrm{inf}}_k\\end{gathered}",
         "rujukan": [
-          "fayherriot1979",
-          "mennis2003"
+          "rao2015",
+          "kyriakidis2004",
+          "tobler1979"
         ]
       }
     ],
     "catatanSkala": [
       "Semua sumber diselaraskan ke tahun 2024–2025 dan ke batas desa yang sama dengan kode PODES 2025. Desa hasil pemekaran ditangani dengan tabel padanan kode.",
-      "Variabel kab/kota hasil downscaling tidak dipakai sebagai pembanding validasi untuk menghindari sirkularitas. Validasi memakai label Sakernas yang disisihkan dan listing SE.",
-      "Ketidakpastian dari downscaling dibawa ke indeks lewat bootstrap, sehingga tiap desa punya selang nilai."
+      "Angka kab/kota tidak masuk indeks, sehingga validasi kab/kota tetap independen. Estimasi proporsi hasil kalibrasi tidak dipakai untuk menguji indeks.",
+      "Ketidakpastian dari pilihan bobot dan normalisasi dibawa ke indeks lewat simulasi Monte Carlo, sehingga tiap desa punya selang nilai."
+    ],
+    "rumus": [
+      {
+        "judul": "Normalisasi per keluarga atau penduduk",
+        "tex": "x_{dj}=\\frac{1000\\,F_{dj}}{K_d}",
+        "ket": "F = jumlah fasilitas j di desa d, K = jumlah keluarga (atau penduduk)."
+      },
+      {
+        "judul": "Winsorizing dan transformasi log",
+        "tex": "\\tilde x_{dj}=\\ln\\!\\Big(1+\\min\\big\\{\\max(x_{dj},\\,q_{0{,}01}),\\,q_{0{,}99}\\big\\}\\Big)",
+        "ket": "q = kuantil provinsi; log hanya untuk indikator yang sangat miring."
+      },
+      {
+        "judul": "Skala 0–1 dengan arah seragam",
+        "tex": "z_{dj}=\\begin{cases}\\dfrac{\\tilde x_{dj}-\\min_d\\tilde x_{dj}}{\\max_d\\tilde x_{dj}-\\min_d\\tilde x_{dj}} & s_j=+1\\\\[2ex] 1-\\dfrac{\\tilde x_{dj}-\\min_d\\tilde x_{dj}}{\\max_d\\tilde x_{dj}-\\min_d\\tilde x_{dj}} & s_j=-1\\end{cases}",
+        "ket": "s_j = +1 bila indikator informal, −1 bila formal. Nilai tinggi selalu berarti lebih informal."
+      },
+      {
+        "judul": "Bobot PCA per dimensi",
+        "tex": "w_j=\\frac{\\sum_{m=1}^{M}\\pi_m\\,a_{jm}^2}{\\sum_{j'}\\sum_{m=1}^{M}\\pi_m\\,a_{j'm}^2},\\qquad \\pi_m=\\frac{\\lambda_m}{\\sum_{m'=1}^{M}\\lambda_{m'}},\\quad M=\\#\\{m:\\lambda_m>1\\}",
+        "ket": "λ = eigenvalue, a = loading indikator j pada komponen m."
+      },
+      {
+        "judul": "Bobot entropi (pembanding)",
+        "tex": "p_{dj}=\\frac{z_{dj}}{\\sum_d z_{dj}},\\qquad e_j=-\\frac{1}{\\ln n}\\sum_{d=1}^{n}p_{dj}\\ln p_{dj},\\qquad w_j=\\frac{1-e_j}{\\sum_{j'}(1-e_{j'})}",
+        "ket": "n = jumlah desa."
+      },
+      {
+        "judul": "Sub-indeks dan indeks",
+        "tex": "S_{dk}=\\sum_{j\\in k}w_j\\,z_{dj},\\qquad G_d=\\sum_{k=1}^{7}v_k\\,S_{dk}\\ \\ \\text{atau}\\ \\ G_d=\\prod_{k=1}^{7}S_{dk}^{\\,v_k},\\qquad I_d=100\\cdot\\frac{G_d-\\min G}{\\max G-\\min G}",
+        "ket": "v_k = bobot dimensi dari PCA atas sub-indeks; bentuk geometrik membatasi kompensasi antar dimensi."
+      },
+      {
+        "judul": "GW-PCA",
+        "tex": "\\Sigma(u_i,v_i)=X^{\\top}W(u_i,v_i)\\,X,\\qquad w_{ij}=\\begin{cases}\\big[1-(d_{ij}/b_i)^2\\big]^2 & d_{ij}<b_i\\\\ 0 & \\text{lainnya}\\end{cases}",
+        "ket": "Dekomposisi eigen matriks kovarians lokal di tiap desa i; b_i = bandwidth adaptif (jumlah tetangga)."
+      },
+      {
+        "judul": "Pergeseran peringkat (sensitivitas)",
+        "tex": "\\bar R=\\operatorname{median}_{s}\\Big[\\operatorname{median}_{d}\\big|R^{(s)}_d-R^{(0)}_d\\big|\\Big]",
+        "ket": "R^(0) = peringkat indeks utama, R^(s) = peringkat pada simulasi s."
+      },
+      {
+        "judul": "Agregasi ke kab/kota untuk validasi",
+        "tex": "\\bar I_k=\\frac{\\sum_{d\\in k}P_d\\,I_d}{\\sum_{d\\in k}P_d},\\qquad \\rho_s=\\operatorname{corr}\\big(\\operatorname{rank}\\bar I_k,\\ \\operatorname{rank}P^{\\mathrm{inf}}_k\\big)",
+        "ket": "P_d = penduduk desa, P^inf_k = persentase pekerja informal kab/kota dari BPS."
+      },
+      {
+        "judul": "Kalibrasi agregat",
+        "tex": "\\operatorname{logit}\\!\\big(P^{\\mathrm{inf}}_k\\big)=\\alpha+\\beta\\,\\frac{\\bar I_k}{100}+\\varepsilon_k,\\qquad \\hat p_d=\\operatorname{logit}^{-1}\\!\\Big(\\hat\\alpha+\\hat\\beta\\,\\frac{I_d}{100}\\Big)",
+        "ket": "Diestimasi pada 19 kab/kota, dicek dengan leave-one-out."
+      },
+      {
+        "judul": "Benchmarking ke angka resmi",
+        "tex": "p^{*}_d=\\operatorname{logit}^{-1}\\!\\big(\\operatorname{logit}\\hat p_d+\\delta_k\\big),\\qquad \\frac{\\sum_{d\\in k}P_d\\,p^{*}_d}{\\sum_{d\\in k}P_d}=P^{\\mathrm{inf}}_k",
+        "ket": "δ_k dicari per kab/kota (akar persamaan) sehingga rata-rata tertimbang desa tepat sama dengan angka BPS."
+      },
+      {
+        "judul": "Global Moran's I",
+        "tex": "I=\\frac{n}{S_0}\\,\\frac{\\sum_i\\sum_j w_{ij}(y_i-\\bar y)(y_j-\\bar y)}{\\sum_i(y_i-\\bar y)^2},\\qquad S_0=\\sum_i\\sum_j w_{ij}",
+        "ket": "w_ij = bobot queen contiguity yang distandardisasi baris."
+      },
+      {
+        "judul": "LISA",
+        "tex": "I_i=\\frac{y_i-\\bar y}{m_2}\\sum_j w_{ij}(y_j-\\bar y),\\qquad m_2=\\frac{1}{n}\\sum_i(y_i-\\bar y)^2",
+        "ket": "Signifikansi dari 999 permutasi, koreksi FDR."
+      },
+      {
+        "judul": "Getis-Ord Gi*",
+        "tex": "G^{*}_i=\\frac{\\sum_j w_{ij}y_j-\\bar y\\sum_j w_{ij}}{s\\sqrt{\\dfrac{n\\sum_j w_{ij}^2-\\big(\\sum_j w_{ij}\\big)^2}{n-1}}}",
+        "ket": "Penjumlahan termasuk desa i sendiri; s = simpangan baku y."
+      }
+    ]
+  },
+  "kode": {
+    "pengantar": "Semua skrip mengasumsikan batas desa sudah tersimpan di variabel DataWilayahDesa: FeatureCollection di GEE, GeoDataFrame di Python, dan objek sf di R, masing-masing dengan kolom iddesa (10 digit, sama dengan kode PODES). Urutan: gee_01, gee_02, gee_03, lalu Python bagian A (a1, a2) dan B (b1, b2), lalu R GW-PCA, lalu Python b3 dan b4. Keluaran tiap langkah menjadi masukan langkah berikutnya.",
+    "berkas": [
+      {
+        "file": "gee_01_cahaya_terbangun_penduduk.js",
+        "judul": "GEE 01: cahaya malam, terbangun, penduduk, akses, lereng",
+        "bahasa": "JavaScript (GEE)",
+        "keluaran": "gee01_cahaya_terbangun_penduduk_2024.csv"
+      },
+      {
+        "file": "gee_02_sentinel2_tutupan_lahan.js",
+        "judul": "GEE 02: indeks spektral dan tekstur Sentinel-2, tutupan lahan",
+        "bahasa": "JavaScript (GEE)",
+        "keluaran": "gee02a_sentinel2_terbangun_2024.csv, gee02b_tutupan_lahan_2024.csv"
+      },
+      {
+        "file": "gee_03_open_buildings.js",
+        "judul": "GEE 03: morfologi bangunan Open Buildings",
+        "bahasa": "JavaScript (GEE)",
+        "keluaran": "gee03_open_buildings.csv"
+      },
+      {
+        "file": "python_indeks_informal.py",
+        "judul": "Python: A. Pengumpulan Data (a1 POI dan jalan, a2 RWI dan Ookla) dan B. Pengolahan (b1 indikator, b2 indeks, b3 validasi dan kalibrasi, b4 spasial)",
+        "bahasa": "Python",
+        "keluaran": "py01_poi_jalan.csv, py02_rwi_ookla.csv, indikator_desa.csv, indeks_desa.csv, validasi_kabkota.csv, estimasi_proporsi_desa.csv, nagari_prioritas.csv"
+      },
+      {
+        "file": "r_05_gwpca.R",
+        "judul": "R: GW-PCA (dijalankan setelah b2, sebelum b3)",
+        "bahasa": "R",
+        "keluaran": "gwpca_desa.csv"
+      }
     ]
   }
 }
