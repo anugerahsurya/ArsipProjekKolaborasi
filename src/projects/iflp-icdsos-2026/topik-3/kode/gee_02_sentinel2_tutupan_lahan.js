@@ -4,7 +4,7 @@
 // =====================================================================
 // DataWilayahDesa: FeatureCollection poligon desa dengan atribut 'iddesa'.
 
-var TAHUN = 2024;
+var TAHUN = 2025; // mengikuti PODES 2025
 var mulai = ee.Date.fromYMD(TAHUN, 1, 1);
 var akhir = mulai.advance(1, 'year');
 var wilayah = DataWilayahDesa.geometry().bounds();
@@ -56,6 +56,7 @@ var dwKelas = ee.Image.cat([
   dwLabel.eq(6).rename('dw_built'),
   dwLabel.eq(7).rename('dw_bare')
 ]);
+// WorldCover terbaru adalah 2021 (v200); dipakai sebagai pembanding Dynamic World 2025
 var wc = ee.Image('ESA/WorldCover/v200/2021').select('Map');
 var wcKelas = ee.Image.cat([
   wc.eq(40).rename('wc_cropland'),

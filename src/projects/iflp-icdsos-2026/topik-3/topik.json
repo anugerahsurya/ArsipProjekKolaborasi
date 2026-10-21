@@ -155,27 +155,27 @@
       },
       {
         "sumber": "VIIRS DNB bulanan (VCMSLCFG)",
-        "isi": "Radiansi cahaya malam, median 2024 (sekitar 500 m)",
+        "isi": "Radiansi cahaya malam, median bulanan 2025 (sekitar 500 m)",
         "akses": "Google Earth Engine"
       },
       {
-        "sumber": "GHSL GHS-BUILT-S R2023A",
-        "isi": "Luas terbangun total dan non-hunian (100 m)",
+        "sumber": "GHSL R2023A epoch 2025 (GHS-BUILT-S, GHS-POP)",
+        "isi": "Luas terbangun total dan non-hunian, jumlah penduduk 2025 (100 m)",
         "akses": "Google Earth Engine"
       },
       {
         "sumber": "Google Open Buildings v3",
-        "isi": "Jejak bangunan: jumlah, luas tapak",
+        "isi": "Jejak bangunan: jumlah, luas tapak (rilis v3, citra hingga 2023)",
         "akses": "Google Earth Engine"
       },
       {
         "sumber": "Sentinel-2 SR Harmonized + Cloud Score+",
-        "isi": "NDVI, NDBI, MNDWI, BSI, tekstur GLCM (10 m), komposit 2024",
+        "isi": "NDVI, NDBI, MNDWI, BSI, tekstur GLCM (10 m), komposit 2025",
         "akses": "Google Earth Engine"
       },
       {
         "sumber": "Dynamic World V1 dan ESA WorldCover v200",
-        "isi": "Masker terbangun dan proporsi tutupan lahan (10 m)",
+        "isi": "Masker terbangun dan proporsi tutupan lahan 2025 (Dynamic World); WorldCover 2021 sebagai pembanding",
         "akses": "Google Earth Engine"
       },
       {
@@ -190,22 +190,22 @@
       },
       {
         "sumber": "Waktu tempuh ke kota (Weiss dkk., 2018)",
-        "isi": "Menit ke kota 50 ribu jiwa ke atas (1 km)",
+        "isi": "Menit ke kota 50 ribu jiwa ke atas (1 km, rilis tunggal 2015)",
         "akses": "Google Earth Engine (Oxford/MAP)"
       },
       {
-        "sumber": "WorldPop 2020",
-        "isi": "Penduduk dan struktur umur (100 m)",
+        "sumber": "WorldPop 2020 (struktur umur)",
+        "isi": "Porsi kelompok umur, dikalikan penduduk GHS-POP 2025",
         "akses": "Google Earth Engine"
       },
       {
         "sumber": "Meta Relative Wealth Index",
-        "isi": "Indeks kekayaan relatif (grid 2,4 km)",
+        "isi": "Indeks kekayaan relatif (grid 2,4 km, rilis tunggal)",
         "akses": "Humanitarian Data Exchange"
       },
       {
         "sumber": "Ookla Open Data",
-        "isi": "Kecepatan internet tetap dan seluler (tile sekitar 610 m)",
+        "isi": "Kecepatan internet seluler, empat kuartal 2025 (tile sekitar 610 m)",
         "akses": "AWS Open Data"
       },
       {
@@ -1189,7 +1189,7 @@
         "platform": "Google Earth Engine",
         "dimensi": "1. Intensitas aktivitas",
         "nama": "Radiansi cahaya malam berbobot penduduk",
-        "sumber": "NOAA/VIIRS/DNB/MONTHLY_V1/VCMSLCFG, median 2024",
+        "sumber": "NOAA/VIIRS/DNB/MONTHLY_V1/VCMSLCFG, median 2025",
         "skrip": "gee_01",
         "olah": "Rata-rata berbobot penduduk; dipakai sebagai sumbu tipologi, tidak masuk indeks",
         "rumus": "\\bar L_d=\\frac{\\sum_p f_{pd}\\,P_p\\,L_p}{\\sum_p f_{pd}\\,P_p}",
@@ -1206,7 +1206,7 @@
         "platform": "Google Earth Engine",
         "dimensi": "1. Intensitas aktivitas",
         "nama": "Cahaya per hektare terbangun",
-        "sumber": "VIIRS + JRC/GHSL/P2023A/GHS_BUILT_S/2020",
+        "sumber": "VIIRS + JRC/GHSL/P2023A/GHS_BUILT_S/2025",
         "skrip": "gee_01",
         "olah": "Jumlah radiansi dibagi luas terbangun, lalu log",
         "rumus": "L^{B}_d=\\frac{\\sum_p f_{pd}\\,L_p}{B_d/10^4}",
@@ -1221,7 +1221,7 @@
         "platform": "Google Earth Engine",
         "dimensi": "1. Intensitas aktivitas",
         "nama": "Proporsi terbangun non-hunian",
-        "sumber": "GHS_BUILT_S band built_surface_nres",
+        "sumber": "GHS_BUILT_S/2025 band built_surface_nres",
         "skrip": "gee_01",
         "olah": "Persen dari total luas terbangun",
         "rumus": "N_d=100\\cdot\\frac{B^{\\mathrm{nres}}_d}{B_d}",
@@ -1235,7 +1235,7 @@
         "platform": "Google Earth Engine",
         "dimensi": "2. Morfologi bangunan",
         "nama": "Kepadatan bangunan dan median luas tapak",
-        "sumber": "GOOGLE/Research/open-buildings/v3/polygons, keyakinan ≥ 0,7",
+        "sumber": "GOOGLE/Research/open-buildings/v3/polygons, keyakinan ≥ 0,7 (citra hingga 2023)",
         "skrip": "gee_03",
         "olah": "Jumlah per km²; median m², keduanya log",
         "rumus": "\\rho_d=\\frac{N_d}{A_d},\\qquad \\tilde a_d=\\operatorname{median}\\{a_b: b\\in d\\}",
@@ -1251,7 +1251,7 @@
         "platform": "Google Earth Engine",
         "dimensi": "2. Morfologi bangunan",
         "nama": "Proporsi bangunan di bawah 50 m²",
-        "sumber": "Open Buildings v3",
+        "sumber": "Open Buildings v3 (citra hingga 2023)",
         "skrip": "gee_03",
         "olah": "Persen dari jumlah bangunan",
         "rumus": "K_d=100\\cdot\\frac{\\#\\{b\\in d: a_b<50\\}}{N_d}",
@@ -1265,7 +1265,7 @@
         "platform": "Google Earth Engine",
         "dimensi": "2. Morfologi bangunan",
         "nama": "Tekstur GLCM variance band NIR di piksel terbangun",
-        "sumber": "COPERNICUS/S2_SR_HARMONIZED B8, masker Cloud Score+, jendela 3×3",
+        "sumber": "COPERNICUS/S2_SR_HARMONIZED B8 2025, masker Cloud Score+, jendela 3×3",
         "skrip": "gee_02",
         "olah": "Rata-rata di piksel terbangun Dynamic World, log",
         "rumus": "\\mathrm{VAR}=\\sum_{i,j}(i-\\mu)^2\\,P(i,j)",
@@ -1281,7 +1281,7 @@
         "platform": "Google Earth Engine",
         "dimensi": "2. Morfologi bangunan",
         "nama": "NDVI di piksel terbangun",
-        "sumber": "Sentinel-2 B8, B4",
+        "sumber": "Sentinel-2 B8, B4 (2025)",
         "skrip": "gee_02",
         "olah": "Rata-rata di piksel terbangun",
         "rumus": "\\mathrm{NDVI}=\\frac{B_8-B_4}{B_8+B_4}",
@@ -1296,7 +1296,7 @@
         "platform": "Google Earth Engine",
         "dimensi": "2. Morfologi bangunan",
         "nama": "NDBI, MNDWI, dan BSI (diuji, tidak otomatis masuk)",
-        "sumber": "Sentinel-2 B2, B3, B4, B8, B11",
+        "sumber": "Sentinel-2 B2, B3, B4, B8, B11 (2025)",
         "skrip": "gee_02",
         "olah": "Rata-rata di piksel terbangun; masuk indeks hanya bila lolos uji korelasi dan KMO",
         "rumus": "\\begin{gathered}\\mathrm{NDBI}=\\frac{B_{11}-B_8}{B_{11}+B_8},\\qquad \\mathrm{MNDWI}=\\frac{B_3-B_{11}}{B_3+B_{11}}\\\\[1ex]\\mathrm{BSI}=\\frac{(B_{11}+B_4)-(B_8+B_2)}{(B_{11}+B_4)+(B_8+B_2)}\\end{gathered}",
@@ -1311,7 +1311,7 @@
         "platform": "Google Earth Engine",
         "dimensi": "6. Struktur lahan",
         "nama": "Proporsi lahan pertanian",
-        "sumber": "GOOGLE/DYNAMICWORLD/V1 (2024) dan ESA/WorldCover/v200 (2021)",
+        "sumber": "GOOGLE/DYNAMICWORLD/V1 (2025) dan ESA/WorldCover/v200 (2021, rilis terbaru)",
         "skrip": "gee_02",
         "olah": "Rata-rata dua sumber, persen luas desa",
         "rumus": "T_d=50\\cdot\\left(\\overline{\\mathbb 1[\\mathrm{DW}=\\text{crops}]}_d+\\overline{\\mathbb 1[\\mathrm{WC}=40]}_d\\right)",
@@ -1340,7 +1340,7 @@
         "platform": "Google Earth Engine",
         "dimensi": "5. Penduduk dan SDM",
         "nama": "Kepadatan penduduk dan rasio ketergantungan",
-        "sumber": "WorldPop/GP/100m/pop dan pop_age_sex (2020)",
+        "sumber": "JRC/GHSL/P2023A/GHS_POP/2025 dan porsi umur WorldPop pop_age_sex (2020)",
         "skrip": "gee_01",
         "olah": "Penduduk menjadi penyebut indikator per kapita; rasio ketergantungan masuk dimensi SDM",
         "rumus": "\\mathrm{RK}_d=100\\cdot\\frac{P^{0-14}_d+P^{65+}_d}{P^{15-64}_d}",
@@ -1355,7 +1355,7 @@
         "platform": "Google Earth Engine",
         "dimensi": "4. Aksesibilitas",
         "nama": "Waktu tempuh ke kota",
-        "sumber": "Oxford/MAP/accessibility_to_cities_2015_v1_0",
+        "sumber": "Oxford/MAP/accessibility_to_cities_2015_v1_0 (rilis tunggal)",
         "skrip": "gee_01",
         "olah": "Rata-rata berbobot penduduk, log",
         "rumus": "\\bar T_d=\\frac{\\sum_p f_{pd}\\,P_p\\,T_p}{\\sum_p f_{pd}\\,P_p}",
@@ -1459,7 +1459,7 @@
         "platform": "Platform lain (Python)",
         "dimensi": "7. Keuangan dan digital",
         "nama": "Kecepatan unduh internet seluler",
-        "sumber": "Ookla Open Data, parquet AWS, 4 kuartal 2024",
+        "sumber": "Ookla Open Data, parquet AWS, 4 kuartal 2025",
         "skrip": "python a2",
         "olah": "Dasimetrik berbobot penduduk × log jumlah tes; desa tanpa tile diimputasi 5 tetangga dan diberi penanda",
         "rumus": "x_d=\\frac{\\sum_c P_{cd}\\ln(1+T_c)\\,x_c}{\\sum_c P_{cd}\\ln(1+T_c)}",
@@ -1500,9 +1500,9 @@
         "platform": "BPS (PODES 2025)",
         "dimensi": "5. Penduduk dan SDM",
         "nama": "SMA/MA dan SMK per 1.000 penduduk usia 15–19",
-        "sumber": "PODES 2025 (kode cek metadata) + WorldPop",
+        "sumber": "PODES 2025 (kode cek metadata) + penduduk 15–19 tahun 2025",
         "skrip": "python b1",
-        "olah": "Penyebut dari WorldPop pop_age_sex",
+        "olah": "Penyebut: porsi umur 15–19 WorldPop 2020 × penduduk GHS-POP 2025",
         "rumus": "x_d=\\frac{1000\\,n^{\\mathrm{SMA/SMK}}_d}{P^{15-19}_d}",
         "arah": "Formal (-)",
         "dasar": "Modal manusia rendah adalah pendorong utama informalitas.",
@@ -1641,7 +1641,7 @@
       }
     ],
     "catatanSkala": [
-      "Semua sumber diselaraskan ke tahun 2024–2025 dan ke batas desa yang sama dengan kode PODES 2025. Desa hasil pemekaran ditangani dengan tabel padanan kode.",
+      "Tahun analisis adalah 2025, mengikuti PODES 2025. Cahaya malam, Sentinel-2, Dynamic World, GHSL (terbangun dan penduduk), dan Ookla diambil untuk 2025. Sumber yang hanya punya satu rilis memakai rilis terbaru: WorldCover 2021, Open Buildings v3 (citra hingga 2023), waktu tempuh 2015, Relative Wealth Index, dan struktur umur WorldPop 2020 yang dipakai sebagai porsi. Semua diringkas ke batas desa dengan kode PODES 2025; desa hasil pemekaran ditangani dengan tabel padanan kode.",
       "Angka kab/kota tidak masuk indeks, sehingga validasi kab/kota tetap independen. Estimasi proporsi hasil kalibrasi tidak dipakai untuk menguji indeks.",
       "Ketidakpastian dari pilihan bobot dan normalisasi dibawa ke indeks lewat simulasi Monte Carlo, sehingga tiap desa punya selang nilai."
     ],
@@ -1719,19 +1719,19 @@
     ]
   },
   "kode": {
-    "pengantar": "Semua skrip mengasumsikan batas desa sudah tersimpan di variabel DataWilayahDesa: FeatureCollection di GEE, GeoDataFrame di Python, dan objek sf di R, masing-masing dengan kolom iddesa (10 digit, sama dengan kode PODES). Urutan: gee_01, gee_02, gee_03, lalu Python bagian A (a1, a2) dan B (b1, b2), lalu R GW-PCA, lalu Python b3 dan b4. Keluaran tiap langkah menjadi masukan langkah berikutnya.",
+    "pengantar": "Tahun analisis 2025 (mengikuti PODES 2025). Semua skrip mengasumsikan batas desa sudah tersimpan di variabel DataWilayahDesa: FeatureCollection di GEE, GeoDataFrame di Python, dan objek sf di R, masing-masing dengan kolom iddesa (10 digit, sama dengan kode PODES). Urutan: gee_01, gee_02, gee_03, lalu Python bagian A (a1, a2) dan B (b1, b2), lalu R GW-PCA, lalu Python b3 dan b4. Keluaran tiap langkah menjadi masukan langkah berikutnya.",
     "berkas": [
       {
         "file": "gee_01_cahaya_terbangun_penduduk.js",
         "judul": "GEE 01: cahaya malam, terbangun, penduduk, akses, lereng",
         "bahasa": "JavaScript (GEE)",
-        "keluaran": "gee01_cahaya_terbangun_penduduk_2024.csv"
+        "keluaran": "gee01_cahaya_terbangun_penduduk_2025.csv, ghs_pop_2025_100m_sumbar.tif"
       },
       {
         "file": "gee_02_sentinel2_tutupan_lahan.js",
         "judul": "GEE 02: indeks spektral dan tekstur Sentinel-2, tutupan lahan",
         "bahasa": "JavaScript (GEE)",
-        "keluaran": "gee02a_sentinel2_terbangun_2024.csv, gee02b_tutupan_lahan_2024.csv"
+        "keluaran": "gee02a_sentinel2_terbangun_2025.csv, gee02b_tutupan_lahan_2025.csv"
       },
       {
         "file": "gee_03_open_buildings.js",

@@ -2,6 +2,7 @@
 // GEE 03 - Morfologi bangunan dari Google Open Buildings v3
 // Hasil per desa: jumlah bangunan, kepadatan, median luas tapak,
 // proporsi bangunan kecil (< 50 m2), dan proporsi bangunan besar (> 500 m2).
+// Open Buildings v3 adalah rilis tunggal (citra hingga 2023), dipakai sebagai kondisi terdekat 2025.
 // =====================================================================
 // DataWilayahDesa: FeatureCollection poligon desa dengan atribut 'iddesa'.
 

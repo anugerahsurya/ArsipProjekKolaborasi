@@ -1,5 +1,6 @@
 """
-Indeks Ekonomi Informal Tingkat Desa - Sumatera Barat (Lembar 3)
+Indeks Ekonomi Informal Tingkat Desa - Sumatera Barat 2025 (Lembar 3)
+Tahun analisis 2025, mengikuti PODES 2025.
 Satu berkas Python untuk semua langkah di luar GEE dan R.
 
   BAGIAN A  PENGUMPULAN DATA
@@ -53,7 +54,7 @@ def a1_poi_jalan():
 
     Kebutuhan:  pip install geopandas osmnx networkx pandas pyarrow shapely overturemaps
     Masukan:    DataWilayahDesa  -> GeoDataFrame poligon desa dengan kolom 'iddesa' (CRS EPSG:4326)
-                gee01_cahaya_terbangun_penduduk_2024.csv (lon_popw, lat_popw, pop dari skrip GEE 01)
+                gee01_cahaya_terbangun_penduduk_2025.csv (lon_popw, lat_popw, pop dari skrip GEE 01)
     Keluaran:   py01_poi_jalan.csv
 
     Unduh POI Overture sekali lewat terminal (bbox Sumatera Barat):
@@ -66,7 +67,7 @@ def a1_poi_jalan():
     desa_m["luas_km2"] = desa_m.area / 1e6
     batas = desa.union_all()
 
-    gee01 = pd.read_csv("gee01_cahaya_terbangun_penduduk_2024.csv", dtype={"iddesa": str})
+    gee01 = pd.read_csv("gee01_cahaya_terbangun_penduduk_2025.csv", dtype={"iddesa": str})
 
     # ---------------------------------------------------------------------
     # 1. POI Overture: usaha kecil vs bermerek
@@ -171,10 +172,10 @@ def a2_rwi_ookla():
     Kebutuhan:  pip install geopandas pandas pyarrow mercantile shapely exactextract rasterio
     Masukan:    DataWilayahDesa  -> GeoDataFrame poligon desa, kolom 'iddesa'
                 idn_relative_wealth_index.csv (HDX: data.humdata.org, "Relative Wealth Index - Indonesia")
-                worldpop_idn_2020_100m.tif  (raster penduduk WorldPop, unduh dari worldpop.org atau ekspor GEE)
+                ghs_pop_2025_100m_sumbar.tif  (raster penduduk GHS-POP 2025, ekspor dari skrip GEE 01)
     Keluaran:   py02_rwi_ookla.csv
     """
-    RASTER_POP = "worldpop_idn_2020_100m.tif"
+    RASTER_POP = "ghs_pop_2025_100m_sumbar.tif"
     desa = DataWilayahDesa[["iddesa", "geometry"]].to_crs(4326)
     xmin, ymin, xmax, ymax = desa.total_bounds
 
@@ -202,9 +203,9 @@ def a2_rwi_ookla():
     rwi_desa = dasimetrik(rwi, ["rwi"])
 
     # ---------------------------------------------------------------------
-    # 2. Ookla Open Data, seluler, empat kuartal 2024 (median kecepatan berbobot jumlah tes)
+    # 2. Ookla Open Data, seluler, empat kuartal 2025 (rata-rata kecepatan berbobot jumlah tes)
     # ---------------------------------------------------------------------
-    URL = "https://ookla-open-data.s3.amazonaws.com/parquet/performance/type={t}/year=2024/quarter={q}/2024-{m:02d}-01_performance_{t}_tiles.parquet"
+    URL = "https://ookla-open-data.s3.amazonaws.com/parquet/performance/type={t}/year=2025/quarter={q}/2025-{m:02d}-01_performance_{t}_tiles.parquet"
     bagian = []
     for q, m in zip([1, 2, 3, 4], [1, 4, 7, 10]):
         df = pd.read_parquet(URL.format(t="mobile", q=q, m=m), columns=["tile", "avg_d_kbps", "avg_u_kbps", "tests"])
@@ -294,16 +295,16 @@ def b1_indikator():
     df = (
         podes[[ID, "keluarga", "perkotaan", "dummy_pertanian", "bank", "jenis_kredit", "jarak_bank_podes_km", "sma_smk"]
               + [f"{c}_per1000kk" for c in per_kk]]
-        .merge(rd("gee01_cahaya_terbangun_penduduk_2024.csv"), on=ID, how="left")
-        .merge(rd("gee02a_sentinel2_terbangun_2024.csv"), on=ID, how="left")
-        .merge(rd("gee02b_tutupan_lahan_2024.csv"), on=ID, how="left")
+        .merge(rd("gee01_cahaya_terbangun_penduduk_2025.csv"), on=ID, how="left")
+        .merge(rd("gee02a_sentinel2_terbangun_2025.csv"), on=ID, how="left")
+        .merge(rd("gee02b_tutupan_lahan_2025.csv"), on=ID, how="left")
         .merge(rd("gee03_open_buildings.csv").replace(-1, np.nan), on=ID, how="left")
         .merge(rd("py01_poi_jalan.csv"), on=ID, how="left", suffixes=("", "_py01"))
         .merge(rd("py02_rwi_ookla.csv"), on=ID, how="left")
     )
     dewasa = df["pop"] * 0.65  # pendekatan penduduk 15+ bila tabel umur tidak dipakai
     df["bank_per10rb_dewasa"] = 1e4 * (df["bank"] + df["osm_bank_atm"]) / dewasa.clip(lower=1)  # SDG 8.10.1
-    df["sma_smk_per1000_15_19"] = 1000 * df["sma_smk"] / df["pop_15_19"].clip(lower=1)
+    df["sma_smk_per1000_15_19"] = 1000 * df["sma_smk"] / df["pop_15_19_2025"].clip(lower=1)
     df["pct_lahan_tani"] = 100 * (df["dw_crops"].fillna(0) + df["wc_cropland"].fillna(0)) / 2
 
     # ---------------------------------------------------------------------
@@ -589,12 +590,12 @@ def b4_spasial_tipologi():
 
     Kebutuhan:  pip install geopandas libpysal esda pandas numpy statsmodels
     Masukan:    DataWilayahDesa (GeoDataFrame, kolom iddesa), indeks_desa.csv,
-                gee01_cahaya_terbangun_penduduk_2024.csv (ntl_popw untuk sumbu aktivitas)
+                gee01_cahaya_terbangun_penduduk_2025.csv (ntl_popw untuk sumbu aktivitas)
     Keluaran:   spasial_tipologi_desa.csv, nagari_prioritas.csv
     """
     ID = "iddesa"
     ix = pd.read_csv("indeks_desa.csv", dtype={ID: str})
-    g1 = pd.read_csv("gee01_cahaya_terbangun_penduduk_2024.csv", dtype={ID: str})
+    g1 = pd.read_csv("gee01_cahaya_terbangun_penduduk_2025.csv", dtype={ID: str})
     gdf = DataWilayahDesa[[ID, "geometry"]].to_crs("EPSG:32747").merge(ix, on=ID).merge(g1[[ID, "ntl_popw"]], on=ID)
     gdf = gdf.reset_index(drop=True)
 
