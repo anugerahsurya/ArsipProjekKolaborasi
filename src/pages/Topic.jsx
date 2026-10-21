@@ -76,7 +76,7 @@ function TopicView({ project, topic }) {
     so && { id: 'sorotan', label: 'Sorotan dan kebijakan', swatch: 'road' },
     { id: 'gap', label: 'Research gap', swatch: 'contour', meta: topic.gap.length },
     { id: 'kerangka', label: 'Kerangka penelitian', swatch: 'water' },
-    ds && { id: 'desain', label: 'Desain indeks', swatch: 'veg', meta: ds.variabel?.length },
+    ds && { id: 'desain', label: 'Metode dan skala desa', swatch: 'veg', meta: ds.opsiMetode?.length },
     { id: 'literatur', label: 'Tabel literatur', swatch: 'dots', meta: topic.literatur.length },
     { id: 'checkpoint', label: 'Checkpoint', swatch: 'veg', meta: `${pr.selesai}/${pr.total}` },
     { id: 'berkas', label: 'Berkas', swatch: 'road', meta: `${nBerkas}/3` },
@@ -286,6 +286,43 @@ function TopicView({ project, topic }) {
                   </table>
                 </div>
 
+                {ds?.variabel && (
+                  <>
+                    <h3>Variabel geospasial per dimensi</h3>
+                    {ds.pengantar && <p className="prose">{ds.pengantar}</p>}
+                    <div className="table-wrap">
+                      <table className="data-table">
+                        <thead>
+                          <tr>
+                            <th scope="col">Dimensi</th>
+                            <th scope="col">Variabel dan sumber</th>
+                            <th scope="col">Pengolahan ke desa</th>
+                            <th scope="col">Arah</th>
+                            <th scope="col">Dasar literatur</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {ds.variabel.map((v, i) => (
+                            <tr key={v.nama}>
+                              <td data-label="Dimensi">{ds.variabel[i - 1]?.dimensi !== v.dimensi && <strong>{v.dimensi}</strong>}</td>
+                              <td data-label="Variabel">
+                                <strong>{v.nama}</strong>
+                                <span className="lit-source">{v.sumber}</span>
+                              </td>
+                              <td data-label="Pengolahan">{v.olah}</td>
+                              <td data-label="Arah"><span className="role">{v.arah}</span></td>
+                              <td data-label="Dasar">
+                                {v.dasar}
+                                <Refs ids={v.rujukan} litById={litById} />
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </>
+                )}
+
                 <h3>{k.variabelJudul || 'Variabel PODES 2025'}</h3>
                 <div className="table-wrap">
                   <table className="data-table">
@@ -336,41 +373,7 @@ function TopicView({ project, topic }) {
 
               {ds && (
                 <section id="desain" className="block">
-                  <h2>Desain indeks</h2>
-                  {ds.pengantar && <p className="prose">{ds.pengantar}</p>}
-
-                  <h3>Variabel geospasial per dimensi</h3>
-                  <div className="table-wrap">
-                    <table className="data-table">
-                      <thead>
-                        <tr>
-                          <th scope="col">Dimensi</th>
-                          <th scope="col">Variabel dan sumber</th>
-                          <th scope="col">Pengolahan ke desa</th>
-                          <th scope="col">Arah</th>
-                          <th scope="col">Dasar literatur</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {ds.variabel.map((v, i) => (
-                          <tr key={v.nama}>
-                            <td data-label="Dimensi">{ds.variabel[i - 1]?.dimensi !== v.dimensi && <strong>{v.dimensi}</strong>}</td>
-                            <td data-label="Variabel">
-                              <strong>{v.nama}</strong>
-                              <span className="lit-source">{v.sumber}</span>
-                            </td>
-                            <td data-label="Pengolahan">{v.olah}</td>
-                            <td data-label="Arah"><span className="role">{v.arah}</span></td>
-                            <td data-label="Dasar">
-                              {v.dasar}
-                              <Refs ids={v.rujukan} litById={litById} />
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-
+                  <h2>Metode indeks dan penurunan ke desa</h2>
                   {ds.opsiMetode && (
                     <>
                       <h3>Opsi metode pembangunan indeks</h3>
