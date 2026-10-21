@@ -1,5 +1,6 @@
 // =====================================================================
 // GEE 04 - Variabel cadangan pengganti Open Buildings v3 dan RWI
+// Statistik zonal numerik: mean dan median. Jumlah (sum) untuk hitungan bangunan.
 // Sentinel-1 SAR, GEDI (LiDAR antariksa), Open Buildings 2.5D Temporal,
 // GHSL tinggi bangunan, dan cahaya malam per kapita. Tahun analisis 2025.
 // =====================================================================
@@ -77,8 +78,11 @@ var pop = ee.Image('JRC/GHSL/P2023A/GHS_POP/2025').select('population_count');
 var ntlSum = viirs.multiply(ee.Image.pixelArea()).divide(250000).rename('ntl_sum_100m');
 
 // ---------- 6. Statistik zonal ----------
+// Numerik: mean dan median
 var hasilSar = sar.addBands([gediTerbangun, gediPohon, ghsH]).reduceRegions({
-  collection: desa, reducer: ee.Reducer.mean(), scale: 25, tileScale: 8
+  collection: desa,
+  reducer: ee.Reducer.mean().combine({ reducer2: ee.Reducer.median(), sharedInputs: true }),
+  scale: 25, tileScale: 8
 });
 var hasilGediN = gediAda.reduceRegions({ collection: desa, reducer: ee.Reducer.sum(), scale: 25, tileScale: 8 });
 // Open Buildings Temporal: jumlah = jumlah fractional count piksel 4 m (berat; jalankan per kab/kota bila perlu)
@@ -90,7 +94,11 @@ var hasilObt = ee.Image.cat([obCount2023, obCount2016]).reduceRegions({
   // laju pertumbuhan tahunan jumlah bangunan 2016-2023
   return f.set('obt_tumbuh_per_tahun', n23.divide(n16).pow(1 / 7).subtract(1));
 });
-var hasilObtTinggi = obTinggi.reduceRegions({ collection: desa, reducer: ee.Reducer.median(), scale: 4, tileScale: 16 });
+var hasilObtTinggi = obTinggi.reduceRegions({
+  collection: desa,
+  reducer: ee.Reducer.mean().combine({ reducer2: ee.Reducer.median(), sharedInputs: true }),
+  scale: 4, tileScale: 16
+});
 var hasilNtl = ee.Image.cat([ntlSum, pop.rename('pop')]).reduceRegions({
   collection: desa, reducer: ee.Reducer.sum(), scale: 100, tileScale: 4
 }).map(function (f) {
@@ -100,11 +108,17 @@ var hasilNtl = ee.Image.cat([ntlSum, pop.rename('pop')]).reduceRegions({
 function ekspor(fc, kolom, nama) {
   Export.table.toDrive({ collection: fc, description: nama, fileFormat: 'CSV', selectors: ['iddesa'].concat(kolom) });
 }
-ekspor(hasilSar, ['s1_vv_db', 's1_vh_db', 's1_vh_vv_db', 's1_vv_glcm_var', 's1_vv_glcm_contrast',
-  'gedi_rh98_terbangun', 'gedi_rh98_pohon', 'ghs_tinggi_m'], 'gee04a_sar_gedi_' + TAHUN);
+var kolomSar = [];
+['s1_vv_db', 's1_vh_db', 's1_vh_vv_db', 's1_vv_glcm_var', 's1_vv_glcm_contrast',
+  'gedi_rh98_terbangun', 'gedi_rh98_pohon', 'ghs_tinggi_m'].forEach(function (b) {
+  kolomSar.push(b + '_mean'); kolomSar.push(b + '_median');
+});
+ekspor(hasilSar, kolomSar, 'gee04a_sar_gedi_' + TAHUN);
 ekspor(hasilGediN.map(function (f) { return f.set('gedi_n_footprint', f.get('sum')); }), ['gedi_n_footprint'], 'gee04b_gedi_jumlah_footprint');
 ekspor(hasilObt, ['obt_jumlah_2023', 'obt_jumlah_2016', 'obt_tumbuh_per_tahun'], 'gee04c_open_buildings_temporal');
-ekspor(hasilObtTinggi.map(function (f) { return f.set('obt_tinggi_m', f.get('median')); }), ['obt_tinggi_m'], 'gee04d_obt_tinggi');
+ekspor(hasilObtTinggi.map(function (f) {
+  return f.set({ obt_tinggi_m_mean: f.get('mean'), obt_tinggi_m_median: f.get('median') });
+}), ['obt_tinggi_m_mean', 'obt_tinggi_m_median'], 'gee04d_obt_tinggi');
 ekspor(hasilNtl, ['ntl_per_kapita'], 'gee04e_ntl_per_kapita_' + TAHUN);
 
 Map.centerObject(DataWilayahDesa, 10);

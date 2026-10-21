@@ -57,7 +57,7 @@ export function useProjectState(project) {
   const saveBerkas = useCallback(
     async (topic, jenis, input) => {
       const row =
-        jenis === 'link'
+        jenis === 'link' || jenis === 'folder_bahan'
           ? await api.saveLink({ project: project.id, topic, jenis, url: input })
           : await api.uploadPdf({ project: project.id, topic, jenis, file: input })
       setState((s) => ({ ...s, berkas: { ...s.berkas, [key(topic, jenis)]: row } }))

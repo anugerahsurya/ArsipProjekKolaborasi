@@ -332,6 +332,8 @@ def b1_indikator():
         .merge(rd("gee01_cahaya_terbangun_penduduk_2025.csv"), on=ID, how="left")
         .merge(rd("gee02a_sentinel2_terbangun_2025.csv"), on=ID, how="left")
         .merge(rd("gee02b_tutupan_lahan_2025.csv"), on=ID, how="left")
+        .merge(rd("gee02c_modus_lahan_2025.csv"), on=ID, how="left")
+        .merge(rd("gee01b_mean_median_2025.csv"), on=ID, how="left")
         .merge(rd("gee03_open_buildings.csv").replace(-1, np.nan), on=ID, how="left")
         .merge(rd("py01_poi_jalan.csv"), on=ID, how="left", suffixes=("", "_py01"))
         .merge(rd("py02_rwi_ookla.csv"), on=ID, how="left")
@@ -359,8 +361,8 @@ def b1_indikator():
         "kepadatan_bangunan_km2": ("D2_morfologi", +1),
         "median_tapak_m2": ("D2_morfologi", -1),
         "pct_kecil_50": ("D2_morfologi", +1),
-        "glcm_var": ("D2_morfologi", +1),
-        "ndvi": ("D2_morfologi", -1),
+        "glcm_var_mean": ("D2_morfologi", +1),          # alternatif: glcm_var_median
+        "ndvi_mean": ("D2_morfologi", -1),              # alternatif: ndvi_median
         # dimensi 3 struktur usaha
         "poi_kecil_per_1000pdd": ("D3_usaha", +1),
         "pct_poi_bermerek": ("D3_usaha", -1),
@@ -390,16 +392,16 @@ def b1_indikator():
         # --- cadangan, aktifkan bila menggantikan variabel utama ---
         # "obt_jumlah_2023": ("D2_morfologi", +1),        # pengganti kepadatan Open Buildings v3 (bagi luas desa)
         # "obt_tumbuh_per_tahun": ("D2_morfologi", +1),
-        # "s1_vv_glcm_var": ("D2_morfologi", +1),
-        # "gedi_rh98_terbangun": ("D1_intensitas", -1),    # bangunan bertingkat = formal
-        # "ghs_tinggi_m": ("D1_intensitas", -1),
+        # "s1_vv_glcm_var_mean": ("D2_morfologi", +1),
+        # "gedi_rh98_terbangun_median": ("D1_intensitas", -1),    # bangunan bertingkat = formal
+        # "ghs_tinggi_m_mean": ("D1_intensitas", -1),
         # "grdi": ("D7_keuangan", +1),                    # pengganti RWI (deprivasi tinggi = informal)
         # "ntl_per_kapita": ("D7_keuangan", -1),
     }
     LOG = ["ntl_per_ha_terbangun", "kepadatan_bangunan_km2", "median_tapak_m2", "poi_kecil_per_1000pdd",
            "pasar_tanpa_bangunan_per1000kk", "warung_makan_per1000kk", "kelontong_per1000kk", "imk_per1000kk",
            "minimarket_per1000kk", "menit_ke_kota_popw", "jarak_pasar_km", "kerapatan_jalan_km_km2",
-           "bank_per10rb_dewasa", "jarak_bank_km", "koperasi_per1000kk", "sma_smk_per1000_15_19", "glcm_var"]
+           "bank_per10rb_dewasa", "jarak_bank_km", "koperasi_per1000kk", "sma_smk_per1000_15_19", "glcm_var_mean"]
 
 
     def winsor(s, lo=0.01, hi=0.99):
@@ -407,7 +409,11 @@ def b1_indikator():
         return s.clip(a, b)
 
 
+    # Prediktor yang berlawanan arah dengan informalitas (arah -1) langsung di-inverse:
+    #   z_inv = 1 - z   -> makin tinggi prediktor asli, makin rendah nilai yang masuk indeks.
+    # Kolomnya diberi akhiran _inv agar jelas di tabel bobot dan di diagram.
     z = pd.DataFrame({ID: df[ID]})
+    meta_rows = []
     for v, (dim, arah) in INDIKATOR.items():
         if v not in df or df[v].isna().all():
             print("lewati (tidak ada data):", v)
@@ -418,9 +424,15 @@ def b1_indikator():
         if v in LOG:
             x = np.log1p(x.clip(lower=0))
         x = (x - x.min()) / (x.max() - x.min())   # min-max 0-1
-        z[v] = x if arah > 0 else 1 - x           # arah: tinggi = lebih informal
+        if arah > 0:
+            z[v] = x
+            meta_rows.append((v, dim, arah, v, False))
+        else:
+            z[f"{v}_inv"] = 1 - x                  # inverse eksplisit
+            meta_rows.append((f"{v}_inv", dim, arah, v, True))
 
-    meta = pd.DataFrame([(v, d, a) for v, (d, a) in INDIKATOR.items() if v in z], columns=["indikator", "dimensi", "arah"])
+    meta = pd.DataFrame(meta_rows, columns=["indikator", "dimensi", "arah", "asal", "invers"])
+    print("Prediktor yang di-inverse:", ", ".join(meta.loc[meta.invers, "asal"]))
     z = z.merge(df[[ID, "pop", "keluarga", "perkotaan"]], on=ID)
     z.to_csv("indikator_desa.csv", index=False)
     meta.to_csv("indikator_meta.csv", index=False)
@@ -590,7 +602,7 @@ def b3_validasi_kalibrasi():
     # ---------------------------------------------------------------------
     z = pd.read_csv("indikator_desa.csv", dtype={ID: str})
     meta = pd.read_csv("indikator_meta.csv")
-    podes_vars = [v for v in meta.indikator if v.endswith("_per1000kk") or v in ("jenis_kredit",)]
+    podes_vars = [v for v, a in zip(meta.indikator, meta.asal) if a.endswith("_per1000kk") or a in ("jenis_kredit",)]
     geo_vars = [v for v in meta.indikator if v not in podes_vars]
     r, p = spearmanr(z[geo_vars].mean(axis=1), z[podes_vars].mean(axis=1))
     print(f"Konvergen geospasial vs PODES: rho={r:.3f} (p={p:.2g})")

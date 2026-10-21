@@ -68,7 +68,8 @@ function TopicView({ project, topic }) {
   const k = topic.kerangka
   const deadline = deadlineOf(project)
   const litById = Object.fromEntries(topic.literatur.map((l) => [l.id, l]))
-  const nBerkas = ['bahan_tayang', 'artikel_final', 'link'].filter((j) => st.berkas[stateKey(topic.id, j)]).length
+  const JENIS_BERKAS = ['bahan_tayang', 'artikel_final', 'link', 'folder_bahan']
+  const nBerkas = JENIS_BERKAS.filter((j) => st.berkas[stateKey(topic.id, j)]).length
 
   const so = topic.sorotan
   const iv = topic.intervensi
@@ -83,7 +84,7 @@ function TopicView({ project, topic }) {
     topic.kode && { id: 'kode', label: 'Kode ekstraksi', swatch: 'dots', meta: topic.kode.berkas?.length },
     { id: 'literatur', label: 'Tabel literatur', swatch: 'dots', meta: topic.literatur.length },
     { id: 'checkpoint', label: 'Checkpoint', swatch: 'veg', meta: `${pr.selesai}/${pr.total}` },
-    { id: 'berkas', label: 'Berkas', swatch: 'road', meta: `${nBerkas}/3` },
+    { id: 'berkas', label: 'Berkas', swatch: 'road', meta: `${nBerkas}/${JENIS_BERKAS.length}` },
   ].filter(Boolean)
 
   return (
@@ -332,6 +333,7 @@ function TopicView({ project, topic }) {
                                       <span className="lit-source">{v.sumber}</span>
                                       <span className="var-tags">
                                         <span className="role">{v.arah}</span>
+                                        {v.invers && <span className="inv-tag">di-inverse 1 − z</span>}
                                         {v.skrip && <span className="skrip">skrip: {v.skrip}</span>}
                                       </span>
                                     </td>

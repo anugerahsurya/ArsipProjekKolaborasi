@@ -1,10 +1,29 @@
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
-import { ExternalLink, FileText, Link2, LoaderCircle, Presentation, Upload } from 'lucide-react'
+import { ExternalLink, FileText, FolderOpen, Link2, LoaderCircle, Presentation, Upload } from 'lucide-react'
 import { stateKey } from '../lib/useProjectState.js'
 import { waktuRelatif } from '../lib/format.js'
 
 const MAKS_MB = 20
+
+const SLOT_LINK = [
+  {
+    jenis: 'link',
+    label: 'Link Pengerjaan Artikel',
+    ket: 'Google Docs, Overleaf, atau sejenisnya',
+    kosong: 'Belum ada link. Tempel tautan dokumen yang dikerjakan bersama.',
+    placeholder: 'https://docs.google.com/...',
+    icon: Link2,
+  },
+  {
+    jenis: 'folder_bahan',
+    label: 'Folder Bahan (Google Drive)',
+    ket: 'Data, skrip, referensi, dan bahan lain',
+    kosong: 'Belum ada folder. Tempel tautan folder Google Drive tempat bahan disimpan.',
+    placeholder: 'https://drive.google.com/drive/folders/...',
+    icon: FolderOpen,
+  },
+]
 
 const SLOT = [
   { jenis: 'bahan_tayang', label: 'Bahan Tayang', ket: 'Slide presentasi', icon: Presentation },
@@ -78,7 +97,8 @@ function SlotPdf({ slot, row, onUpload }) {
   )
 }
 
-function SlotLink({ row, onSave }) {
+function SlotLink({ slot, row, onSave }) {
+  const Icon = slot.icon
   const [url, setUrl] = useState(row?.url || '')
   const [busy, setBusy] = useState(false)
   const valid = /^https?:\/\/\S+\.\S+/.test(url)
@@ -89,7 +109,7 @@ function SlotLink({ row, onSave }) {
     setBusy(true)
     try {
       await onSave(url)
-      toast.success('Link pengerjaan tersimpan')
+      toast.success(`${slot.label} tersimpan`)
     } catch (err) {
       toast.error(err.message)
     } finally {
@@ -100,10 +120,10 @@ function SlotLink({ row, onSave }) {
   return (
     <form className={`slot ${row ? 'is-filled' : ''}`} onSubmit={simpan}>
       <div className="slot-head">
-        <Link2 size={20} aria-hidden="true" />
+        <Icon size={20} aria-hidden="true" />
         <div>
-          <h4>Link Pengerjaan Artikel</h4>
-          <p>Google Docs, Overleaf, atau sejenisnya</p>
+          <h4>{slot.label}</h4>
+          <p>{slot.ket}</p>
         </div>
       </div>
       <div className="slot-body">
@@ -114,17 +134,17 @@ function SlotLink({ row, onSave }) {
             <ExternalLink size={15} aria-hidden="true" />
           </a>
         ) : (
-          <p className="slot-empty">Belum ada link. Tempel tautan dokumen yang dikerjakan bersama.</p>
+          <p className="slot-empty">{slot.kosong}</p>
         )}
       </div>
       <div className="slot-foot">
         <input
           type="url"
           inputMode="url"
-          placeholder="https://docs.google.com/..."
+          placeholder={slot.placeholder}
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          aria-label="Link pengerjaan artikel"
+          aria-label={slot.label}
           aria-invalid={url !== '' && !valid}
         />
         <button type="submit" className="btn" disabled={busy || !url || url === row?.url}>
@@ -143,7 +163,9 @@ export default function Berkas({ topic, berkas, onSave, loading }) {
       {SLOT.map((s) => (
         <SlotPdf key={s.jenis} slot={s} row={berkas[stateKey(topic.id, s.jenis)]} onUpload={(file) => onSave(topic.id, s.jenis, file)} />
       ))}
-      <SlotLink row={berkas[stateKey(topic.id, 'link')]} onSave={(url) => onSave(topic.id, 'link', url)} />
+      {SLOT_LINK.map((s) => (
+        <SlotLink key={s.jenis} slot={s} row={berkas[stateKey(topic.id, s.jenis)]} onSave={(url) => onSave(topic.id, s.jenis, url)} />
+      ))}
       <p className="slots-note">
         Berkas disimpan di Google Drive, folder "Artikel Ilmiah Surya", dengan akses Pengomentar untuk siapa saja yang memiliki link.
       </p>

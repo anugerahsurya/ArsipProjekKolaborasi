@@ -1,6 +1,8 @@
 // =====================================================================
 // GEE 02 - Sentinel-2 (indeks spektral dan tekstur) serta tutupan lahan
 // Hasil: indeks spektral di kawasan terbangun, tekstur GLCM, proporsi lahan.
+// Statistik zonal: numerik -> mean dan median; kategorikal (kelas lahan) -> modus
+// ditambah proporsi tiap kelas.
 // =====================================================================
 // DataWilayahDesa: FeatureCollection poligon desa dengan atribut 'iddesa'.
 
@@ -65,19 +67,28 @@ var wcKelas = ee.Image.cat([
 ]);
 
 // ---------- 6. Statistik zonal per desa ----------
-var redMean = ee.Reducer.mean();
 var desa = DataWilayahDesa.select(['iddesa']);
 
+// Numerik: mean dan median (keluaran ndvi_mean, ndvi_median, dst.)
 var hasilSpektral = spektralTerbangun.reduceRegions({
-  collection: desa, reducer: redMean, scale: 10, tileScale: 8
+  collection: desa,
+  reducer: ee.Reducer.mean().combine({ reducer2: ee.Reducer.median(), sharedInputs: true }),
+  scale: 10, tileScale: 8
 });
+// Kategorikal: proporsi tiap kelas (rata-rata dummy = porsi luas desa)
 var hasilLahan = ee.Image.cat([dwKelas, wcKelas]).reduceRegions({
-  collection: desa, reducer: redMean, scale: 10, tileScale: 8
-}); // rata-rata dummy = proporsi luas desa
+  collection: desa, reducer: ee.Reducer.mean(), scale: 10, tileScale: 8
+});
+// Kategorikal: modus kelas per desa (kelas yang paling luas)
+var hasilModus = ee.Image.cat([dwLabel.rename('dw_modus'), wc.rename('wc_modus')]).reduceRegions({
+  collection: desa, reducer: ee.Reducer.mode(), scale: 10, tileScale: 8
+});
 
 Export.table.toDrive({
-  collection: hasilSpektral.select(['iddesa', 'ndvi', 'ndbi', 'mndwi', 'bsi',
-    'glcm_contrast', 'glcm_var', 'glcm_ent'], null, false),
+  collection: hasilSpektral,
+  selectors: ['iddesa', 'ndvi_mean', 'ndvi_median', 'ndbi_mean', 'ndbi_median', 'mndwi_mean', 'mndwi_median',
+    'bsi_mean', 'bsi_median', 'glcm_contrast_mean', 'glcm_contrast_median', 'glcm_var_mean', 'glcm_var_median',
+    'glcm_ent_mean', 'glcm_ent_median'],
   description: 'gee02a_sentinel2_terbangun_' + TAHUN,
   fileFormat: 'CSV'
 });
@@ -86,6 +97,14 @@ Export.table.toDrive({
     'wc_cropland', 'wc_tree', 'wc_built'], null, false),
   description: 'gee02b_tutupan_lahan_' + TAHUN,
   fileFormat: 'CSV'
+});
+// Kode modus: Dynamic World 0 air, 1 pohon, 2 rumput, 3 vegetasi tergenang, 4 tanaman pangan,
+// 5 semak, 6 terbangun, 7 lahan terbuka; WorldCover 10 pohon, 40 pertanian, 50 terbangun, dst.
+Export.table.toDrive({
+  collection: hasilModus,
+  description: 'gee02c_modus_lahan_' + TAHUN,
+  fileFormat: 'CSV',
+  selectors: ['iddesa', 'dw_modus', 'wc_modus']
 });
 
 Map.centerObject(DataWilayahDesa, 9);

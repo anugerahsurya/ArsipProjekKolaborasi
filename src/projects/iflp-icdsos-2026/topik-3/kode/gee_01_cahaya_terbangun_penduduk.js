@@ -2,6 +2,8 @@
 // GEE 01 - Cahaya malam, luas terbangun, penduduk, aksesibilitas, lereng
 // Jalankan di code.earthengine.google.com. Hasil: satu tabel per desa.
 // Tahun analisis 2025, mengikuti PODES 2025.
+// Statistik zonal: variabel numerik diberi mean dan median (akhiran _mean, _median);
+// jumlah (sum) hanya untuk besaran ekstensif yang dipakai menghitung rasio.
 // =====================================================================
 // DataWilayahDesa: FeatureCollection poligon desa Sumatera Barat 2025
 // dengan atribut 'iddesa' (10 digit, sama dengan kode PODES).
@@ -91,6 +93,30 @@ var hasil = stack.reduceRegions({
     lon_popw: ee.Number(f.get('lon_x_pop')).divide(p),
     lat_popw: ee.Number(f.get('lat_x_pop')).divide(p)
   });
+});
+
+// ---------- 6. Mean dan median per desa untuk variabel numerik per piksel ----------
+var numerik = ee.Image.cat([
+  viirs.rename('ntl'),
+  akses,
+  lereng,
+  builtTotal.divide(ee.Image.pixelArea()).multiply(100).rename('pct_terbangun_px'),
+  builtNres.divide(builtTotal.max(1)).multiply(100).updateMask(builtTotal.gt(0)).rename('pct_nres_px'),
+  pop.divide(ee.Image.pixelArea().divide(1e6)).rename('kepadatan_pdd_px')
+]);
+var hasilMeanMedian = numerik.reduceRegions({
+  collection: DataWilayahDesa.select(['iddesa']),
+  reducer: ee.Reducer.mean().combine({ reducer2: ee.Reducer.median(), sharedInputs: true }),
+  scale: 100,
+  tileScale: 4
+});
+Export.table.toDrive({
+  collection: hasilMeanMedian,
+  description: 'gee01b_mean_median_' + TAHUN,
+  fileFormat: 'CSV',
+  selectors: ['iddesa', 'ntl_mean', 'ntl_median', 'menit_ke_kota_mean', 'menit_ke_kota_median',
+    'lereng_mean', 'lereng_median', 'pct_terbangun_px_mean', 'pct_terbangun_px_median',
+    'pct_nres_px_mean', 'pct_nres_px_median', 'kepadatan_pdd_px_mean', 'kepadatan_pdd_px_median']
 });
 
 Export.table.toDrive({

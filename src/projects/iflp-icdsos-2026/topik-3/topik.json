@@ -1275,7 +1275,7 @@
         "nama": "Radiansi cahaya malam berbobot penduduk",
         "sumber": "NOAA/VIIRS/DNB/MONTHLY_V1/VCMSLCFG, median 2025",
         "skrip": "gee_01",
-        "olah": "Rata-rata berbobot penduduk; dipakai sebagai sumbu tipologi, tidak masuk indeks",
+        "olah": "Rata-rata berbobot penduduk; dipakai sebagai sumbu tipologi, tidak masuk indeks; statistik zonal mean dan median (median untuk uji ketahanan)",
         "rumus": "\\bar L_d=\\frac{\\sum_p f_{pd}\\,P_p\\,L_p}{\\sum_p f_{pd}\\,P_p}",
         "arah": "Sumbu tipologi",
         "dasar": "Cahaya malam adalah proksi aktivitas ekonomi yang paling banyak dipakai, termasuk untuk mengestimasi ekonomi informal sebagai selisih antara cahaya dan PDB resmi.",
@@ -1285,7 +1285,8 @@
           "elvidge2017",
           "bps2022"
         ],
-        "singkat": "Cahaya malam"
+        "singkat": "Cahaya malam",
+        "invers": false
       },
       {
         "platform": "Google Earth Engine",
@@ -1293,7 +1294,7 @@
         "nama": "Cahaya per hektare terbangun",
         "sumber": "VIIRS + JRC/GHSL/P2023A/GHS_BUILT_S/2025",
         "skrip": "gee_01",
-        "olah": "Jumlah radiansi dibagi luas terbangun, lalu log",
+        "olah": "Jumlah radiansi dibagi luas terbangun, lalu log; di-inverse (1 − z)",
         "rumus": "L^{B}_d=\\frac{\\sum_p f_{pd}\\,L_p}{B_d/10^4}",
         "arah": "Informal (-)",
         "dasar": "Usaha informal menghasilkan cahaya lebih sedikit per unit kegiatan. Tanaka dan Keola memisahkan elastisitas cahaya usaha formal dan informal; Medina dan Schneider memakai cahaya malam dalam MIMIC ekonomi bayangan.",
@@ -1301,7 +1302,8 @@
           "tanaka2017",
           "medina2018"
         ],
-        "singkat": "Cahaya per ha terbangun"
+        "singkat": "Cahaya per ha terbangun",
+        "invers": true
       },
       {
         "platform": "Google Earth Engine",
@@ -1309,31 +1311,51 @@
         "nama": "Proporsi terbangun non-hunian",
         "sumber": "GHS_BUILT_S/2025 band built_surface_nres",
         "skrip": "gee_01",
-        "olah": "Persen dari total luas terbangun",
+        "olah": "Persen dari total luas terbangun; di-inverse (1 − z)",
         "rumus": "N_d=100\\cdot\\frac{B^{\\mathrm{nres}}_d}{B_d}",
         "arah": "Formal (-)",
         "dasar": "Gedung non-hunian besar (kantor, pabrik, pusat belanja) mencirikan kawasan usaha formal. GHSL memisahkan kelas ini dengan akurasi yang terdokumentasi.",
         "rujukan": [
           "pesaresi2024"
         ],
-        "singkat": "Terbangun non-hunian"
+        "singkat": "Terbangun non-hunian",
+        "invers": true
       },
       {
         "platform": "Google Earth Engine",
         "dimensi": "2. Morfologi bangunan",
-        "nama": "Kepadatan bangunan dan median luas tapak",
+        "nama": "Kepadatan bangunan",
         "sumber": "GOOGLE/Research/open-buildings/v3/polygons, keyakinan ≥ 0,7 (citra hingga 2023)",
         "skrip": "gee_03",
-        "olah": "Jumlah per km²; median m², keduanya log",
-        "rumus": "\\rho_d=\\frac{N_d}{A_d},\\qquad \\tilde a_d=\\operatorname{median}\\{a_b: b\\in d\\}",
-        "arah": "Informal (+) rapat, (-) tapak",
+        "olah": "Jumlah per km², log",
+        "rumus": "\\rho_d=\\frac{N_d}{A_d}",
+        "arah": "Informal (+)",
         "dasar": "Morfologi blok dari jejak bangunan (jumlah, ukuran, kepadatan) berasosiasi dengan informalitas fisik dan indikator deprivasi; jumlah bangunan dan jalan dari citra menjelaskan 37–62 persen variasi kemiskinan.",
         "rujukan": [
           "bettencourt2025",
           "engstrom2022",
           "sirko2021"
         ],
-        "singkat": "Kepadatan & luas tapak"
+        "singkat": "Kepadatan bangunan",
+        "invers": false
+      },
+      {
+        "platform": "Google Earth Engine",
+        "dimensi": "2. Morfologi bangunan",
+        "nama": "Luas tapak bangunan (mean dan median)",
+        "sumber": "GOOGLE/Research/open-buildings/v3/polygons, keyakinan ≥ 0,7 (citra hingga 2023)",
+        "skrip": "gee_03",
+        "olah": "Mean dan median luas tapak (m²), log, lalu di-inverse",
+        "rumus": "\\bar a_d=\\frac{1}{N_d}\\sum_{b\\in d}a_b,\\qquad \\tilde a_d=\\operatorname{median}\\{a_b: b\\in d\\}",
+        "arah": "Formal (-)",
+        "dasar": "Tapak besar mencirikan gedung usaha formal; tapak kecil mencirikan usaha rumahan.",
+        "rujukan": [
+          "bettencourt2025",
+          "engstrom2022",
+          "sirko2021"
+        ],
+        "singkat": "Luas tapak",
+        "invers": true
       },
       {
         "platform": "Google Earth Engine",
@@ -1348,7 +1370,8 @@
         "rujukan": [
           "bettencourt2025"
         ],
-        "singkat": "Bangunan < 50 m²"
+        "singkat": "Bangunan < 50 m²",
+        "invers": false
       },
       {
         "platform": "Google Earth Engine",
@@ -1356,7 +1379,7 @@
         "nama": "Tekstur GLCM variance band NIR di piksel terbangun",
         "sumber": "COPERNICUS/S2_SR_HARMONIZED B8 2025, masker Cloud Score+, jendela 3×3",
         "skrip": "gee_02",
-        "olah": "Rata-rata di piksel terbangun Dynamic World, log",
+        "olah": "Rata-rata di piksel terbangun Dynamic World, log; statistik zonal mean dan median (median untuk uji ketahanan)",
         "rumus": "\\mathrm{VAR}=\\sum_{i,j}(i-\\mu)^2\\,P(i,j)",
         "arah": "Informal (+)",
         "dasar": "Atap kecil yang rapat dan tidak beraturan memberi variasi tekstur tinggi. GLCM variance bersama NDVI memisahkan slum dari kawasan formal dengan akurasi 84–88 persen; di Sentinel-2, kombinasi band dan tekstur mencapai F-score 94 persen di GEE.",
@@ -1365,7 +1388,8 @@
           "matarira2022",
           "wurm2019"
         ],
-        "singkat": "Tekstur GLCM"
+        "singkat": "Tekstur GLCM",
+        "invers": false
       },
       {
         "platform": "Google Earth Engine",
@@ -1373,7 +1397,7 @@
         "nama": "NDVI di piksel terbangun",
         "sumber": "Sentinel-2 B8, B4 (2025)",
         "skrip": "gee_02",
-        "olah": "Rata-rata di piksel terbangun",
+        "olah": "Rata-rata di piksel terbangun; statistik zonal mean dan median (median untuk uji ketahanan); di-inverse (1 − z)",
         "rumus": "\\mathrm{NDVI}=\\frac{B_8-B_4}{B_8+B_4}",
         "arah": "Informal (-)",
         "dasar": "Permukiman informal yang padat cenderung minim vegetasi; NDVI dipakai bersama tekstur untuk memisahkan kawasan informal.",
@@ -1381,7 +1405,8 @@
           "kuffer2016glcm",
           "kuffer2016"
         ],
-        "singkat": "NDVI terbangun"
+        "singkat": "NDVI terbangun",
+        "invers": true
       },
       {
         "platform": "Google Earth Engine",
@@ -1389,7 +1414,7 @@
         "nama": "NDBI, MNDWI, dan BSI (diuji, tidak otomatis masuk)",
         "sumber": "Sentinel-2 B2, B3, B4, B8, B11 (2025)",
         "skrip": "gee_02",
-        "olah": "Rata-rata di piksel terbangun; masuk indeks hanya bila lolos uji korelasi dan KMO",
+        "olah": "Rata-rata di piksel terbangun; masuk indeks hanya bila lolos uji korelasi dan KMO; statistik zonal mean dan median (median untuk uji ketahanan)",
         "rumus": "\\begin{gathered}\\mathrm{NDBI}=\\frac{B_{11}-B_8}{B_{11}+B_8},\\qquad \\mathrm{MNDWI}=\\frac{B_3-B_{11}}{B_3+B_{11}}\\\\[1ex]\\mathrm{BSI}=\\frac{(B_{11}+B_4)-(B_8+B_2)}{(B_{11}+B_4)+(B_8+B_2)}\\end{gathered}",
         "arah": "Diuji",
         "dasar": "NDBI adalah indeks baku lahan terbangun, tetapi Matarira dkk. menemukan indeks spektral justru menurunkan akurasi pemetaan permukiman informal di Sentinel-2. Karena itu indeks ini diuji dulu.",
@@ -1397,7 +1422,8 @@
           "zha2003",
           "matarira2022"
         ],
-        "singkat": "NDBI, MNDWI, BSI"
+        "singkat": "NDBI, MNDWI, BSI",
+        "invers": false
       },
       {
         "platform": "Google Earth Engine",
@@ -1405,7 +1431,7 @@
         "nama": "Proporsi lahan pertanian",
         "sumber": "GOOGLE/DYNAMICWORLD/V1 (2025) dan ESA/WorldCover/v200 (2021, rilis terbaru)",
         "skrip": "gee_02",
-        "olah": "Rata-rata dua sumber, persen luas desa",
+        "olah": "Rata-rata dua sumber, persen luas desa; modus kelas per desa juga dicatat",
         "rumus": "T_d=50\\cdot\\left(\\overline{\\mathbb 1[\\mathrm{DW}=\\text{crops}]}_d+\\overline{\\mathbb 1[\\mathrm{WC}=40]}_d\\right)",
         "arah": "Informal (+)",
         "dasar": "Pertanian rakyat adalah sektor dengan informalitas tertinggi; cahaya malam saja kurang peka di wilayah pertanian sehingga perlu fitur tutupan lahan.",
@@ -1413,7 +1439,8 @@
           "keola2015",
           "brown2022"
         ],
-        "singkat": "Lahan pertanian"
+        "singkat": "Lahan pertanian",
+        "invers": false
       },
       {
         "platform": "Google Earth Engine",
@@ -1421,14 +1448,15 @@
         "nama": "Proporsi tutupan pohon di luar kawasan hutan",
         "sumber": "ESA WorldCover kelas 10",
         "skrip": "gee_02",
-        "olah": "Persen luas desa; kawasan hutan negara dikeluarkan bila poligonnya tersedia",
+        "olah": "Persen luas desa; kawasan hutan negara dikeluarkan bila poligonnya tersedia; modus kelas per desa juga dicatat",
         "rumus": "H_d=100\\cdot\\overline{\\mathbb 1[\\mathrm{WC}=10]}_d",
         "arah": "Informal (+)",
         "dasar": "Di luar kawasan hutan, tutupan pohon di Sumatera Barat sebagian besar adalah kebun rakyat (karet, kelapa sawit, gambir) yang dikelola secara informal.",
         "rujukan": [
           "keola2015"
         ],
-        "singkat": "Kebun rakyat (tutupan pohon)"
+        "singkat": "Kebun rakyat (tutupan pohon)",
+        "invers": false
       },
       {
         "platform": "Google Earth Engine",
@@ -1444,7 +1472,8 @@
           "stevens2015",
           "laporta2014"
         ],
-        "singkat": "Rasio ketergantungan"
+        "singkat": "Rasio ketergantungan",
+        "invers": false
       },
       {
         "platform": "Google Earth Engine",
@@ -1452,7 +1481,7 @@
         "nama": "Waktu tempuh ke kota",
         "sumber": "Oxford/MAP/accessibility_to_cities_2015_v1_0 (rilis tunggal)",
         "skrip": "gee_01",
-        "olah": "Rata-rata berbobot penduduk, log",
+        "olah": "Rata-rata berbobot penduduk, log; statistik zonal mean dan median (median untuk uji ketahanan)",
         "rumus": "\\bar T_d=\\frac{\\sum_p f_{pd}\\,P_p\\,T_p}{\\sum_p f_{pd}\\,P_p}",
         "arah": "Informal (+)",
         "dasar": "Jarak ke pasar kerja formal menentukan pilihan kerja informal; peta friksi global ini menjadi rujukan baku aksesibilitas.",
@@ -1460,7 +1489,8 @@
           "weiss2018",
           "nelson2019"
         ],
-        "singkat": "Waktu tempuh ke kota"
+        "singkat": "Waktu tempuh ke kota",
+        "invers": false
       },
       {
         "platform": "Google Earth Engine",
@@ -1468,7 +1498,7 @@
         "nama": "Lereng berbobot penduduk",
         "sumber": "USGS/SRTMGL1_003",
         "skrip": "gee_01",
-        "olah": "Derajat, rata-rata berbobot penduduk",
+        "olah": "Derajat, rata-rata berbobot penduduk; statistik zonal mean dan median (median untuk uji ketahanan)",
         "rumus": "\\bar S_d=\\frac{\\sum_p f_{pd}\\,P_p\\,S_p}{\\sum_p f_{pd}\\,P_p}",
         "arah": "Informal (+)",
         "dasar": "Medan Bukit Barisan menaikkan biaya angkut ke pasar dan bank; lereng adalah komponen permukaan friksi waktu tempuh.",
@@ -1476,7 +1506,8 @@
           "weiss2018",
           "gibson2010"
         ],
-        "singkat": "Lereng"
+        "singkat": "Lereng",
+        "invers": false
       },
       {
         "platform": "Platform lain (Python)",
@@ -1492,7 +1523,8 @@
           "wang2024",
           "barrington2017"
         ],
-        "singkat": "POI usaha kecil"
+        "singkat": "POI usaha kecil",
+        "invers": false
       },
       {
         "platform": "Platform lain (Python)",
@@ -1500,14 +1532,15 @@
         "nama": "Proporsi POI bermerek atau berjejaring",
         "sumber": "Overture Places, atribut brand",
         "skrip": "python a1",
-        "olah": "Persen dari total POI desa",
+        "olah": "Persen dari total POI desa; di-inverse (1 − z)",
         "rumus": "M_d=100\\cdot\\frac{n^{\\mathrm{merek}}_d}{n_d}",
         "arah": "Formal (-)",
         "dasar": "Gerai waralaba, bank, dan minimarket adalah usaha berbadan hukum; proporsinya membedakan pusat dagang formal dan informal.",
         "rujukan": [
           "rothenberg2016"
         ],
-        "singkat": "POI bermerek"
+        "singkat": "POI bermerek",
+        "invers": true
       },
       {
         "platform": "Platform lain (Python)",
@@ -1515,7 +1548,7 @@
         "nama": "Kerapatan jalan",
         "sumber": "OSM network_type drive (osmnx)",
         "skrip": "python a1",
-        "olah": "Panjang ruas dalam poligon dibagi luas",
+        "olah": "Panjang ruas dalam poligon dibagi luas; di-inverse (1 − z)",
         "rumus": "\\ell_d=\\frac{\\sum_{e\\in d}\\mathrm{len}(e)}{A_d}",
         "arah": "Formal (-)",
         "dasar": "Infrastruktur jalan memengaruhi skala dan formalitas usaha non-pertanian desa; kelengkapan jalan OSM sudah di atas 80 persen secara global.",
@@ -1523,7 +1556,8 @@
           "gibson2010",
           "barrington2017"
         ],
-        "singkat": "Kerapatan jalan"
+        "singkat": "Kerapatan jalan",
+        "invers": true
       },
       {
         "platform": "Platform lain (Python)",
@@ -1538,7 +1572,8 @@
         "rujukan": [
           "gibson2010"
         ],
-        "singkat": "Jarak ke pasar/bank"
+        "singkat": "Jarak ke pasar/bank",
+        "invers": false
       },
       {
         "platform": "Platform lain (Python)",
@@ -1546,7 +1581,7 @@
         "nama": "Relative Wealth Index",
         "sumber": "Meta, grid 2,4 km (HDX)",
         "skrip": "python a2",
-        "olah": "Interpolasi dasimetrik berbobot penduduk",
+        "olah": "Interpolasi dasimetrik berbobot penduduk; di-inverse (1 − z)",
         "rumus": "x_d=\\sum_c\\frac{P_{cd}}{\\sum_{c'}P_{c'd}}\\,x_c",
         "arah": "Formal (-)",
         "dasar": "Kekayaan relatif dari citra dan data konektivitas, divalidasi dengan survei rumah tangga di negara berkembang.",
@@ -1555,7 +1590,8 @@
           "yeh2020",
           "jean2016"
         ],
-        "singkat": "Relative Wealth Index"
+        "singkat": "Relative Wealth Index",
+        "invers": true
       },
       {
         "platform": "Platform lain (Python)",
@@ -1563,28 +1599,47 @@
         "nama": "Kecepatan unduh internet seluler",
         "sumber": "Ookla Open Data, parquet AWS, 4 kuartal 2025",
         "skrip": "python a2",
-        "olah": "Dasimetrik berbobot penduduk × log jumlah tes; desa tanpa tile diimputasi 5 tetangga dan diberi penanda",
+        "olah": "Dasimetrik berbobot penduduk × log jumlah tes; desa tanpa tile diimputasi 5 tetangga dan diberi penanda; di-inverse (1 − z)",
         "rumus": "x_d=\\frac{\\sum_c P_{cd}\\ln(1+T_c)\\,x_c}{\\sum_c P_{cd}\\ln(1+T_c)}",
         "arah": "Formal (-)",
         "dasar": "Syarat formalisasi daring (OSS, QRIS) dan inklusi keuangan digital; terkait SDG 9.c.",
         "rujukan": [],
-        "singkat": "Kecepatan internet"
+        "singkat": "Kecepatan internet",
+        "invers": true
       },
       {
         "platform": "BPS (PODES 2025)",
         "dimensi": "3. Struktur usaha (POI)",
-        "nama": "Pasar tanpa bangunan, warung, kelontong, IMK, minimarket",
+        "nama": "Pasar tanpa bangunan, warung, kelontong, IMK",
         "sumber": "PODES 2025 r905, r907a",
         "skrip": "python b1",
         "olah": "Per 1.000 keluarga, log",
         "rumus": "x_{dj}=\\frac{1000\\,F_{dj}}{K_d}",
-        "arah": "Campuran",
+        "arah": "Informal (+)",
         "dasar": "Melengkapi POI di desa yang POI-nya kosong; karakter usaha informal Indonesia terlihat dari tempat dan skala usaha.",
         "rujukan": [
           "rothenberg2016",
           "gibson2010"
         ],
-        "singkat": "Pasar, warung, IMK, minimarket"
+        "singkat": "Pasar, warung, IMK",
+        "invers": false
+      },
+      {
+        "platform": "BPS (PODES 2025)",
+        "dimensi": "3. Struktur usaha (POI)",
+        "nama": "Minimarket/swalayan",
+        "sumber": "PODES 2025 r905ek2",
+        "skrip": "python b1",
+        "olah": "Per 1.000 keluarga, log; di-inverse (1 − z)",
+        "rumus": "x_{dj}=\\frac{1000\\,F_{dj}}{K_d}",
+        "arah": "Formal (-)",
+        "dasar": "Minimarket berjejaring adalah usaha berbadan hukum; makin banyak, makin formal.",
+        "rujukan": [
+          "rothenberg2016",
+          "gibson2010"
+        ],
+        "singkat": "Minimarket",
+        "invers": true
       },
       {
         "platform": "BPS (PODES 2025)",
@@ -1592,14 +1647,15 @@
         "nama": "Bank dan ATM per 10.000 penduduk dewasa, koperasi, jenis kredit",
         "sumber": "PODES 2025 r902–r904 + POI bank OSM",
         "skrip": "python b1",
-        "olah": "Sejalan dengan indikator SDG 8.10.1",
+        "olah": "Sejalan dengan indikator SDG 8.10.1; di-inverse (1 − z)",
         "rumus": "x_d=\\frac{10^4\\,(n^{\\mathrm{bank}}_d+n^{\\mathrm{ATM}}_d)}{P^{15+}_d}",
         "arah": "Formal (-)",
         "dasar": "Akses kredit formal memisahkan usaha mikro formal dan informal.",
         "rujukan": [
           "ohnsorge2022"
         ],
-        "singkat": "Bank, ATM, koperasi, KUR"
+        "singkat": "Bank, ATM, koperasi, KUR",
+        "invers": true
       },
       {
         "platform": "BPS (PODES 2025)",
@@ -1607,14 +1663,15 @@
         "nama": "SMA/MA dan SMK per 1.000 penduduk usia 15–19",
         "sumber": "PODES 2025 (kode cek metadata) + penduduk 15–19 tahun 2025",
         "skrip": "python b1",
-        "olah": "Penyebut: porsi umur 15–19 WorldPop 2020 × penduduk GHS-POP 2025",
+        "olah": "Penyebut: porsi umur 15–19 WorldPop 2020 × penduduk GHS-POP 2025; di-inverse (1 − z)",
         "rumus": "x_d=\\frac{1000\\,n^{\\mathrm{SMA/SMK}}_d}{P^{15-19}_d}",
         "arah": "Formal (-)",
         "dasar": "Modal manusia rendah adalah pendorong utama informalitas.",
         "rujukan": [
           "laporta2014"
         ],
-        "singkat": "SMA/SMK"
+        "singkat": "SMA/SMK",
+        "invers": true
       }
     ],
     "opsiMetode": [
@@ -1695,8 +1752,8 @@
       {
         "asal": "Raster halus (10–100 m)",
         "contoh": "GHSL, WorldPop, Sentinel-2, Dynamic World, WorldCover",
-        "mekanisme": "Statistik zonal di GEE (reduceRegions). Reducer mean dan sum otomatis memberi bobot fraksi piksel yang masuk poligon.",
-        "tex": "\\begin{gathered}\\bar x_d=\\frac{\\sum_p f_{pd}\\,x_p}{\\sum_p f_{pd}}\\\\[1ex]X_d=\\sum_p f_{pd}\\,x_p\\end{gathered}",
+        "mekanisme": "Statistik zonal di GEE (reduceRegions). Variabel numerik diberi mean dan median sekaligus (reducer mean dikombinasi median); median dipakai untuk uji ketahanan terhadap pencilan. Reducer GEE memberi bobot fraksi piksel yang masuk poligon.",
+        "tex": "\\begin{gathered}\\bar x_d=\\frac{\\sum_p f_{pd}\\,x_p}{\\sum_p f_{pd}}\\\\[1ex]\\tilde x_d=\\operatorname{median}_{f}\\{x_p: p\\in d\\}\\\\[1ex]X_d=\\sum_p f_{pd}\\,x_p\\end{gathered}",
         "rujukan": []
       },
       {
@@ -1706,6 +1763,15 @@
         "tex": "\\bar x_d=\\frac{\\sum_p f_{pd}\\,P_p\\,x_p}{\\sum_p f_{pd}\\,P_p}",
         "rujukan": [
           "stevens2015"
+        ]
+      },
+      {
+        "asal": "Raster kategorikal",
+        "contoh": "Kelas Dynamic World, WorldCover",
+        "mekanisme": "Variabel non-numerik diringkas dengan modus (kelas yang paling luas di desa), ditambah proporsi tiap kelas sebagai variabel numerik.",
+        "tex": "\\begin{gathered}\\mathrm{mode}_d=\\arg\\max_{c}\\sum_p f_{pd}\\,\\mathbb 1[x_p=c]\\\\[1ex]\\pi_{dc}=\\frac{\\sum_p f_{pd}\\,\\mathbb 1[x_p=c]}{\\sum_p f_{pd}}\\end{gathered}",
+        "rujukan": [
+          "brown2022"
         ]
       },
       {
@@ -1763,9 +1829,9 @@
         "ket": "q = kuantil provinsi; log hanya untuk indikator yang sangat miring."
       },
       {
-        "judul": "Skala 0–1 dengan arah seragam",
-        "tex": "z_{dj}=\\begin{cases}\\dfrac{\\tilde x_{dj}-\\min_d\\tilde x_{dj}}{\\max_d\\tilde x_{dj}-\\min_d\\tilde x_{dj}} & s_j=+1\\\\[2ex] 1-\\dfrac{\\tilde x_{dj}-\\min_d\\tilde x_{dj}}{\\max_d\\tilde x_{dj}-\\min_d\\tilde x_{dj}} & s_j=-1\\end{cases}",
-        "ket": "s_j = +1 bila indikator informal, −1 bila formal. Nilai tinggi selalu berarti lebih informal."
+        "judul": "Skala 0–1 dan inverse prediktor yang berlawanan arah",
+        "tex": "z_{dj}=\\frac{\\tilde x_{dj}-\\min_d\\tilde x_{dj}}{\\max_d\\tilde x_{dj}-\\min_d\\tilde x_{dj}},\\qquad z^{\\mathrm{inv}}_{dj}=1-z_{dj}\\ \\ \\text{bila } s_j=-1",
+        "ket": "s_j = −1 bila prediktor makin tinggi berarti makin formal (bank, minimarket, cahaya per luas terbangun, dan seterusnya). Prediktor seperti ini langsung di-inverse, sehingga yang masuk indeks adalah z^inv dan nilai tinggi selalu berarti lebih informal. Di kode kolomnya berakhiran _inv; di diagram ditandai garis merah putus-putus."
       },
       {
         "judul": "Bobot PCA per dimensi",
