@@ -12,6 +12,7 @@ import LiteratureTable from '../components/LiteratureTable.jsx'
 import Checkpoints from '../components/Checkpoints.jsx'
 import Berkas from '../components/Berkas.jsx'
 import Tex from '../components/Tex.jsx'
+import IndexStructure from '../components/IndexStructure.jsx'
 import KodeSumber from '../components/KodeSumber.jsx'
 import Kolaborator from '../components/Kolaborator.jsx'
 import NotFound from './NotFound.jsx'
@@ -297,6 +298,9 @@ function TopicView({ project, topic }) {
 
                 {ds?.variabel && (
                   <>
+                    <h3>Struktur indeks</h3>
+                    <IndexStructure variabel={ds.variabel} keluaran={ds.keluaranIndeks} />
+
                     <h3>Variabel indeks per platform</h3>
                     {ds.pengantar && <p className="prose">{ds.pengantar}</p>}
                     {[...new Set(ds.variabel.map((v) => v.platform))].map((pf) => {
@@ -373,6 +377,53 @@ function TopicView({ project, topic }) {
                     </tbody>
                   </table>
                 </div>
+
+                {ds?.cadangan && (
+                  <>
+                    <h3>Variabel cadangan (pengganti Open Buildings v3 dan RWI)</h3>
+                    {ds.cadangan.pengantar && <p className="prose">{ds.cadangan.pengantar}</p>}
+                    {ds.cadangan.kelompok.map((g) => (
+                      <div key={g.utama} className="platform">
+                        <h4 className="platform-title">
+                          {g.utama} <span className="num">{g.item.length} opsi</span>
+                        </h4>
+                        <div className="table-wrap">
+                          <table className="data-table var-table">
+                            <thead>
+                              <tr>
+                                <th scope="col">Variabel dan sumber</th>
+                                <th scope="col">Pengolahan dan rumus</th>
+                                <th scope="col">Kapan dipakai</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {g.item.map((v) => (
+                                <tr key={v.nama}>
+                                  <td data-label="Variabel">
+                                    <strong>{v.nama}</strong>
+                                    <span className="lit-source">{v.sumber}</span>
+                                    <span className="var-tags">
+                                      <span className="role">{v.jenis}</span>
+                                      <span className="skrip">{v.platform}</span>
+                                    </span>
+                                  </td>
+                                  <td data-label="Pengolahan">
+                                    {v.olah}
+                                    {v.rumus && <Tex tex={v.rumus} block />}
+                                  </td>
+                                  <td data-label="Kapan">
+                                    {v.kapan}
+                                    <Refs ids={v.rujukan} litById={litById} />
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    ))}
+                  </>
+                )}
 
                 <h3>Metode</h3>
                 <dl className="methods">

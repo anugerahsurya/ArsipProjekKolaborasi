@@ -6,6 +6,7 @@ Satu berkas Python untuk semua langkah di luar GEE dan R.
   BAGIAN A  PENGUMPULAN DATA
     a1_poi_jalan    POI Overture dan OSM, kerapatan jalan, jarak jaringan ke bank/pasar
     a2_rwi_ookla    Relative Wealth Index dan Ookla, interpolasi dasimetrik ke desa
+    a3_cadangan_grdi  (cadangan) GRDI pengganti RWI, rata-rata berbobot penduduk
   BAGIAN B  PENGOLAHAN
     b1_indikator    PODES 2025, penggabungan semua sumber, normalisasi, arah indikator
     b2_indeks       PCA berjenjang, bobot entropi, agregasi, Monte Carlo
@@ -239,6 +240,39 @@ def a2_rwi_ookla():
     out.to_csv("py02_rwi_ookla.csv", index=False)
     print(out.describe().T)
 
+def a3_cadangan_grdi():
+    """
+    CADANGAN pengganti RWI: Global Gridded Relative Deprivation Index (GRDI v1, CIESIN 2022, 1 km).
+    Nilai tinggi = deprivasi lebih tinggi. Diturunkan ke desa sebagai rata-rata berbobot penduduk 2025.
+
+    Masukan:    DataWilayahDesa, povmap-grdi-v1.tif (unduh dari SEDAC/Earthdata, perlu akun Earthdata),
+                ghs_pop_2025_100m_sumbar.tif (ekspor GEE 01)
+    Keluaran:   a3_grdi.csv  -> gabungkan di b1_indikator bila RWI tidak dipakai
+    """
+    import rasterio
+    from rasterio.warp import Resampling, reproject
+
+    desa = DataWilayahDesa[["iddesa", "geometry"]].to_crs(4326)
+    # Samakan grid GRDI (1 km) ke grid penduduk 100 m agar bobot penduduk bisa dipakai per sel
+    with rasterio.open("ghs_pop_2025_100m_sumbar.tif") as pop_src, rasterio.open("povmap-grdi-v1.tif") as g_src:
+        prof = pop_src.profile.copy()
+        grdi_100 = np.full((pop_src.height, pop_src.width), np.nan, dtype="float32")
+        reproject(
+            source=rasterio.band(g_src, 1), destination=grdi_100,
+            dst_transform=pop_src.transform, dst_crs=pop_src.crs,
+            dst_nodata=np.nan, resampling=Resampling.nearest,
+        )
+    prof.update(dtype="float32", nodata=np.nan, count=1)
+    with rasterio.open("grdi_100m_sumbar.tif", "w", **prof) as dst:
+        dst.write(grdi_100, 1)
+
+    # rata-rata berbobot penduduk: x_d = sum f*P*x / sum f*P (exactextract menghitung fraksi f)
+    out = exact_extract("grdi_100m_sumbar.tif", desa, "weighted_mean",
+                        weights="ghs_pop_2025_100m_sumbar.tif", output="pandas", include_cols=["iddesa"])
+    out = out.rename(columns={"weighted_mean": "grdi"})
+    out.to_csv("a3_grdi.csv", index=False)
+    print(out.describe().T)
+
 # =====================================================================
 # BAGIAN B. PENGOLAHAN
 # =====================================================================
@@ -302,6 +336,13 @@ def b1_indikator():
         .merge(rd("py01_poi_jalan.csv"), on=ID, how="left", suffixes=("", "_py01"))
         .merge(rd("py02_rwi_ookla.csv"), on=ID, how="left")
     )
+    # Variabel cadangan (opsional): SAR, GEDI, Open Buildings Temporal, GRDI, cahaya per kapita.
+    # Tambahkan ke INDIKATOR di bawah bila dipakai untuk menggantikan Open Buildings v3 atau RWI.
+    import os
+    for f in ["gee04a_sar_gedi_2025.csv", "gee04c_open_buildings_temporal.csv", "gee04d_obt_tinggi.csv",
+              "gee04e_ntl_per_kapita_2025.csv", "a3_grdi.csv"]:
+        if os.path.exists(f):
+            df = df.merge(rd(f), on=ID, how="left")
     dewasa = df["pop"] * 0.65  # pendekatan penduduk 15+ bila tabel umur tidak dipakai
     df["bank_per10rb_dewasa"] = 1e4 * (df["bank"] + df["osm_bank_atm"]) / dewasa.clip(lower=1)  # SDG 8.10.1
     df["sma_smk_per1000_15_19"] = 1000 * df["sma_smk"] / df["pop_15_19_2025"].clip(lower=1)
@@ -346,6 +387,14 @@ def b1_indikator():
         "jenis_kredit": ("D7_keuangan", -1),
         "rwi": ("D7_keuangan", -1),
         "log_unduh_mbps": ("D7_keuangan", -1),
+        # --- cadangan, aktifkan bila menggantikan variabel utama ---
+        # "obt_jumlah_2023": ("D2_morfologi", +1),        # pengganti kepadatan Open Buildings v3 (bagi luas desa)
+        # "obt_tumbuh_per_tahun": ("D2_morfologi", +1),
+        # "s1_vv_glcm_var": ("D2_morfologi", +1),
+        # "gedi_rh98_terbangun": ("D1_intensitas", -1),    # bangunan bertingkat = formal
+        # "ghs_tinggi_m": ("D1_intensitas", -1),
+        # "grdi": ("D7_keuangan", +1),                    # pengganti RWI (deprivasi tinggi = informal)
+        # "ntl_per_kapita": ("D7_keuangan", -1),
     }
     LOG = ["ntl_per_ha_terbangun", "kepadatan_bangunan_km2", "median_tapak_m2", "poi_kecil_per_1000pdd",
            "pasar_tanpa_bangunan_per1000kk", "warung_makan_per1000kk", "kelontong_per1000kk", "imk_per1000kk",
@@ -655,8 +704,8 @@ def b4_spasial_tipologi():
 
 if __name__ == "__main__":
     # DataWilayahDesa = gpd.read_file("batas_desa_sumbar_2025.gpkg")[["iddesa", "geometry"]]
-    LANGKAH = ["a1", "a2", "b1", "b2", "b3", "b4"]  # hapus yang sudah selesai
-    peta = {"a1": a1_poi_jalan, "a2": a2_rwi_ookla, "b1": b1_indikator,
+    LANGKAH = ["a1", "a2", "b1", "b2", "b3", "b4"]  # tambahkan "a3" bila memakai variabel cadangan
+    peta = {"a1": a1_poi_jalan, "a2": a2_rwi_ookla, "a3": a3_cadangan_grdi, "b1": b1_indikator,
             "b2": b2_indeks, "b3": b3_validasi_kalibrasi, "b4": b4_spasial_tipologi}
     for s in LANGKAH:
         print(f"=== {s} ===")

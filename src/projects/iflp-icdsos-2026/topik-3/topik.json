@@ -948,6 +948,90 @@
       "url": "https://doi.org/10.1016/S1001-0742(06)60032-6",
       "metode": "Metode bobot entropi",
       "relevansi": "Rujukan bobot entropi sebagai pembanding."
+    },
+    {
+      "id": "obtemporal2024",
+      "kelompok": "Data geospasial",
+      "penulis": "Google Research",
+      "tahun": 2024,
+      "judul": "Open Buildings 2.5D Temporal Dataset (v1)",
+      "sumber": "Earth Engine Data Catalog",
+      "jenis": "Dataset",
+      "url": "https://developers.google.com/earth-engine/datasets/catalog/GOOGLE_Research_open-buildings-temporal_v1",
+      "metode": "Kehadiran, jumlah fraksional, dan tinggi bangunan tahunan 2016–2023 dari Sentinel-2",
+      "relevansi": "Pengganti Open Buildings v3 dengan seri tahunan."
+    },
+    {
+      "id": "kapp2023",
+      "kelompok": "Citra dan permukiman informal",
+      "penulis": "Kapp, Kemp",
+      "tahun": 2023,
+      "judul": "Temporal Autocorrelation of Sentinel-1 SAR Imagery for Detecting Settlement Expansion",
+      "sumber": "Geomatics 3(3)",
+      "jenis": "Jurnal",
+      "url": "https://doi.org/10.3390/geomatics3030023",
+      "metode": "Backscatter VV Sentinel-1 hiper-temporal di empat permukiman informal Afrika Selatan",
+      "relevansi": "Dasar SAR untuk permukiman informal; kinerja turun di permukiman jarang."
+    },
+    {
+      "id": "chepkilot2026",
+      "kelompok": "Citra dan permukiman informal",
+      "penulis": "Chepkilot, Memar, Gamba",
+      "tahun": 2026,
+      "judul": "Context-Aware Slum Mapping in Sub-Saharan Africa Using Sentinel-1 Texture and Local Climate Zones",
+      "sumber": "arXiv 2607.07532 (dikirim ke IEEE JSTARS)",
+      "jenis": "Preprint",
+      "url": "https://arxiv.org/abs/2607.07532",
+      "metode": "Sentinel-2 dan tekstur GLCM Sentinel-1; tekstur SAR memberi tambahan kinerja terbesar",
+      "relevansi": "Dasar tekstur SAR sebagai variabel cadangan (belum peer-review)."
+    },
+    {
+      "id": "dubayah2020",
+      "kelompok": "Data geospasial",
+      "penulis": "Dubayah dkk.",
+      "tahun": 2020,
+      "judul": "The Global Ecosystem Dynamics Investigation: High-resolution laser ranging of the Earth's forests and topography",
+      "sumber": "Science of Remote Sensing 1",
+      "jenis": "Jurnal",
+      "url": "https://doi.org/10.1016/j.srs.2020.100002",
+      "metode": "Misi LiDAR GEDI dan produk tinggi relatif (RH)",
+      "relevansi": "Rujukan data GEDI."
+    },
+    {
+      "id": "chen2025gedi",
+      "kelompok": "Data geospasial",
+      "penulis": "Chen dkk.",
+      "tahun": 2025,
+      "judul": "Evaluating GEDI L2A relative height metrics for building height estimation against airborne LiDAR",
+      "sumber": "GIScience & Remote Sensing",
+      "jenis": "Jurnal",
+      "url": "https://doi.org/10.1080/15481603.2025.2498785",
+      "metode": "RH96 paling akurat (R² 0,82); bangunan di bawah 5 m ditaksir terlalu tinggi",
+      "relevansi": "Batas pemakaian GEDI untuk bangunan rendah di perdesaan."
+    },
+    {
+      "id": "ma2023",
+      "kelompok": "Data geospasial",
+      "penulis": "Ma dkk.",
+      "tahun": 2023,
+      "judul": "A global product of fine-scale urban building height based on spaceborne lidar",
+      "sumber": "arXiv 2310.14355",
+      "jenis": "Preprint",
+      "url": "https://arxiv.org/abs/2310.14355",
+      "metode": "GEDI digabung Landsat-8, Sentinel-1/2 untuk tinggi bangunan 150 m",
+      "relevansi": "Bukti GEDI dan SAR bisa menaksir tinggi bangunan."
+    },
+    {
+      "id": "ciesin2022",
+      "kelompok": "Citra dan kesejahteraan",
+      "penulis": "CIESIN",
+      "tahun": 2022,
+      "judul": "Global Gridded Relative Deprivation Index (GRDI), Version 1",
+      "sumber": "NASA SEDAC",
+      "jenis": "Dataset",
+      "url": "https://doi.org/10.7927/3xxe-ap97",
+      "metode": "Indeks deprivasi multidimensi grid 1 km dari enam komponen",
+      "relevansi": "Pengganti Relative Wealth Index."
     }
   ],
   "checkpoint": [
@@ -1200,7 +1284,8 @@
           "ghosh2009",
           "elvidge2017",
           "bps2022"
-        ]
+        ],
+        "singkat": "Cahaya malam"
       },
       {
         "platform": "Google Earth Engine",
@@ -1215,7 +1300,8 @@
         "rujukan": [
           "tanaka2017",
           "medina2018"
-        ]
+        ],
+        "singkat": "Cahaya per ha terbangun"
       },
       {
         "platform": "Google Earth Engine",
@@ -1229,7 +1315,8 @@
         "dasar": "Gedung non-hunian besar (kantor, pabrik, pusat belanja) mencirikan kawasan usaha formal. GHSL memisahkan kelas ini dengan akurasi yang terdokumentasi.",
         "rujukan": [
           "pesaresi2024"
-        ]
+        ],
+        "singkat": "Terbangun non-hunian"
       },
       {
         "platform": "Google Earth Engine",
@@ -1245,7 +1332,8 @@
           "bettencourt2025",
           "engstrom2022",
           "sirko2021"
-        ]
+        ],
+        "singkat": "Kepadatan & luas tapak"
       },
       {
         "platform": "Google Earth Engine",
@@ -1259,7 +1347,8 @@
         "dasar": "Proksi usaha rumahan dan lapak kecil; ukuran bangunan termasuk fitur utama pemisah permukiman informal.",
         "rujukan": [
           "bettencourt2025"
-        ]
+        ],
+        "singkat": "Bangunan < 50 m²"
       },
       {
         "platform": "Google Earth Engine",
@@ -1275,7 +1364,8 @@
           "kuffer2016glcm",
           "matarira2022",
           "wurm2019"
-        ]
+        ],
+        "singkat": "Tekstur GLCM"
       },
       {
         "platform": "Google Earth Engine",
@@ -1290,7 +1380,8 @@
         "rujukan": [
           "kuffer2016glcm",
           "kuffer2016"
-        ]
+        ],
+        "singkat": "NDVI terbangun"
       },
       {
         "platform": "Google Earth Engine",
@@ -1305,7 +1396,8 @@
         "rujukan": [
           "zha2003",
           "matarira2022"
-        ]
+        ],
+        "singkat": "NDBI, MNDWI, BSI"
       },
       {
         "platform": "Google Earth Engine",
@@ -1320,7 +1412,8 @@
         "rujukan": [
           "keola2015",
           "brown2022"
-        ]
+        ],
+        "singkat": "Lahan pertanian"
       },
       {
         "platform": "Google Earth Engine",
@@ -1334,7 +1427,8 @@
         "dasar": "Di luar kawasan hutan, tutupan pohon di Sumatera Barat sebagian besar adalah kebun rakyat (karet, kelapa sawit, gambir) yang dikelola secara informal.",
         "rujukan": [
           "keola2015"
-        ]
+        ],
+        "singkat": "Kebun rakyat (tutupan pohon)"
       },
       {
         "platform": "Google Earth Engine",
@@ -1349,7 +1443,8 @@
         "rujukan": [
           "stevens2015",
           "laporta2014"
-        ]
+        ],
+        "singkat": "Rasio ketergantungan"
       },
       {
         "platform": "Google Earth Engine",
@@ -1364,7 +1459,8 @@
         "rujukan": [
           "weiss2018",
           "nelson2019"
-        ]
+        ],
+        "singkat": "Waktu tempuh ke kota"
       },
       {
         "platform": "Google Earth Engine",
@@ -1379,7 +1475,8 @@
         "rujukan": [
           "weiss2018",
           "gibson2010"
-        ]
+        ],
+        "singkat": "Lereng"
       },
       {
         "platform": "Platform lain (Python)",
@@ -1394,7 +1491,8 @@
         "rujukan": [
           "wang2024",
           "barrington2017"
-        ]
+        ],
+        "singkat": "POI usaha kecil"
       },
       {
         "platform": "Platform lain (Python)",
@@ -1408,7 +1506,8 @@
         "dasar": "Gerai waralaba, bank, dan minimarket adalah usaha berbadan hukum; proporsinya membedakan pusat dagang formal dan informal.",
         "rujukan": [
           "rothenberg2016"
-        ]
+        ],
+        "singkat": "POI bermerek"
       },
       {
         "platform": "Platform lain (Python)",
@@ -1423,7 +1522,8 @@
         "rujukan": [
           "gibson2010",
           "barrington2017"
-        ]
+        ],
+        "singkat": "Kerapatan jalan"
       },
       {
         "platform": "Platform lain (Python)",
@@ -1437,7 +1537,8 @@
         "dasar": "Jarak ke lembaga keuangan formal memisahkan usaha mikro yang bisa mengakses kredit dari yang tidak.",
         "rujukan": [
           "gibson2010"
-        ]
+        ],
+        "singkat": "Jarak ke pasar/bank"
       },
       {
         "platform": "Platform lain (Python)",
@@ -1453,7 +1554,8 @@
           "chi2022",
           "yeh2020",
           "jean2016"
-        ]
+        ],
+        "singkat": "Relative Wealth Index"
       },
       {
         "platform": "Platform lain (Python)",
@@ -1465,7 +1567,8 @@
         "rumus": "x_d=\\frac{\\sum_c P_{cd}\\ln(1+T_c)\\,x_c}{\\sum_c P_{cd}\\ln(1+T_c)}",
         "arah": "Formal (-)",
         "dasar": "Syarat formalisasi daring (OSS, QRIS) dan inklusi keuangan digital; terkait SDG 9.c.",
-        "rujukan": []
+        "rujukan": [],
+        "singkat": "Kecepatan internet"
       },
       {
         "platform": "BPS (PODES 2025)",
@@ -1480,7 +1583,8 @@
         "rujukan": [
           "rothenberg2016",
           "gibson2010"
-        ]
+        ],
+        "singkat": "Pasar, warung, IMK, minimarket"
       },
       {
         "platform": "BPS (PODES 2025)",
@@ -1494,7 +1598,8 @@
         "dasar": "Akses kredit formal memisahkan usaha mikro formal dan informal.",
         "rujukan": [
           "ohnsorge2022"
-        ]
+        ],
+        "singkat": "Bank, ATM, koperasi, KUR"
       },
       {
         "platform": "BPS (PODES 2025)",
@@ -1508,7 +1613,8 @@
         "dasar": "Modal manusia rendah adalah pendorong utama informalitas.",
         "rujukan": [
           "laporta2014"
-        ]
+        ],
+        "singkat": "SMA/SMK"
       }
     ],
     "opsiMetode": [
@@ -1716,7 +1822,150 @@
         "tex": "G^{*}_i=\\frac{\\sum_j w_{ij}y_j-\\bar y\\sum_j w_{ij}}{s\\sqrt{\\dfrac{n\\sum_j w_{ij}^2-\\big(\\sum_j w_{ij}\\big)^2}{n-1}}}",
         "ket": "Penjumlahan termasuk desa i sendiri; s = simpangan baku y."
       }
-    ]
+    ],
+    "keluaranIndeks": [
+      {
+        "tahap": "Validasi",
+        "isi": "Spearman rata-rata indeks kab/kota dengan persentase pekerja informal publikasi BPS (n = 19)"
+      },
+      {
+        "tahap": "Kalibrasi",
+        "isi": "Estimasi proporsi pekerja informal desa, di-benchmark ke angka kab/kota"
+      },
+      {
+        "tahap": "Tipologi dan hotspot",
+        "isi": "Indeks × intensitas aktivitas; LISA dan Getis-Ord Gi*"
+      },
+      {
+        "tahap": "Kebijakan",
+        "isi": "Nagari prioritas per tipologi, sub-indeks dominan sebagai tuas intervensi"
+      }
+    ],
+    "cadangan": {
+      "pengantar": "Open Buildings v3 dan RWI adalah rilis tunggal, sehingga tidak bisa diperbarui ke 2025 dan bisa saja tidak lengkap di sebagian desa. Variabel berikut disiapkan sebagai pengganti atau uji ketahanan. Semuanya diambil di skrip gee_04 atau Python a3, lalu diaktifkan di b1 bila dipakai.",
+      "kelompok": [
+        {
+          "utama": "Pengganti Open Buildings v3 (morfologi bangunan)",
+          "item": [
+            {
+              "nama": "Open Buildings 2.5D Temporal",
+              "jenis": "Optik (Sentinel-2, super-resolusi)",
+              "platform": "Google Earth Engine",
+              "sumber": "GOOGLE/Research/open-buildings-temporal/v1, tahunan 2016–2023, 4 m",
+              "olah": "Jumlah bangunan dari fractional count, tinggi median, dan laju pertumbuhan 2016–2023",
+              "rumus": "N_d=\\sum_p c_p,\\qquad g_d=\\left(\\frac{N_{d,2023}}{N_{d,2016}}\\right)^{1/7}-1",
+              "kapan": "Pengganti utama: angka tahunan, lebih dekat ke 2025, dan menambah dinamika pertumbuhan permukiman.",
+              "rujukan": [
+                "obtemporal2024",
+                "sirko2021"
+              ]
+            },
+            {
+              "nama": "Sentinel-1 SAR: backscatter dan tekstur VV",
+              "jenis": "SAR (radar C-band)",
+              "platform": "Google Earth Engine",
+              "sumber": "COPERNICUS/S1_GRD, IW, VV+VH, median 2025",
+              "olah": "Rata-rata VV, VH, rasio VH/VV (dB), dan GLCM variance VV di piksel terbangun",
+              "rumus": "\\sigma^0_{\\mathrm{dB}}=10\\log_{10}\\sigma^0,\\qquad R_d=\\overline{\\sigma^0_{VH,\\mathrm{dB}}-\\sigma^0_{VV,\\mathrm{dB}}}",
+              "kapan": "Tembus awan, cocok untuk Sumatera Barat yang sering berawan. Tekstur SAR memberi tambahan akurasi terbesar untuk pemetaan permukiman informal di Kenya, tetapi lemah di permukiman jarang. Arahnya diuji dulu.",
+              "rujukan": [
+                "chepkilot2026",
+                "kapp2023",
+                "wurm2019"
+              ]
+            },
+            {
+              "nama": "GEDI L2A RH98 di piksel terbangun",
+              "jenis": "LiDAR antariksa",
+              "platform": "Google Earth Engine",
+              "sumber": "LARSE/GEDI/GEDI02_A_002_MONTHLY, 2019–2025, footprint 25 m",
+              "olah": "Median RH98 footprint berkualitas (quality_flag 1, sensitivity > 0,95) di piksel terbangun; jumlah footprint dicatat",
+              "rumus": "H_d=\\operatorname{median}\\{\\mathrm{RH98}_i: i\\in d,\\ q_i=1,\\ s_i>0{,}95\\}",
+              "kapan": "Membedakan bangunan bertingkat (formal) dari bangunan rendah. RH96–98 akurat untuk bangunan menengah dan tinggi, tetapi bangunan di bawah 5 m cenderung ditaksir terlalu tinggi, dan footprint jarang di desa kecil.",
+              "rujukan": [
+                "dubayah2020",
+                "chen2025gedi",
+                "ma2023"
+              ]
+            },
+            {
+              "nama": "GEDI L2A RH98 di piksel pohon",
+              "jenis": "LiDAR antariksa",
+              "platform": "Google Earth Engine",
+              "sumber": "LARSE/GEDI/GEDI02_A_002_MONTHLY",
+              "olah": "Median tinggi tajuk di piksel pohon Dynamic World",
+              "rumus": "H^{\\mathrm{pohon}}_d=\\operatorname{median}\\{\\mathrm{RH98}_i: i\\in d,\\ \\mathrm{DW}_i=\\text{trees}\\}",
+              "kapan": "Pelengkap dimensi struktur lahan: tajuk rendah dan seragam menandai kebun rakyat, tajuk tinggi menandai hutan.",
+              "rujukan": [
+                "dubayah2020"
+              ]
+            },
+            {
+              "nama": "GHSL tinggi bangunan rata-rata",
+              "jenis": "Optik dan DEM",
+              "platform": "Google Earth Engine",
+              "sumber": "JRC/GHSL/P2023A/GHS_BUILT_H/2018, 100 m",
+              "olah": "Rata-rata tinggi bangunan per desa",
+              "rumus": "\\bar h_d=\\frac{\\sum_p f_{pd}\\,h_p}{\\sum_p f_{pd}}",
+              "kapan": "Cadangan tinggi bangunan dengan cakupan penuh bila footprint GEDI terlalu jarang.",
+              "rujukan": [
+                "pesaresi2024"
+              ]
+            },
+            {
+              "nama": "Overture Buildings",
+              "jenis": "Vektor gabungan (Google, Microsoft, OSM)",
+              "platform": "Platform lain (Python)",
+              "sumber": "overturemaps download --type=building",
+              "olah": "Metrik yang sama dengan Open Buildings v3: kepadatan, median tapak, proporsi < 50 m²",
+              "rumus": "\\rho_d=\\frac{N_d}{A_d}",
+              "kapan": "Bila jejak Open Buildings v3 bolong di suatu desa; gabungan sumber biasanya lebih lengkap.",
+              "rujukan": []
+            }
+          ]
+        },
+        {
+          "utama": "Pengganti Relative Wealth Index (kesejahteraan)",
+          "item": [
+            {
+              "nama": "Global Gridded Relative Deprivation Index (GRDI v1)",
+              "jenis": "Indeks gabungan grid 1 km",
+              "platform": "Platform lain (Python)",
+              "sumber": "CIESIN/NASA SEDAC (2022), unduh lewat Earthdata",
+              "olah": "Rata-rata berbobot penduduk 2025 (Python a3)",
+              "rumus": "x_d=\\frac{\\sum_p f_{pd}\\,P_p\\,x_p}{\\sum_p f_{pd}\\,P_p}",
+              "kapan": "Pengganti utama: cakupan global dan metodologi terbuka. Komponennya antara lain luas terbangun, rasio ketergantungan anak, kematian bayi, HDI subnasional, dan cahaya malam, jadi cek korelasinya dengan indikator lain agar tidak dihitung dua kali.",
+              "rujukan": [
+                "ciesin2022"
+              ]
+            },
+            {
+              "nama": "Cahaya malam per kapita 2025",
+              "jenis": "Optik malam",
+              "platform": "Google Earth Engine",
+              "sumber": "VIIRS 2025 dan GHS-POP 2025",
+              "olah": "Jumlah radiansi dibagi penduduk",
+              "rumus": "L^{\\mathrm{cap}}_d=\\frac{1000\\sum_p f_{pd}\\,L_p}{P_d}",
+              "kapan": "Proksi kesejahteraan yang bisa diperbarui setiap tahun; dipakai bila GRDI dan RWI tidak tersedia.",
+              "rujukan": [
+                "henderson2012",
+                "ghosh2009"
+              ]
+            },
+            {
+              "nama": "Indikator kesejahteraan PODES 2025",
+              "jenis": "Administratif",
+              "platform": "BPS (PODES 2025)",
+              "sumber": "PODES 2025 (kode cek metadata)",
+              "olah": "Surat keterangan tidak mampu per 1.000 keluarga, keberadaan permukiman kumuh, keluarga tanpa listrik PLN",
+              "rumus": "x_d=\\frac{1000\\,S_d}{K_d}",
+              "kapan": "Cadangan lokal tanpa ketergantungan pada data global; kualitas tergantung laporan aparat desa.",
+              "rujukan": []
+            }
+          ]
+        }
+      ]
+    }
   },
   "kode": {
     "pengantar": "Tahun analisis 2025 (mengikuti PODES 2025). Semua skrip mengasumsikan batas desa sudah tersimpan di variabel DataWilayahDesa: FeatureCollection di GEE, GeoDataFrame di Python, dan objek sf di R, masing-masing dengan kolom iddesa (10 digit, sama dengan kode PODES). Urutan: gee_01, gee_02, gee_03, lalu Python bagian A (a1, a2) dan B (b1, b2), lalu R GW-PCA, lalu Python b3 dan b4. Keluaran tiap langkah menjadi masukan langkah berikutnya.",
@@ -1740,10 +1989,16 @@
         "keluaran": "gee03_open_buildings.csv"
       },
       {
+        "file": "gee_04_cadangan_sar_lidar.js",
+        "judul": "GEE 04 (cadangan): Sentinel-1 SAR, GEDI LiDAR, Open Buildings Temporal, tinggi GHSL, cahaya per kapita",
+        "bahasa": "JavaScript (GEE)",
+        "keluaran": "gee04a_sar_gedi_2025.csv, gee04b_gedi_jumlah_footprint.csv, gee04c_open_buildings_temporal.csv, gee04d_obt_tinggi.csv, gee04e_ntl_per_kapita_2025.csv"
+      },
+      {
         "file": "python_indeks_informal.py",
-        "judul": "Python: A. Pengumpulan Data (a1 POI dan jalan, a2 RWI dan Ookla) dan B. Pengolahan (b1 indikator, b2 indeks, b3 validasi dan kalibrasi, b4 spasial)",
+        "judul": "Python: A. Pengumpulan Data (a1 POI dan jalan, a2 RWI dan Ookla, a3 cadangan GRDI) dan B. Pengolahan (b1 indikator, b2 indeks, b3 validasi dan kalibrasi, b4 spasial)",
         "bahasa": "Python",
-        "keluaran": "py01_poi_jalan.csv, py02_rwi_ookla.csv, indikator_desa.csv, indeks_desa.csv, validasi_kabkota.csv, estimasi_proporsi_desa.csv, nagari_prioritas.csv"
+        "keluaran": "py01_poi_jalan.csv, py02_rwi_ookla.csv, indikator_desa.csv, indeks_desa.csv, validasi_kabkota.csv, estimasi_proporsi_desa.csv, nagari_prioritas.csv, a3_grdi.csv"
       },
       {
         "file": "r_05_gwpca.R",
