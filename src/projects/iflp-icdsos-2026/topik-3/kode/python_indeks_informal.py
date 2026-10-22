@@ -10,12 +10,12 @@ Satu berkas Python untuk semua langkah di luar GEE dan R.
   BAGIAN B  PENGOLAHAN
     b1_indikator    PODES 2025, penggabungan semua sumber, normalisasi, arah indikator
     b2_indeks       PCA berjenjang, bobot entropi, agregasi, Monte Carlo
-    (GW-PCA dijalankan di R: r_05_gwpca.R, di antara b2 dan b3)
+    b2b_gwpca       GW-PCA (PCA lokal, kernel bisquare adaptif), pengganti GWmodel di R
     b0_tabel_bps    persentase pekerja informal kab/kota dari tabel status pekerjaan BPS
     b3_validasi_kalibrasi  validasi kab/kota, validitas konvergen, kalibrasi top-down
     b4_spasial_tipologi    Moran's I, LISA, Gi*, tipologi, nagari prioritas
 
-Urutan lengkap: gee_01, gee_02, gee_03 (Earth Engine) -> a1, a2 -> b1, b2 -> r_05 -> b3, b4.
+Urutan lengkap: gee_01, gee_02, gee_03 (Earth Engine) -> a1, a2 -> b0, b1, b2, b2b -> b3, b4.
 
 Kebutuhan:
   pip install geopandas osmnx networkx pandas numpy pyarrow shapely overturemaps mercantile \
@@ -41,7 +41,6 @@ from libpysal import weights
 from scipy.optimize import brentq
 from scipy.special import expit, logit
 from scipy.stats import rankdata, spearmanr
-from shapely import wkt
 from shapely.geometry import box
 from sklearn.decomposition import PCA
 from statsmodels.stats.multitest import fdrcorrection
@@ -207,21 +206,34 @@ def a2_rwi_ookla():
     # ---------------------------------------------------------------------
     # 2. Ookla Open Data, seluler, empat kuartal 2025 (rata-rata kecepatan berbobot jumlah tes)
     # ---------------------------------------------------------------------
+    # Satu file per kuartal berisi tile seluruh dunia (sekitar 185 MB). Tile disaring ke Sumatera Barat
+    # lewat awalan quadkey zoom 8, lalu disimpan di folder cache agar unduhan hanya terjadi sekali.
+    # Geometri tile dibangun dari quadkey (mercantile), bukan parsing WKT jutaan baris.
+    import os
+
     URL = "https://ookla-open-data.s3.amazonaws.com/parquet/performance/type={t}/year=2025/quarter={q}/2025-{m:02d}-01_performance_{t}_tiles.parquet"
+    CACHE = "ookla_cache"
+    os.makedirs(CACHE, exist_ok=True)
+    induk = {mercantile.quadkey(t) for t in mercantile.tiles(xmin, ymin, xmax, ymax, zooms=8)}
     bagian = []
     for q, m in zip([1, 2, 3, 4], [1, 4, 7, 10]):
-        df = pd.read_parquet(URL.format(t="mobile", q=q, m=m), columns=["tile", "avg_d_kbps", "avg_u_kbps", "tests"])
-        bagian.append(df)
+        lokal = f"{CACHE}/ookla_mobile_2025_q{q}_sumbar.parquet"
+        if not os.path.exists(lokal):
+            print(f"unduh Ookla 2025 Q{q} ...")
+            df = pd.read_parquet(URL.format(t="mobile", q=q, m=m), columns=["quadkey", "avg_d_kbps", "avg_u_kbps", "tests"])
+            df[df["quadkey"].str[:8].isin(induk)].to_parquet(lokal, index=False)
+        bagian.append(pd.read_parquet(lokal))
     ookla = pd.concat(bagian)
-    ookla["geometry"] = ookla["tile"].apply(wkt.loads)
-    ookla = gpd.GeoDataFrame(ookla.drop(columns="tile"), crs=4326).cx[xmin:xmax, ymin:ymax]
+    print("tile Ookla di sekitar Sumatera Barat:", ookla["quadkey"].nunique())
+
     # rata-rata empat kuartal per tile, berbobot jumlah tes
     ookla["d_x_t"] = ookla["avg_d_kbps"] * ookla["tests"]
-    ookla["key"] = ookla.geometry.to_wkt()
-    agg = ookla.groupby("key").agg(d_x_t=("d_x_t", "sum"), tests=("tests", "sum"))
+    agg = ookla.groupby("quadkey").agg(d_x_t=("d_x_t", "sum"), tests=("tests", "sum")).reset_index()
     agg["unduh_mbps"] = agg["d_x_t"] / agg["tests"] / 1000
-    agg = gpd.GeoDataFrame(agg.reset_index(), geometry=gpd.GeoSeries.from_wkt(agg.index), crs=4326)
     agg["log_tests"] = np.log1p(agg["tests"])
+    agg = gpd.GeoDataFrame(
+        agg, geometry=[box(*mercantile.bounds(mercantile.quadkey_to_tile(k))) for k in agg["quadkey"]], crs=4326
+    )
     ookla_desa = dasimetrik(agg[["unduh_mbps", "log_tests", "geometry"]], ["unduh_mbps"], bobot_tambahan="log_tests")
 
     # ---------------------------------------------------------------------
@@ -661,6 +673,91 @@ def b0_tabel_bps():
     df[["kdkab", "nama", "pct_informal", "pendapatan_informal"]].to_csv("tabel_bps_informal_kabkota.csv", index=False)
     print(df[["nama", "pct_informal"]].sort_values("pct_informal").round(1).to_string(index=False))
 
+def b2b_gwpca(k=3, nsim=0):
+    """
+    Geographically Weighted PCA (opsi B), padanan bw.gwpca dan gwpca di paket R GWmodel.
+    Menguji apakah bobot indikator berubah antar wilayah (pesisir, darek, Mentawai).
+
+    Kebutuhan:  pip install geopandas numpy pandas scipy
+    Masukan:    DataWilayahDesa (GeoDataFrame, kolom iddesa), indikator_desa.csv, indikator_meta.csv
+    Keluaran:   gwpca_desa.csv (varians lokal PC1, indikator dominan, skor lokal PC1),
+                gwpca_loading_pc1.csv (loading PC1 tiap indikator di tiap desa)
+    k:          jumlah komponen untuk validasi silang bandwidth (sama dengan k = 3 di GWmodel)
+    nsim:       jumlah permutasi uji Monte Carlo variabilitas lokal (0 = dilewati; 99 untuk paper)
+    """
+    from scipy.spatial import cKDTree
+
+    ID = "iddesa"
+    z = pd.read_csv("indikator_desa.csv", dtype={ID: str})
+    vars_ = list(pd.read_csv("indikator_meta.csv")["indikator"])
+    gdf = DataWilayahDesa[[ID, "geometry"]].to_crs("EPSG:32747").merge(z[[ID] + vars_], on=ID).reset_index(drop=True)
+    pt = gdf.geometry.representative_point()
+    xy = np.c_[pt.x, pt.y]
+    X = gdf[vars_].values.astype(float)
+    X = (X - X.mean(0)) / X.std(0, ddof=1)       # standardisasi seperti scale() di R
+    n, p = X.shape
+    tree = cKDTree(xy)
+
+    def pca_lokal(i, bw, Xd=X, tanpa_i=False):
+        # kernel bisquare adaptif: bw = jumlah tetangga terdekat, jarak tetangga ke-bw sebagai lebar
+        d, j = tree.query(xy[i], k=min(bw + 1, n))
+        h = max(d[-1], 1e-9)
+        w = np.where(d < h, (1 - (d / h) ** 2) ** 2, 0.0)
+        if tanpa_i:
+            w[j == i] = 0.0
+        Xi = Xd[j]
+        mu = w @ Xi / w.sum()
+        Xc = Xi - mu
+        C = (w[:, None] * Xc).T @ Xc / w.sum()     # kovarians berbobot
+        val, vec = np.linalg.eigh(C)
+        return val[::-1], vec[:, ::-1], mu
+
+    # 1. Bandwidth adaptif lewat validasi silang leave-one-out (galat rekonstruksi k komponen)
+    def cv(bw):
+        e = 0.0
+        for i in range(n):
+            _, V, mu = pca_lokal(i, bw, tanpa_i=True)
+            Vk = V[:, :k]
+            xc = X[i] - mu
+            e += np.sum((xc - Vk @ (Vk.T @ xc)) ** 2)
+        return e
+
+    kandidat = np.unique(np.linspace(max(p + 1, 30), n - 1, 15).astype(int))
+    skor_cv = {int(b): cv(b) for b in kandidat}
+    bw = min(skor_cv, key=skor_cv.get)
+    print("Validasi silang bandwidth:", {b: round(v, 1) for b, v in skor_cv.items()})
+    print(f"Bandwidth adaptif terpilih: {bw} desa tetangga")
+
+    # 2. PCA lokal di tiap desa
+    pv1, dominan, skor, load = np.zeros(n), [], np.zeros(n), np.zeros((n, p))
+    for i in range(n):
+        val, V, mu = pca_lokal(i, bw)
+        l = V[:, 0]
+        if l.mean() < 0:                           # arah diseragamkan: rata-rata loading positif
+            l = -l
+        pv1[i] = 100 * val[0] / val.sum()
+        dominan.append(vars_[int(np.argmax(np.abs(l)))])
+        skor[i] = (X[i] - mu) @ l
+        load[i] = l
+
+    out = pd.DataFrame({ID: gdf[ID], "gwpca_var_pc1": pv1, "gwpca_indikator_dominan": dominan, "gwpca_skor_pc1": skor})
+    out.to_csv("gwpca_desa.csv", index=False)
+    pd.concat([gdf[[ID]], pd.DataFrame(load, columns=vars_)], axis=1).to_csv("gwpca_loading_pc1.csv", index=False)
+    print(out["gwpca_indikator_dominan"].value_counts().head(10))
+
+    # 3. Uji Monte Carlo (opsional): apakah simpangan baku varians lokal PC1 lebih besar dari
+    #    hasil acak bila lokasi desa dipermutasi (padanan montecarlo.gwpca.2)
+    if nsim:
+        rng = np.random.default_rng(2026)
+        obs = pv1.std()
+        acak = []
+        for _ in range(nsim):
+            Xp = X[rng.permutation(n)]
+            v = [pca_lokal(i, bw, Xd=Xp)[0] for i in range(n)]
+            acak.append(np.std([100 * a[0] / a.sum() for a in v]))
+        p_mc = (1 + np.sum(np.array(acak) >= obs)) / (nsim + 1)
+        print(f"Monte Carlo GW-PCA: sd varians lokal PC1 = {obs:.2f}, p = {p_mc:.3f}")
+
 def b3_validasi_kalibrasi():
     """
     Validasi eksternal di tingkat kab/kota dan kalibrasi top-down (opsi E).
@@ -823,8 +920,9 @@ def b4_spasial_tipologi():
 
 if __name__ == "__main__":
     # DataWilayahDesa = gpd.read_file("batas_desa_sumbar_2025.gpkg")[["iddesa", "geometry"]]
-    LANGKAH = ["a1", "a2", "b0", "b1", "b2", "b3", "b4"]  # tambahkan "a3" bila memakai variabel cadangan
+    LANGKAH = ["a1", "a2", "b0", "b1", "b2", "b2b", "b3", "b4"]  # tambahkan "a3" bila memakai variabel cadangan
     peta = {"a1": a1_poi_jalan, "a2": a2_rwi_ookla, "a3": a3_cadangan_grdi, "b0": b0_tabel_bps, "b1": b1_indikator,
+            "b2b": b2b_gwpca,
             "b2": b2_indeks, "b3": b3_validasi_kalibrasi, "b4": b4_spasial_tipologi}
     for s in LANGKAH:
         print(f"=== {s} ===")

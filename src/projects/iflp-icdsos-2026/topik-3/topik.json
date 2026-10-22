@@ -1086,7 +1086,7 @@
         {
           "id": "t3-06",
           "judul": "PCA berjenjang dan GW-PCA",
-          "isi": "Python b2 untuk bobot dan sub-indeks, R untuk GW-PCA.",
+          "isi": "Python b2 untuk bobot dan sub-indeks, Python b2b untuk GW-PCA.",
           "target": "2026-10-23"
         },
         {
@@ -2055,7 +2055,7 @@
     }
   },
   "kode": {
-    "pengantar": "Tahun analisis 2025 (mengikuti PODES 2025). Semua skrip mengasumsikan batas desa sudah tersimpan di variabel DataWilayahDesa: FeatureCollection di GEE, GeoDataFrame di Python, dan objek sf di R, masing-masing dengan kolom iddesa (10 digit, sama dengan kode PODES). Urutan: gee_01, gee_02, gee_03, lalu Python bagian A (a1, a2) dan B (b1, b2), lalu R GW-PCA, lalu Python b0 (persentase pekerja informal kab/kota dari tabel BPS), b3, dan b4. Keluaran tiap langkah menjadi masukan langkah berikutnya.",
+    "pengantar": "Tahun analisis 2025 (mengikuti PODES 2025). Semua skrip mengasumsikan batas desa sudah tersimpan di variabel DataWilayahDesa: FeatureCollection di GEE, GeoDataFrame di Python, masing-masing dengan kolom iddesa (10 digit, sama dengan kode PODES). Urutan: gee_01, gee_02, gee_03, lalu Python bagian A (a1, a2) dan B (b0 persentase pekerja informal kab/kota dari tabel BPS, b1, b2, b2b GW-PCA, b3, b4). Semua pengolahan di luar Earth Engine memakai Python. Keluaran tiap langkah menjadi masukan langkah berikutnya.",
     "berkas": [
       {
         "file": "gee_01_cahaya_terbangun_penduduk.js",
@@ -2083,15 +2083,9 @@
       },
       {
         "file": "python_indeks_informal.py",
-        "judul": "Python: A. Pengumpulan Data (a1 POI dan jalan, a2 RWI dan Ookla, a3 cadangan GRDI) dan B. Pengolahan (b1 indikator, b2 indeks, b3 validasi dan kalibrasi, b4 spasial)",
+        "judul": "Python: A. Pengumpulan Data (a1 POI dan jalan, a2 RWI dan Ookla, a3 cadangan GRDI) dan B. Pengolahan (b0 tabel BPS, b1 indikator, b2 indeks, b2b GW-PCA, b3 validasi dan kalibrasi, b4 spasial)",
         "bahasa": "Python",
-        "keluaran": "py01_poi_jalan.csv, py02_rwi_ookla.csv, indikator_desa.csv, indeks_desa.csv, validasi_kabkota.csv, estimasi_proporsi_desa.csv, nagari_prioritas.csv, a3_grdi.csv"
-      },
-      {
-        "file": "r_05_gwpca.R",
-        "judul": "R: GW-PCA (dijalankan setelah b2, sebelum b3)",
-        "bahasa": "R",
-        "keluaran": "gwpca_desa.csv"
+        "keluaran": "py01_poi_jalan.csv, py02_rwi_ookla.csv, indikator_desa.csv, indeks_desa.csv, gwpca_desa.csv, gwpca_loading_pc1.csv, validasi_kabkota.csv, estimasi_proporsi_desa.csv, nagari_prioritas.csv, a3_grdi.csv"
       }
     ]
   }
