@@ -4,6 +4,8 @@ const projectFiles = import.meta.glob('./*/project.json', { eager: true, import:
 const topicFiles = import.meta.glob('./*/*/topik.json', { eager: true, import: 'default' })
 // Kode ekstraksi opsional per topik: src/projects/<projek>/<topik>/kode/*
 const codeFiles = import.meta.glob('./*/*/kode/*.{js,py,R}', { eager: true, query: '?raw', import: 'default' })
+// Metadata variabel keluaran kode (opsional): src/projects/<projek>/<topik>/metadata_variabel.json
+const metaFiles = import.meta.glob('./*/*/metadata_variabel.json', { eager: true, import: 'default' })
 
 function kodeOf(topicPath) {
   const base = topicPath.replace('topik.json', 'kode/')
@@ -19,7 +21,7 @@ export const projects = Object.entries(projectFiles)
     const dir = path.split('/')[1]
     const topics = Object.entries(topicFiles)
       .filter(([tp]) => tp.split('/')[1] === dir)
-      .map(([tp, t]) => ({ ...t, kodeSumber: kodeOf(tp) }))
+      .map(([tp, t]) => ({ ...t, kodeSumber: kodeOf(tp), metadataVariabel: metaFiles[tp.replace('topik.json', 'metadata_variabel.json')] }))
       .sort((a, b) => a.nomor - b.nomor)
     return { ...p, topics }
   })

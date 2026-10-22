@@ -55,10 +55,12 @@ var gediAda = gedi.mask().rename('gedi_n_footprint');
 
 // ---------- 3. Open Buildings 2.5D Temporal (2016-2023, 4 m) ----------
 var obt = ee.ImageCollection('GOOGLE/Research/open-buildings-temporal/v1').filterBounds(wilayah);
+// Stempel waktu tiap tahun bukan tepat 30 Juni 00:00 UTC, jadi filter per rentang tahun,
+// bukan ee.Filter.eq pada inference_time_epoch_s (hasilnya koleksi kosong, citra tanpa band).
 function obtTahun(th) {
-  var epoch = ee.Date(th + '-06-30').millis().divide(1000);
-  return obt.filter(ee.Filter.eq('inference_time_epoch_s', epoch)).mosaic();
+  return obt.filterDate(th + '-01-01', (th + 1) + '-01-01').mosaic();
 }
+print('Jumlah tile Open Buildings Temporal 2023:', obt.filterDate('2023-01-01', '2024-01-01').size());
 var ob2023 = obtTahun(2023);
 var ob2016 = obtTahun(2016);
 var obCount2023 = ob2023.select('building_fractional_count').rename('obt_jumlah_2023');

@@ -14,6 +14,7 @@ import Berkas from '../components/Berkas.jsx'
 import Tex from '../components/Tex.jsx'
 import IndexStructure from '../components/IndexStructure.jsx'
 import KodeSumber from '../components/KodeSumber.jsx'
+import MetadataVariabel from '../components/MetadataVariabel.jsx'
 import Kolaborator from '../components/Kolaborator.jsx'
 import NotFound from './NotFound.jsx'
 import { deadlineOf, getProject } from '../projects/index.js'
@@ -564,6 +565,7 @@ function TopicView({ project, topic }) {
                   <h2>Kode ekstraksi dan pengolahan</h2>
                   {topic.kode.pengantar && <p className="prose">{topic.kode.pengantar}</p>}
                   <KodeSumber kode={topic.kode} sumber={topic.kodeSumber || {}} />
+                  {topic.metadataVariabel && <MetadataVariabel data={topic.metadataVariabel} />}
                 </section>
               )}
 

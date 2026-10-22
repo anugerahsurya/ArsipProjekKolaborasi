@@ -2045,7 +2045,7 @@
     }
   },
   "kode": {
-    "pengantar": "Tahun analisis 2025 (mengikuti PODES 2025). Semua skrip mengasumsikan batas desa sudah tersimpan di variabel DataWilayahDesa: FeatureCollection di GEE, GeoDataFrame di Python, dan objek sf di R, masing-masing dengan kolom iddesa (10 digit, sama dengan kode PODES). Urutan: gee_01, gee_02, gee_03, lalu Python bagian A (a1, a2) dan B (b1, b2), lalu R GW-PCA, lalu Python b3 dan b4. Keluaran tiap langkah menjadi masukan langkah berikutnya.",
+    "pengantar": "Tahun analisis 2025 (mengikuti PODES 2025). Semua skrip mengasumsikan batas desa sudah tersimpan di variabel DataWilayahDesa: FeatureCollection di GEE, GeoDataFrame di Python, dan objek sf di R, masing-masing dengan kolom iddesa (10 digit, sama dengan kode PODES). Urutan: gee_01, gee_02, gee_03, lalu Python bagian A (a1, a2) dan B (b1, b2), lalu R GW-PCA, lalu Python b0 (persentase pekerja informal kab/kota dari tabel BPS), b3, dan b4. Keluaran tiap langkah menjadi masukan langkah berikutnya.",
     "berkas": [
       {
         "file": "gee_01_cahaya_terbangun_penduduk.js",

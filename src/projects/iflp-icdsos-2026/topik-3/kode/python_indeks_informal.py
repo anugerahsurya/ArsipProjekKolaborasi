@@ -11,6 +11,7 @@ Satu berkas Python untuk semua langkah di luar GEE dan R.
     b1_indikator    PODES 2025, penggabungan semua sumber, normalisasi, arah indikator
     b2_indeks       PCA berjenjang, bobot entropi, agregasi, Monte Carlo
     (GW-PCA dijalankan di R: r_05_gwpca.R, di antara b2 dan b3)
+    b0_tabel_bps    persentase pekerja informal kab/kota dari tabel status pekerjaan BPS
     b3_validasi_kalibrasi  validasi kab/kota, validitas konvergen, kalibrasi top-down
     b4_spasial_tipologi    Moran's I, LISA, Gi*, tipologi, nagari prioritas
 
@@ -295,7 +296,8 @@ def b1_indikator():
     p1 = pd.read_csv("podes2025_desa_p1.csv", dtype=str)
     p2 = pd.read_csv("podes2025_desa_p2.csv", dtype=str)
     for p in (p1, p2):
-        p[ID] = p["r101"].str.zfill(2) + p["r102"].str.zfill(2) + p["r103"].str.zfill(3) + p["r104"].str.zfill(3)
+        p.columns = p.columns.str.lower()  # layout PODES memakai R101-R104 huruf besar
+        p[ID] =p["r101"].str.zfill(2) + p["r102"].str.zfill(2) + p["r103"].str.zfill(3) + p["r104"].str.zfill(3)
     podes = p1.merge(p2, on=ID, suffixes=("", "_p2"))
     podes = podes[podes["r101"] == "13"].copy()
 
@@ -315,7 +317,8 @@ def b1_indikator():
     podes["dummy_pertanian"] = (podes["r906a"] == "1").astype(int)  # 1 = pertanian (cek kodebook)
     podes["perkotaan"] = (podes["r105"] == "1").astype(int)
     # Variabel pendidikan dan sinyal: ganti nama kolom sesuai metadata PODES 2025
-    KOLOM_SMA_SMK = []   # contoh: ["r701...","r701..."]  (cek metadata)
+    # SMA, MA, SMK negeri dan swasta (layout PODES 2025 desa part 1, r701g-r701i kolom k2/k3)
+    KOLOM_SMA_SMK = ["r701gk2", "r701gk3", "r701hk2", "r701hk3", "r701ik2", "r701ik3"]
     podes["sma_smk"] = num(KOLOM_SMA_SMK).sum(axis=1) if KOLOM_SMA_SMK else np.nan
 
     per_kk = ["pasar_tanpa_bangunan", "pasar_semi", "pasar_permanen", "warung_makan", "kelontong",
@@ -554,6 +557,59 @@ def b2_indeks():
     pd.DataFrame({"simulasi": range(len(geser)), "median_geser_peringkat": geser}).to_csv("sensitivitas.csv", index=False)
     out.to_csv("indeks_desa.csv", index=False)
 
+def b0_tabel_bps():
+    """
+    Persentase pekerja informal kab/kota tidak tersaji langsung di web BPS Sumbar, jadi dihitung dari
+    tabel "Penduduk 15+ yang Bekerja Menurut Kabupaten/Kota dan Status Pekerjaan Utama (6 kategori)",
+    Agustus 2025 (sumbar.bps.go.id, diperbarui 10 November 2025). Definisi proksi BPS:
+      informal = berusaha sendiri + berusaha dibantu buruh tidak tetap/tidak dibayar
+                 + pekerja bebas + pekerja keluarga/tidak dibayar
+
+    Masukan:   pendapatan_informal_kabkota.csv (opsional; kolom kdkab, pendapatan_informal) dari tabel
+               "Rata-rata Pendapatan Bersih Sebulan Pekerja Informal Menurut Kabupaten/Kota"
+    Keluaran:  tabel_bps_informal_kabkota.csv (kdkab, nama, pct_informal, pendapatan_informal)
+    """
+    import os
+
+    # kdkab, nama, berusaha sendiri, dibantu buruh tidak tetap, dibantu buruh tetap, buruh/karyawan,
+    # pekerja bebas, pekerja keluarga
+    tabel = [
+        ("1301", "Kab. Kepulauan Mentawai", 12659, 11723, 649, 10872, 1996, 18444),
+        ("1302", "Kab. Pesisir Selatan", 52145, 50325, 9599, 79448, 40549, 40202),
+        ("1303", "Kab. Solok", 38840, 55785, 6510, 43277, 38365, 49119),
+        ("1304", "Kab. Sijunjung", 38978, 19510, 4942, 38205, 16510, 16502),
+        ("1305", "Kab. Tanah Datar", 52792, 46372, 8186, 49436, 21207, 34869),
+        ("1306", "Kab. Padang Pariaman", 57491, 47090, 5423, 57383, 31324, 24413),
+        ("1307", "Kab. Agam", 68639, 49457, 10383, 85149, 39193, 38082),
+        ("1308", "Kab. Lima Puluh Kota", 51330, 36128, 8262, 65905, 31450, 31016),
+        ("1309", "Kab. Pasaman", 42982, 45251, 4493, 38161, 15028, 20158),
+        ("1310", "Kab. Solok Selatan", 23655, 21609, 3302, 34935, 11590, 18075),
+        ("1311", "Kab. Dharmasraya", 25522, 24522, 6779, 48836, 8044, 17001),
+        ("1312", "Kab. Pasaman Barat", 43501, 35371, 20318, 58866, 34690, 25003),
+        ("1371", "Kota Padang", 90674, 45227, 16516, 222567, 35288, 35506),
+        ("1372", "Kota Solok", 8372, 3807, 2578, 17201, 4613, 3849),
+        ("1373", "Kota Sawahlunto", 9311, 3851, 1017, 17676, 1484, 3947),
+        ("1374", "Kota Padang Panjang", 5658, 3309, 1286, 12636, 2767, 3678),
+        ("1375", "Kota Bukittinggi", 16155, 7093, 3709, 25519, 1924, 9202),
+        ("1376", "Kota Payakumbuh", 18371, 10342, 4467, 28033, 7700, 7688),
+        ("1377", "Kota Pariaman", 10255, 6506, 2954, 21119, 5345, 5556),
+    ]
+    kol = ["kdkab", "nama", "bs", "bt", "btt", "buruh", "bebas", "keluarga"]
+    df = pd.DataFrame(tabel, columns=kol)
+    total = df[["bs", "bt", "btt", "buruh", "bebas", "keluarga"]].sum(axis=1)
+    df["pct_informal"] = 100 * (df["bs"] + df["bt"] + df["bebas"] + df["keluarga"]) / total
+    prov = 100 * df[["bs", "bt", "bebas", "keluarga"]].sum().sum() / total.sum()
+    print(f"Provinsi: {prov:.1f}% (cocokkan dengan rilis resmi BPS Sumbar Agustus 2025)")
+
+    if os.path.exists("pendapatan_informal_kabkota.csv"):
+        pend = pd.read_csv("pendapatan_informal_kabkota.csv", dtype={"kdkab": str})
+        df = df.merge(pend[["kdkab", "pendapatan_informal"]], on="kdkab", how="left")
+    else:
+        print("pendapatan_informal_kabkota.csv belum ada; validasi sisi pendapatan dilewati")
+        df["pendapatan_informal"] = np.nan
+    df[["kdkab", "nama", "pct_informal", "pendapatan_informal"]].to_csv("tabel_bps_informal_kabkota.csv", index=False)
+    print(df[["nama", "pct_informal"]].sort_values("pct_informal").round(1).to_string(index=False))
+
 def b3_validasi_kalibrasi():
     """
     Validasi eksternal di tingkat kab/kota dan kalibrasi top-down (opsi E).
@@ -716,8 +772,8 @@ def b4_spasial_tipologi():
 
 if __name__ == "__main__":
     # DataWilayahDesa = gpd.read_file("batas_desa_sumbar_2025.gpkg")[["iddesa", "geometry"]]
-    LANGKAH = ["a1", "a2", "b1", "b2", "b3", "b4"]  # tambahkan "a3" bila memakai variabel cadangan
-    peta = {"a1": a1_poi_jalan, "a2": a2_rwi_ookla, "a3": a3_cadangan_grdi, "b1": b1_indikator,
+    LANGKAH = ["a1", "a2", "b0", "b1", "b2", "b3", "b4"]  # tambahkan "a3" bila memakai variabel cadangan
+    peta = {"a1": a1_poi_jalan, "a2": a2_rwi_ookla, "a3": a3_cadangan_grdi, "b0": b0_tabel_bps, "b1": b1_indikator,
             "b2": b2_indeks, "b3": b3_validasi_kalibrasi, "b4": b4_spasial_tipologi}
     for s in LANGKAH:
         print(f"=== {s} ===")
