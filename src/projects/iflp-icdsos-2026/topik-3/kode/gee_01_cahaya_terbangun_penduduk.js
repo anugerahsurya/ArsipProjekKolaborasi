@@ -120,7 +120,8 @@ Export.table.toDrive({
 });
 
 Export.table.toDrive({
-  collection: hasil.select(['iddesa', 'pop', 'pop_15_19_2025', 'ntl_popw', 'ntl_per_ha_terbangun',
+  // pop_wp2020 ikut diekspor sebagai sebaran alternatif saat benchmarking ke proyeksi BPS (Python b1)
+  collection: hasil.select(['iddesa', 'pop', 'pop_wp2020', 'pop_15_19_2025', 'ntl_popw', 'ntl_per_ha_terbangun',
     'pct_terbangun', 'pct_nres', 'kepadatan_pdd', 'rasio_ketergantungan',
     'menit_ke_kota_popw', 'lereng_popw', 'lon_popw', 'lat_popw'], null, false),
   description: 'gee01_cahaya_terbangun_penduduk_' + TAHUN,

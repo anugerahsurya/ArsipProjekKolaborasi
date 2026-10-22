@@ -15,12 +15,23 @@
     {
       "variabel": "pop",
       "berkas": "gee01_cahaya_terbangun_penduduk_2025.csv",
-      "deskripsi": "Jumlah penduduk desa 2025",
+      "deskripsi": "Jumlah penduduk desa 2025 dari grid GHS-POP (sebelum benchmarking)",
       "satuan": "jiwa",
       "sumber": "JRC GHS-POP R2023A epoch 2025, 100 m",
-      "cara": "Jumlah piksel penduduk di dalam poligon desa (fraksi piksel diperhitungkan)",
+      "cara": "Jumlah piksel penduduk di dalam poligon desa (fraksi piksel diperhitungkan). Di Python b1 nilai ini disimpan sebagai pop_grid dan diganti hasil benchmarking ke proyeksi BPS",
       "zonal": "sum",
       "status": "utama",
+      "dimensi": ""
+    },
+    {
+      "variabel": "pop_wp2020",
+      "berkas": "gee01_cahaya_terbangun_penduduk_2025.csv",
+      "deskripsi": "Jumlah penduduk desa 2020 dari WorldPop, sebaran alternatif saat benchmarking",
+      "satuan": "jiwa",
+      "sumber": "WorldPop age-sex 2020 (IDN), 100 m",
+      "cara": "Jumlah band population di dalam poligon desa",
+      "zonal": "sum",
+      "status": "pendukung",
       "dimensi": ""
     },
     {
@@ -29,7 +40,7 @@
       "deskripsi": "Penduduk umur 15-19 tahun 2025",
       "satuan": "jiwa",
       "sumber": "WorldPop age-sex 2020 (IDN), 100 m; JRC GHS-POP R2023A epoch 2025, 100 m",
-      "cara": "Porsi umur 15-19 WorldPop 2020 di desa x pop 2025",
+      "cara": "Porsi umur 15-19 WorldPop 2020 di desa x pop 2025. Dihitung ulang di b1 memakai pop hasil benchmarking BPS",
       "zonal": "sum lalu rasio",
       "status": "utama",
       "dimensi": ""
@@ -84,7 +95,7 @@
       "deskripsi": "Kepadatan penduduk",
       "satuan": "jiwa/km2",
       "sumber": "JRC GHS-POP R2023A epoch 2025, 100 m",
-      "cara": "pop / luas desa (km2)",
+      "cara": "pop / luas desa (km2). Dihitung ulang di b1 memakai pop hasil benchmarking BPS",
       "zonal": "sum lalu rasio",
       "status": "utama",
       "dimensi": ""
@@ -623,7 +634,7 @@
       "deskripsi": "Jumlah radiansi cahaya malam per 1.000 penduduk (pengganti RWI)",
       "satuan": "nW/cm2/sr per 1.000 jiwa",
       "sumber": "NOAA VIIRS DNB VCMSLCFG, median bulanan 2025, sekitar 463 m; JRC GHS-POP R2023A epoch 2025, 100 m",
-      "cara": "ntl_sum_100m / max(pop, 1) x 1.000",
+      "cara": "ntl_sum_100m / max(pop, 1) x 1.000. Dihitung ulang di b1 memakai pop hasil benchmarking BPS",
       "zonal": "sum lalu rasio",
       "status": "cadangan",
       "dimensi": "Cadangan D7 keuangan (-)"
@@ -755,7 +766,7 @@
       "deskripsi": "POI usaha kecil per 1.000 penduduk",
       "satuan": "titik per 1.000 jiwa",
       "sumber": "Overture Maps places (confidence >= 0,5), unduhan 2025; JRC GHS-POP R2023A epoch 2025, 100 m",
-      "cara": "1.000 x poi_kecil / max(pop, 1)",
+      "cara": "1.000 x poi_kecil / max(pop, 1). Dihitung ulang di b1 memakai pop hasil benchmarking BPS",
       "zonal": "rasio",
       "status": "utama",
       "dimensi": "D3 usaha (+)"
@@ -856,6 +867,28 @@
       "sumber": "PODES 2025 (BPS)",
       "cara": "r501a1 + r501a2 + r501b",
       "zonal": "-",
+      "status": "pendukung",
+      "dimensi": ""
+    },
+    {
+      "variabel": "pop",
+      "berkas": "indikator_desa.csv (b1_indikator)",
+      "deskripsi": "Penduduk desa 2025 hasil benchmarking: total tiap kab/kota sama dengan proyeksi BPS 2025, sebaran antar-desa mengikuti SEBARAN_PENDUDUK",
+      "satuan": "jiwa",
+      "sumber": "BPS Sumbar, Proyeksi Penduduk 2020-2035 per kab/kota, pertengahan 2025; GHS-POP 2025, WorldPop 2020, atau keluarga PODES 2025",
+      "cara": "pop_d = basis_d / sum_(d di k) basis_d x P_k; basis = GHS-POP (bawaan), WorldPop 2020, atau keluarga PODES",
+      "zonal": "-",
+      "status": "utama",
+      "dimensi": "Bobot agregasi kab/kota, penyebut indikator per kapita"
+    },
+    {
+      "variabel": "pop_grid",
+      "berkas": "indikator_desa.csv (b1_indikator)",
+      "deskripsi": "Penduduk desa dari grid GHS-POP sebelum benchmarking (arsip pembanding)",
+      "satuan": "jiwa",
+      "sumber": "JRC GHS-POP R2023A epoch 2025, 100 m",
+      "cara": "Salinan kolom pop dari gee01",
+      "zonal": "sum",
       "status": "pendukung",
       "dimensi": ""
     },
@@ -1019,7 +1052,7 @@
       "deskripsi": "Bank dan ATM per 10.000 penduduk dewasa (SDG 8.10.1)",
       "satuan": "per 10.000 jiwa",
       "sumber": "PODES 2025 (BPS); OpenStreetMap lewat osmnx (shop, amenity), unduhan 2025; JRC GHS-POP R2023A epoch 2025, 100 m",
-      "cara": "10.000 x (bank + osm_bank_atm) / (0,65 x pop)",
+      "cara": "10.000 x (bank + osm_bank_atm) / (0,65 x pop). Dihitung ulang di b1 memakai pop hasil benchmarking BPS",
       "zonal": "-",
       "status": "utama",
       "dimensi": "D7 keuangan (-)"

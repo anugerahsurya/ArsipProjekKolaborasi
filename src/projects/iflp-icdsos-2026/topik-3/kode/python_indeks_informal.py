@@ -278,6 +278,56 @@ def a3_cadangan_grdi():
 # BAGIAN B. PENGOLAHAN
 # =====================================================================
 
+# Proyeksi penduduk pertengahan tahun 2025 per kab/kota (ribu jiwa), BPS Provinsi Sumatera Barat,
+# tabel "[Proyeksi 2020-2035] Jumlah Penduduk Menurut Kabupaten/Kota dan Jenis Kelamin" (diperbarui 25 Mei 2026).
+PENDUDUK_BPS_2025 = {
+    "1301": 94.05, "1302": 540.38, "1303": 415.44, "1304": 249.79, "1305": 392.74, "1306": 467.04,
+    "1307": 566.76, "1308": 405.71, "1309": 322.93, "1310": 198.51, "1311": 248.11, "1312": 462.79,
+    "1371": 965.05, "1372": 81.06, "1373": 69.70, "1374": 60.26, "1375": 125.92, "1376": 148.60,
+    "1377": 99.44,
+}
+
+# Sebaran penduduk antar-desa di dalam kab/kota:
+#   "ghs"      GHS-POP 2025 (grid 100 m berbasis luas terbangun, epoch 2025)
+#   "worldpop" WorldPop 2020 (grid 100 m, unconstrained)
+#   "podes_kk" jumlah keluarga PODES 2025 (r501a1 + r501a2 + r501b)
+SEBARAN_PENDUDUK = "ghs"
+
+
+def benchmark_penduduk(df, ID="iddesa"):
+    """
+    Penduduk desa disesuaikan agar totalnya per kab/kota sama dengan proyeksi BPS 2025:
+        pop_d = basis_d / sum_{d in k} basis_d x P_k
+    Sebaran antar-desa mengikuti SEBARAN_PENDUDUK. Rata-rata berbobot penduduk di dalam desa
+    (ntl_popw, menit_ke_kota_popw, lereng_popw) tidak berubah karena bobotnya relatif.
+    """
+    kd = df[ID].str[:4]
+    pilihan = {"ghs": df["pop"], "worldpop": df.get("pop_wp2020"), "podes_kk": df["keluarga"]}
+    basis = pilihan[SEBARAN_PENDUDUK].astype(float).fillna(0)
+
+    # perbandingan sebaran antar sumber (Spearman antar-desa)
+    tersedia = {k: v for k, v in pilihan.items() if v is not None}
+    print(pd.DataFrame(tersedia).corr(method="spearman").round(3))
+
+    total_k = kd.map(PENDUDUK_BPS_2025) * 1000
+    df["pop_grid"] = df["pop"]
+    df["pop"] = basis / basis.groupby(kd).transform("sum") * total_k
+    rasio = (df["pop"] / df["pop_grid"].where(df["pop_grid"] > 0)).fillna(1)
+
+    # variabel turunan penduduk dihitung ulang dengan penduduk hasil benchmarking
+    df["kepadatan_pdd"] = df["pop"] / df["luas_km2"]
+    df["pop_15_19_2025"] = df["pop_15_19_2025"] * rasio
+    df["poi_kecil_per_1000pdd"] = 1000 * df["poi_kecil"] / df["pop"].clip(lower=1)
+    if "ntl_per_kapita" in df:
+        df["ntl_per_kapita"] = df["ntl_per_kapita"] / rasio
+
+    cek = df.groupby(kd)["pop"].sum() / 1000
+    print("Total kab/kota setelah benchmarking (ribu jiwa), harus sama dengan BPS:")
+    print(pd.DataFrame({"hasil": cek.round(2), "bps": pd.Series(PENDUDUK_BPS_2025)}).to_string())
+    print(f"Faktor penyesuaian GHS-POP per kab/kota: "
+          f"{(total_k.groupby(kd).first() / df['pop_grid'].groupby(kd).sum()).round(3).to_dict()}")
+    return df
+
 def b1_indikator():
     """
     Variabel PODES 2025, penggabungan semua sumber, dan penyiapan indikator.
@@ -348,6 +398,7 @@ def b1_indikator():
               "gee04e_ntl_per_kapita_2025.csv", "a3_grdi.csv"]:
         if os.path.exists(f):
             df = df.merge(rd(f), on=ID, how="left")
+    df = benchmark_penduduk(df)
     dewasa = df["pop"] * 0.65  # pendekatan penduduk 15+ bila tabel umur tidak dipakai
     df["bank_per10rb_dewasa"] = 1e4 * (df["bank"] + df["osm_bank_atm"]) / dewasa.clip(lower=1)  # SDG 8.10.1
     df["sma_smk_per1000_15_19"] = 1000 * df["sma_smk"] / df["pop_15_19_2025"].clip(lower=1)

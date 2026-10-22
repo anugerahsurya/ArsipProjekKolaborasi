@@ -149,6 +149,11 @@
         "akses": "Data milik BPS Sumbar"
       },
       {
+        "sumber": "Tabel BPS Sumbar: [Proyeksi 2020-2035] jumlah penduduk menurut kab/kota, 2025",
+        "isi": "Total penduduk kab/kota pertengahan 2025 untuk benchmarking penduduk desa (grid GHS-POP disesuaikan ke angka resmi)",
+        "akses": "https://sumbar.bps.go.id/id/statistics-table/2/NzU1IzI=/-proyeksi-2020-2035--jumlah-penduduk-menurut-kabupaten-kota-dan-jenis-kelamin-di-provinsi-sumatera-barat--ribu-jiwa-.html"
+      },
+      {
         "sumber": "Tabel BPS Sumbar: penduduk bekerja menurut kab/kota dan status pekerjaan utama (6 kategori), Agustus 2025",
         "isi": "Diolah menjadi persentase pekerja informal kab/kota untuk validasi eksternal dan kalibrasi agregat (bukan label desa)",
         "akses": "https://sumbar.bps.go.id/id/statistics-table/2/ODU1IzI=/penduduk-berumur-15-tahun-ke-atas-yang-bekerja-selama-seminggu-yang-lalu-menurut-kabupaten-kota-dan-status-pekerjaan-utama--6-kategori---jiwa-.html"
@@ -1052,7 +1057,7 @@
         {
           "id": "t3-02",
           "judul": "Unduh tabel dan hitung persentase informal",
-          "isi": "Tabel status pekerjaan 6 kategori per kab/kota: hitung persentase pekerja informal (berusaha sendiri + dibantu buruh tidak tetap + pekerja bebas + pekerja keluarga, dibagi total pekerja), cek angka provinsi dengan rilis BPS. Unduh juga tabel pendapatan pekerja informal per kab/kota.",
+          "isi": "Tabel status pekerjaan 6 kategori per kab/kota: hitung persentase pekerja informal (berusaha sendiri + dibantu buruh tidak tetap + pekerja bebas + pekerja keluarga, dibagi total pekerja), cek angka provinsi dengan rilis BPS. Unduh juga tabel pendapatan pekerja informal per kab/kota. Unduh juga proyeksi penduduk kab/kota 2025 untuk benchmarking penduduk desa.",
           "target": "2026-10-20"
         },
         {
@@ -1863,6 +1868,11 @@
         "judul": "Pergeseran peringkat (sensitivitas)",
         "tex": "\\bar R=\\operatorname{median}_{s}\\Big[\\operatorname{median}_{d}\\big|R^{(s)}_d-R^{(0)}_d\\big|\\Big]",
         "ket": "R^(0) = peringkat indeks utama, R^(s) = peringkat pada simulasi s."
+      },
+      {
+        "judul": "Benchmarking penduduk desa ke proyeksi BPS 2025",
+        "tex": "P_d=\\frac{B_d}{\\sum_{d'\\in k}B_{d'}}\\,P^{\\mathrm{BPS}}_k",
+        "ket": "B_d = basis sebaran desa d: GHS-POP 2025 (bawaan), WorldPop 2020, atau jumlah keluarga PODES 2025. P^BPS_k = proyeksi penduduk kab/kota k pertengahan 2025. Jumlah P_d dalam satu kab/kota sama persis dengan angka BPS; indikator per kapita dan kepadatan dihitung ulang dengan P_d."
       },
       {
         "judul": "Persentase pekerja informal kab/kota (proksi BPS)",
