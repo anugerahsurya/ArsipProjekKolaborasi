@@ -290,7 +290,15 @@ function TopicView({ project, topic }) {
                         <tr key={d.sumber}>
                           <td data-label="Sumber"><strong>{d.sumber}</strong></td>
                           <td data-label="Isi">{d.isi}</td>
-                          <td data-label="Akses">{d.akses}</td>
+                          <td data-label="Akses">
+                            {d.akses.startsWith('http') ? (
+                              <a href={d.akses} target="_blank" rel="noreferrer">
+                                {new URL(d.akses).hostname}
+                              </a>
+                            ) : (
+                              d.akses
+                            )}
+                          </td>
                         </tr>
                       ))}
                     </tbody>

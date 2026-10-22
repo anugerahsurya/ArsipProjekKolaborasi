@@ -127,8 +127,8 @@
       },
       {
         "sumber": "Tabel BPS Sumbar: penduduk bekerja menurut kab/kota dan status pekerjaan utama",
-        "isi": "Persentase pekerja informal per kab/kota (definisi proksi status pekerjaan)",
-        "akses": "sumbar.bps.go.id"
+        "isi": "Jumlah pekerja per 6 kategori status pekerjaan per kab/kota (Agustus 2025), diolah menjadi persentase pekerja informal",
+        "akses": "https://sumbar.bps.go.id/id/statistics-table/2/ODU1IzI=/penduduk-berumur-15-tahun-ke-atas-yang-bekerja-selama-seminggu-yang-lalu-menurut-kabupaten-kota-dan-status-pekerjaan-utama--6-kategori---jiwa-.html"
       },
       {
         "sumber": "VIIRS DNB bulanan (NOAA/VIIRS/DNB/MONTHLY_V1/VCMSLCFG)",
@@ -239,7 +239,7 @@
       },
       {
         "judul": "Keterkaitan dengan statistik resmi",
-        "isi": "Proporsi desa pertanian hasil prediksi (dibobot jumlah keluarga) per kab/kota dikorelasikan dengan persentase pekerja informal dari tabel BPS memakai korelasi Spearman. Dengan n = 19, hasil dibaca sebagai indikasi, bukan uji kausal."
+        "isi": "Proporsi desa pertanian hasil prediksi (dibobot jumlah keluarga) per kab/kota dikorelasikan dengan persentase pekerja informal yang dihitung dari tabel status pekerjaan BPS (berusaha sendiri, dibantu buruh tidak tetap, pekerja bebas, dan pekerja keluarga dibagi total pekerja) memakai korelasi Spearman. Dengan n = 19, hasil dibaca sebagai indikasi, bukan uji kausal."
       }
     ],
     "outline": [
@@ -563,7 +563,7 @@
         {
           "id": "t1-03",
           "judul": "Unduh tabel status pekerjaan per kab/kota",
-          "isi": "Tabel BPS Sumbar 6 kategori, hitung persentase pekerja informal per kab/kota.",
+          "isi": "Tabel BPS Sumbar 6 kategori. Hitung persentase pekerja informal (proksi) per kab/kota dan cek angka provinsi dengan rilis BPS.",
           "target": "2026-10-21"
         }
       ]

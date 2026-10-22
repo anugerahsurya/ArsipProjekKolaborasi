@@ -7,7 +7,7 @@
   "subtema": "07 Big Data, Alternative Data, and Data Integration for Official Statistics",
   "prosiding": "Prosiding ICDSOS",
   "ringkasan": [
-    "Penelitian ini membangun indeks ekonomi informal untuk setiap desa, nagari, dan kelurahan di Sumatera Barat. Ini indeks, bukan model prediksi: di tingkat desa tidak ada ukuran langsung ekonomi informal. Statistik resmi yang tersedia hanya persentase pekerja informal per kab/kota dari publikasi BPS. Bobot indikator karena itu ditentukan dari struktur data, sedangkan persentase kab/kota hanya dipakai untuk validasi dan kalibrasi agregat.",
+    "Penelitian ini membangun indeks ekonomi informal untuk setiap desa, nagari, dan kelurahan di Sumatera Barat. Ini indeks, bukan model prediksi: di tingkat desa tidak ada ukuran langsung ekonomi informal. Statistik resmi yang tersedia hanya jumlah penduduk bekerja menurut status pekerjaan per kab/kota dari publikasi BPS, yang diolah menjadi persentase pekerja informal (proksi status pekerjaan). Bobot indikator karena itu ditentukan dari struktur data, sedangkan persentase kab/kota hanya dipakai untuk validasi dan kalibrasi agregat.",
     "Indikator berasal dari tiga kelompok sumber. Google Earth Engine menyediakan cahaya malam VIIRS, luas terbangun GHSL, jejak Open Buildings, indeks spektral dan tekstur Sentinel-2, tutupan lahan Dynamic World dan WorldCover, penduduk WorldPop, waktu tempuh, dan lereng. Platform lain menyediakan POI OpenStreetMap dan Overture, jaringan jalan, Relative Wealth Index, dan kecepatan internet Ookla. Dari PODES 2025 hanya diambil jumlah fasilitas perdagangan, keuangan, dan pendidikan.",
     "Indeks utama disusun dengan PCA berjenjang per dimensi, diuji dengan GW-PCA dan bobot entropi, lalu dikalibrasi ke persentase pekerja informal kab/kota. Keluarannya berupa peta indeks 0 sampai 100 dengan selang ketidakpastian, peta hotspot, tipologi, dan daftar nagari prioritas yang dikaitkan dengan RPJMN 2025–2029 dan SDG 8.3."
   ],
@@ -149,8 +149,13 @@
         "akses": "Data milik BPS Sumbar"
       },
       {
-        "sumber": "Tabel BPS Sumbar: status pekerjaan dan pendapatan pekerja informal per kab/kota",
-        "isi": "Validasi eksternal dan kalibrasi agregat (bukan label desa)",
+        "sumber": "Tabel BPS Sumbar: penduduk bekerja menurut kab/kota dan status pekerjaan utama (6 kategori), Agustus 2025",
+        "isi": "Diolah menjadi persentase pekerja informal kab/kota untuk validasi eksternal dan kalibrasi agregat (bukan label desa)",
+        "akses": "https://sumbar.bps.go.id/id/statistics-table/2/ODU1IzI=/penduduk-berumur-15-tahun-ke-atas-yang-bekerja-selama-seminggu-yang-lalu-menurut-kabupaten-kota-dan-status-pekerjaan-utama--6-kategori---jiwa-.html"
+      },
+      {
+        "sumber": "Tabel BPS Sumbar: rata-rata pendapatan bersih pekerja informal menurut kab/kota",
+        "isi": "Validasi sisi pendapatan",
         "akses": "sumbar.bps.go.id"
       },
       {
@@ -1046,8 +1051,8 @@
         },
         {
           "id": "t3-02",
-          "judul": "Unduh tabel informalitas BPS",
-          "isi": "Status pekerjaan dan pendapatan pekerja informal per kab/kota, untuk validasi dan kalibrasi (bukan label desa).",
+          "judul": "Unduh tabel dan hitung persentase informal",
+          "isi": "Tabel status pekerjaan 6 kategori per kab/kota: hitung persentase pekerja informal (berusaha sendiri + dibantu buruh tidak tetap + pekerja bebas + pekerja keluarga, dibagi total pekerja), cek angka provinsi dengan rilis BPS. Unduh juga tabel pendapatan pekerja informal per kab/kota.",
           "target": "2026-10-20"
         },
         {
@@ -1220,7 +1225,8 @@
     "penegasan": {
       "judul": "Yang dibangun adalah indeks, bukan model prediksi",
       "isi": [
-        "Di tingkat desa tidak ada ukuran langsung ekonomi informal. Statistik resmi yang tersedia hanya persentase pekerja informal per kab/kota dari publikasi BPS.",
+        "Di tingkat desa tidak ada ukuran langsung ekonomi informal. Statistik resmi yang tersedia hanya jumlah penduduk bekerja menurut status pekerjaan per kab/kota dari publikasi BPS, yang diolah menjadi persentase pekerja informal (proksi status pekerjaan).",
+        "Persentase itu tidak tersaji langsung, jadi dihitung sendiri dari tabel penduduk bekerja menurut kab/kota dan status pekerjaan utama dengan definisi proksi BPS. Angka provinsi hasil hitungan dicek terhadap rilis resmi BPS.",
         "Karena itu bobot indikator ditentukan dari struktur data (PCA berjenjang), bukan dilatih dari data pekerja.",
         "Persentase pekerja informal kab/kota (n = 19) hanya dipakai untuk dua hal: validasi eksternal setelah indeks jadi, dan kalibrasi agar estimasi proporsi desa konsisten dengan angka BPS.",
         "Akurasi dibuktikan lewat validitas eksternal, validitas konvergen antar sumber, dan ketahanan terhadap pilihan metode."
@@ -1859,9 +1865,14 @@
         "ket": "R^(0) = peringkat indeks utama, R^(s) = peringkat pada simulasi s."
       },
       {
+        "judul": "Persentase pekerja informal kab/kota (proksi BPS)",
+        "tex": "P^{\\mathrm{inf}}_k=\\frac{BS_k+BT_k+PB_k+PK_k}{\\sum_{j=1}^{6}S_{jk}}\\times 100",
+        "ket": "Dari tabel status pekerjaan 6 kategori. BS = berusaha sendiri, BT = berusaha dibantu buruh tidak tetap/tidak dibayar, PB = pekerja bebas, PK = pekerja keluarga/tidak dibayar, S_jk = jumlah pekerja status j di kab/kota k. Hitungan awal Agustus 2025: provinsi 64,3 persen, Kota Padang 46,4 persen, Kab. Kepulauan Mentawai 79,6 persen."
+      },
+      {
         "judul": "Agregasi ke kab/kota untuk validasi",
         "tex": "\\bar I_k=\\frac{\\sum_{d\\in k}P_d\\,I_d}{\\sum_{d\\in k}P_d},\\qquad \\rho_s=\\operatorname{corr}\\big(\\operatorname{rank}\\bar I_k,\\ \\operatorname{rank}P^{\\mathrm{inf}}_k\\big)",
-        "ket": "P_d = penduduk desa, P^inf_k = persentase pekerja informal kab/kota dari BPS."
+        "ket": "P_d = penduduk desa, P^inf_k = persentase pekerja informal kab/kota hasil hitungan dari tabel status pekerjaan BPS."
       },
       {
         "judul": "Kalibrasi agregat",
@@ -1892,7 +1903,7 @@
     "keluaranIndeks": [
       {
         "tahap": "Validasi",
-        "isi": "Spearman rata-rata indeks kab/kota dengan persentase pekerja informal publikasi BPS (n = 19)"
+        "isi": "Spearman rata-rata indeks kab/kota dengan persentase pekerja informal hasil olahan tabel status pekerjaan BPS (n = 19)"
       },
       {
         "tahap": "Kalibrasi",
